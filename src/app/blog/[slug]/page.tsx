@@ -4,6 +4,7 @@ import { use } from 'react'
 import { notFound } from 'next/navigation'
 import Layout from '../../../components/Layout/Layout'
 import Link from 'next/link'
+import { generateMetadata as generateSEOMetadata, generateBlogStructuredData, KEYWORDS } from '../../../lib/utils/seo'
 
 interface BlogPost {
   slug: string
@@ -592,6 +593,40 @@ interface BlogPostPageProps {
   }>
 }
 
+export async function generateMetadata({ params }: BlogPostPageProps) {
+  const { slug } = await params
+  const post = blogPosts.find(p => p.slug === slug)
+
+  if (!post) {
+    return generateSEOMetadata({
+      title: 'Blog Post Not Found',
+      description: 'The requested blog post could not be found.',
+      keywords: [...KEYWORDS.medical],
+      canonical: `/blog/${slug}`,
+    })
+  }
+
+  const categoryKeywords = post.category === 'preventive-care' ? KEYWORDS.preventive
+    : post.category === 'chronic-care' ? KEYWORDS.chronic
+    : post.category === 'mental-health' ? KEYWORDS.mental
+    : post.category === 'womens-health' ? KEYWORDS.womens
+    : post.category === 'pediatrics' ? KEYWORDS.pediatric
+    : post.category === 'senior-care' ? KEYWORDS.senior
+    : KEYWORDS.medical
+
+  return generateSEOMetadata({
+    title: post.title,
+    description: post.excerpt,
+    keywords: [...KEYWORDS.medical, ...categoryKeywords, ...post.tags],
+    canonical: `/blog/${post.slug}`,
+    ogType: 'article',
+    publishedTime: post.publishDate,
+    author: post.author,
+    section: 'Health & Wellness',
+    tags: post.tags,
+  })
+}
+
 export default function BlogPost({ params }: BlogPostPageProps) {
   const { slug } = use(params)
   const post = blogPosts.find(p => p.slug === slug)
@@ -624,8 +659,16 @@ export default function BlogPost({ params }: BlogPostPageProps) {
 
   const otherPosts = blogPosts.filter(p => p.slug !== slug).slice(0, 3)
 
+  // Generate structured data for the blog post
+  const blogStructuredData = generateBlogStructuredData(post)
+
   return (
     <Layout>
+      {/* Blog Post Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogStructuredData) }}
+      />
       {/* Article Header */}
       <article className="bg-white">
         <header className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">

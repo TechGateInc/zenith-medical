@@ -3,6 +3,12 @@
 import { useState } from 'react'
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
+import { generateMetadata as generateSEOMetadata, PAGE_METADATA } from '../../lib/utils/seo'
+
+export const metadata = generateSEOMetadata({
+  ...PAGE_METADATA.contact,
+  canonical: '/contact',
+})
 
 export default function Contact() {
   const [formData, setFormData] = useState({

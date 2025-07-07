@@ -1,5 +1,11 @@
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
+import { generateMetadata as generateSEOMetadata, PAGE_METADATA } from '../../lib/utils/seo'
+
+export const metadata = generateSEOMetadata({
+  ...PAGE_METADATA.services,
+  canonical: '/services',
+})
 
 export default function Services() {
   const primaryServices = [

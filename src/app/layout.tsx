@@ -5,9 +5,60 @@ import SessionProvider from '../lib/auth/session-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
+
 export const metadata: Metadata = {
-  title: 'Zenith Medical Centre',
-  description: 'Professional healthcare services with modern patient care',
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: 'Zenith Medical Centre - Comprehensive Family Healthcare',
+    template: '%s | Zenith Medical Centre',
+  },
+  description: 'Quality family medicine and healthcare services in Medical District, MD. Preventive care, chronic disease management, and comprehensive health services for all ages.',
+  keywords: 'family medicine, healthcare, medical center, doctor, physician, health clinic, primary care, Medical District MD',
+  authors: [{ name: 'Zenith Medical Centre' }],
+  creator: 'Zenith Medical Centre',
+  publisher: 'Zenith Medical Centre',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+  },
+  category: 'medical',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: baseUrl,
+    siteName: 'Zenith Medical Centre',
+    title: 'Zenith Medical Centre - Comprehensive Family Healthcare',
+    description: 'Quality family medicine and healthcare services in Medical District, MD. Preventive care, chronic disease management, and comprehensive health services for all ages.',
+    images: [
+      {
+        url: `${baseUrl}/images/zenith-medical-og.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Zenith Medical Centre',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@ZenithMedical',
+    creator: '@ZenithMedical',
+  },
 }
 
 export default function RootLayout({

@@ -3,6 +3,12 @@
 import { useState } from 'react'
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
+import { generateMetadata as generateSEOMetadata, generateFAQStructuredData, PAGE_METADATA } from '../../lib/utils/seo'
+
+export const metadata = generateSEOMetadata({
+  ...PAGE_METADATA.faq,
+  canonical: '/faq',
+})
 
 interface FAQItem {
   id: string
@@ -150,8 +156,21 @@ export default function FAQ() {
     ? faqData 
     : faqData.filter(item => item.category === activeCategory)
 
+  // Generate FAQ structured data
+  const faqStructuredData = generateFAQStructuredData(
+    faqData.map(faq => ({
+      question: faq.question,
+      answer: faq.answer
+    }))
+  )
+
   return (
     <Layout>
+      {/* FAQ Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">
         <div className="container mx-auto px-4 text-center">

@@ -1,5 +1,11 @@
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
+import { generateMetadata as generateSEOMetadata, generateDoctorStructuredData, PAGE_METADATA } from '../../lib/utils/seo'
+
+export const metadata = generateSEOMetadata({
+  ...PAGE_METADATA.about,
+  canonical: '/about',
+})
 
 export default function About() {
   const teamMembers = [
@@ -41,8 +47,26 @@ export default function About() {
     }
   ]
 
+  // Generate structured data for all team members
+  const doctorStructuredData = teamMembers.map(member => 
+    generateDoctorStructuredData({
+      name: member.name,
+      title: member.role,
+      specialties: member.specialties,
+      experience: member.bio
+    })
+  )
+
   return (
     <Layout>
+      {/* Structured Data for Team Members */}
+      {doctorStructuredData.map((data, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+        />
+      ))}
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">
         <div className="container mx-auto px-4 text-center">
