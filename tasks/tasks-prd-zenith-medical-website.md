@@ -20,13 +20,12 @@ Based on PRD: `prd-zenith-medical-website.md`
 - `lib/utils/validation.ts` - Form validation utilities for intake form
 - `lib/notifications/email.ts` - Email notification service integration
 - `lib/notifications/sms.ts` - SMS notification service integration
-- `pages/index.tsx` - Homepage with prominent appointment booking CTAs
-- `pages/about.tsx` - About page with clinic information and team details
-- `pages/services.tsx` - Services page outlining medical offerings
-- `pages/contact.tsx` - Contact page with location and hours
-- `pages/blog/index.tsx` - Blog listing page for health articles
-- `pages/blog/[slug].tsx` - Individual blog post pages
-- `pages/faq.tsx` - FAQ page with common patient questions
+- `src/app/about/page.tsx` - About page with clinic information and team profiles
+- `src/app/services/page.tsx` - Services page with comprehensive medical offerings
+- `src/app/contact/page.tsx` - Contact page with location, hours, and interactive contact form
+- `src/app/faq/page.tsx` - FAQ page with expandable questions organized by category
+- `src/app/blog/page.tsx` - Blog listing page with health articles and category filtering
+- `src/app/blog/[slug]/page.tsx` - Dynamic blog post pages with full article content
 - `pages/intake/form.tsx` - Patient intake form component
 - `pages/intake/success.tsx` - Intake completion and booking redirect page
 - `pages/admin/login.tsx` - Admin authentication page
@@ -38,8 +37,9 @@ Based on PRD: `prd-zenith-medical-website.md`
 - `pages/api/admin/intake/[id].ts` - API route for managing intake submissions
 - `pages/api/admin/notifications.ts` - API route for sending notifications
 - `pages/api/admin/export.ts` - API route for data export functionality
-- `components/Layout/Header.tsx` - Main navigation with appointment CTAs
-- `components/Layout/Footer.tsx` - Footer with contact information
+- `src/components/Layout/Header.tsx` - Main navigation with appointment CTAs
+- `src/components/Layout/Footer.tsx` - Footer with contact information
+- `src/components/Layout/Layout.tsx` - Main layout wrapper component
 - `components/UI/Button.tsx` - Reusable button component for CTAs
 - `components/Forms/IntakeForm.tsx` - Patient intake form component
 - `components/Admin/Dashboard.tsx` - Admin dashboard interface
@@ -70,7 +70,7 @@ Based on PRD: `prd-zenith-medical-website.md`
   - [x] 2.4 Develop Services page with medical offerings
   - [x] 2.5 Build Contact page with location, hours, and contact form
   - [x] 2.6 Create FAQ page with expandable question sections
-  - [ ] 2.7 Implement blog listing and individual post pages
+  - [x] 2.7 Implement blog listing and individual post pages
   - [ ] 2.8 Add SEO optimization and meta tags for all pages
 - [ ] 3.0 Patient Intake System
   - [ ] 3.1 Create patient intake form with all 14 required fields
