@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Layout from '../../components/Layout/Layout'
-import IntakeForm, { PatientIntakeData } from '../../components/Forms/IntakeForm'
+import IntakeForm, { type PatientIntakeData } from '../../components/Forms/IntakeForm'
 
 export default function IntakePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)

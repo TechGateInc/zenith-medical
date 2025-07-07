@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../../lib/auth/config'
-import { prisma } from '../../../../../lib/database/connection'
+import { prisma } from '../../../../../lib/prisma'
 import { decryptPatientData } from '../../../../../lib/utils/encryption'
 import { AdminRole } from '../../../../../generated/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: submissionId } = await params
+  
   try {
     // Check authentication
     const session = await getServerSession(authOptions)
@@ -19,8 +21,6 @@ export async function GET(
         { status: 401 }
       )
     }
-
-    const submissionId = params.id
 
     // Get client information for audit logging
     const ipAddress = request.headers.get('x-forwarded-for') || 
@@ -169,7 +169,7 @@ export async function GET(
           userId: session?.user?.id,
           action: 'ERROR',
           resource: 'patient_intake',
-          resourceId: params.id,
+          resourceId: submissionId,
           details: {
             error: 'intake_detail_api_error',
             errorMessage: error instanceof Error ? error.message : 'unknown',
@@ -195,8 +195,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: submissionId } = await params
+  
   try {
     // Check authentication
     const session = await getServerSession(authOptions)
@@ -215,8 +217,6 @@ export async function PATCH(
         { status: 403 }
       )
     }
-
-    const submissionId = params.id
     const body = await request.json()
 
     // Get client information for audit logging
@@ -359,7 +359,7 @@ export async function PATCH(
           userId: session?.user?.id,
           action: 'ERROR',
           resource: 'patient_intake',
-          resourceId: params.id,
+          resourceId: submissionId,
           details: {
             error: 'intake_update_api_error',
             errorMessage: error instanceof Error ? error.message : 'unknown',

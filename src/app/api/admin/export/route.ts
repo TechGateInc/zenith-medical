@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../lib/auth/config'
-import { prisma } from '../../../../lib/database/connection'
+import { prisma } from '../../../../lib/prisma'
 import { decryptPatientData } from '../../../../lib/utils/encryption'
 import { AdminRole } from '../../../../generated/prisma'
 
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Decrypt patient data for export
-    const decryptedSubmissions = intakeSubmissions.map((submission) => {
+    const decryptedSubmissions = intakeSubmissions.map((submission: any) => {
       try {
         const decryptedData = decryptPatientData({
           legalFirstName: submission.legalFirstName,
@@ -213,7 +213,7 @@ export async function GET(request: NextRequest) {
         'Last Updated'
       ]
 
-      const csvRows = decryptedSubmissions.map(submission => [
+      const csvRows = decryptedSubmissions.map((submission: any) => [
         submission.id,
         submission.legalFirstName,
         submission.legalLastName,
@@ -246,7 +246,7 @@ export async function GET(request: NextRequest) {
 
       const csvContent = [
         csvHeaders.join(','),
-        ...csvRows.map(row => row.map(cell => escapeCsvValue(String(cell))).join(','))
+        ...csvRows.map((row: any) => row.map((cell: any) => escapeCsvValue(String(cell))).join(','))
       ].join('\n')
 
       // Generate filename with timestamp
@@ -356,7 +356,7 @@ export async function GET(request: NextRequest) {
               </tr>
             </thead>
             <tbody>
-              ${decryptedSubmissions.map(submission => `
+              ${decryptedSubmissions.map((submission: any) => `
                 <tr>
                   <td>
                     ${submission.legalFirstName} ${submission.legalLastName}

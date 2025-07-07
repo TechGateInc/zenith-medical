@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../../auth/[...nextauth]/route'
-import { prisma } from '../../../../../../lib/db/prisma'
+import { authOptions } from '../../../../../../lib/auth/config'
+import { prisma } from '../../../../../../lib/prisma'
 import { auditLog } from '../../../../../../lib/audit/audit-logger'
-import { AdminRole } from '@prisma/client'
+import { AdminRole } from '../../../../../../generated/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and authorization
@@ -26,7 +26,7 @@ export async function GET(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
-    const faqId = params.id
+    const { id: faqId } = await params
 
     // Get FAQ
     const faq = await prisma.fAQItem.findUnique({
@@ -71,7 +71,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and authorization
@@ -90,7 +90,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
-    const faqId = params.id
+    const { id: faqId } = await params
 
     // Check if FAQ exists
     const existingFAQ = await prisma.fAQItem.findUnique({
@@ -166,7 +166,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and authorization
@@ -182,11 +182,11 @@ export async function DELETE(
     })
 
     // Only admins and super admins can delete FAQs
-    if (!user || !user.role || ![AdminRole.SUPER_ADMIN, AdminRole.ADMIN].includes(user.role as AdminRole)) {
+    if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
-    const faqId = params.id
+    const { id: faqId } = await params
 
     // Check if FAQ exists
     const existingFAQ = await prisma.fAQItem.findUnique({

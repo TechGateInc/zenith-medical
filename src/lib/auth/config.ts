@@ -1,7 +1,7 @@
-import { NextAuthOptions } from 'next-auth'
+import { type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { prisma } from '../database/connection'
+import { prisma } from '../prisma'
 import { AdminRole } from '../../generated/prisma'
 
 export const authOptions: NextAuthOptions = {

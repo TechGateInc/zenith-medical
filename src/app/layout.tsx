@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import SessionProvider from '../lib/auth/session-provider'
+import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Analytics/AnalyticsProvider'
+import AnalyticsConsent from '../components/Analytics/AnalyticsConsent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -70,7 +72,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider>
-          {children}
+          <AnalyticsProvider>
+            {children}
+            <ScrollTracker />
+            <TimeTracker />
+            <AnalyticsConsent />
+          </AnalyticsProvider>
         </SessionProvider>
       </body>
     </html>

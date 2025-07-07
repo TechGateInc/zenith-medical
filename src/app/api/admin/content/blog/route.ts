@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../auth/[...nextauth]/route'
-import { prisma } from '../../../../../lib/db/prisma'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../../../../../lib/auth/config'
+import { prisma } from '../../../../../lib/prisma'
 import { auditLog } from '../../../../../lib/audit/audit-logger'
-import { AdminRole } from '@prisma/client'
+import { AdminRole } from '../../../../../generated/prisma'
 
 export async function GET(request: NextRequest) {
   try {

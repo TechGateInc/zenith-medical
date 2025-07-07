@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     
     // Get client information for audit logging
-    const headersList = headers()
+    const headersList = await headers()
     const ipAddress = headersList.get('x-forwarded-for') || 
                      headersList.get('x-real-ip') || 
                      'unknown'
@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
     
     // Log the error for audit purposes (without sensitive data)
     try {
-      const headersList = headers()
+      const headersList = await headers()
       const ipAddress = headersList.get('x-forwarded-for') || 
                        headersList.get('x-real-ip') || 
                        'unknown'

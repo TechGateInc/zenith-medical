@@ -57,7 +57,7 @@ export default function FAQManagementPage() {
       setFaqs(data.faqs)
       
       // Extract unique categories
-      const uniqueCategories = [...new Set(data.faqs.map((faq: FAQItem) => faq.category))].filter(Boolean)
+      const uniqueCategories = [...new Set(data.faqs.map((faq: FAQItem) => faq.category))].filter(Boolean) as string[]
       setCategories(uniqueCategories)
     } catch (err) {
       console.error('Fetch error:', err)

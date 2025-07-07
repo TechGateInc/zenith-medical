@@ -49,6 +49,9 @@ model PatientIntake {
   ipAddress             String?  // For audit purposes
   userAgent             String?  // For audit purposes
   
+  // Relations
+  appointments          Appointment[]
+  
   @@map("patient_intakes")
 }
 
@@ -162,4 +165,68 @@ enum AdminRole {
   SUPER_ADMIN
   ADMIN
   EDITOR
+}
+
+model Appointment {
+  id                      String   @id @default(cuid())
+  
+  // Link to intake submission
+  patientIntakeId         String?
+  patientIntake           PatientIntake? @relation(fields: [patientIntakeId], references: [id], onDelete: SetNull)
+  
+  // Provider information
+  providerType            String   // 'acuity', 'calendly', etc.
+  providerAppointmentId   String?  // ID from the booking provider
+  providerName            String?  // Name of the provider service
+  
+  // Patient information
+  patientName             String
+  patientEmail            String
+  patientPhone            String
+  
+  // Appointment details
+  appointmentDate         String
+  appointmentTime         String
+  appointmentType         String
+  duration                Int?     // Duration in minutes
+  
+  // Provider/Doctor information
+  providerId              String?
+  providerStaffName       String?
+  
+  // Status and metadata
+  status                  String   // 'scheduled', 'confirmed', 'cancelled', 'completed', 'no_show'
+  notes                   String?
+  reminderSent            Boolean  @default(false)
+  confirmationSent        Boolean  @default(false)
+  
+  // Booking metadata
+  bookingUrl              String?
+  metadata                Json?    // Store provider-specific data
+  
+  // Timestamps
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  @@map("appointments")
+}
+
+model BookingProvider {
+  id                      String   @id @default(cuid())
+  
+  // Provider details
+  name                    String
+  type                    String   // 'acuity', 'calendly', 'simplepractice', 'generic_webhook', 'embed'
+  active                  Boolean  @default(false)
+  isDefault               Boolean  @default(false)
+  
+  // Configuration
+  config                  Json     // Store provider-specific configuration
+  
+  // Timestamps
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  @@unique([type])
+  @@map("booking_providers")
 }

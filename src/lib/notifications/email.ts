@@ -52,7 +52,7 @@ const getEmailConfig = (): EmailConfig => {
 // Create transporter
 const createTransporter = () => {
   const config = getEmailConfig()
-  return nodemailer.createTransporter(config)
+  return nodemailer.createTransport(config)
 }
 
 // Email templates

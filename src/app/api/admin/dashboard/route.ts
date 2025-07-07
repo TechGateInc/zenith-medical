@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../lib/auth/config'
-import { prisma } from '../../../../lib/database/connection'
+import { prisma } from '../../../../lib/prisma'
 import { decryptPatientData } from '../../../../lib/utils/encryption'
 import { AdminRole } from '../../../../generated/prisma'
 
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Decrypt patient data for display
-    const decryptedSubmissions = intakeSubmissions.map((submission) => {
+    const decryptedSubmissions = intakeSubmissions.map((submission: any) => {
       try {
         const decryptedData = decryptPatientData({
           legalFirstName: submission.legalFirstName,
