@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
     const headersList = headers()
     const ipAddress = headersList.get('x-forwarded-for') || 
                      headersList.get('x-real-ip') || 
-                     request.ip || 
                      'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
     
