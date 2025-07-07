@@ -59,10 +59,10 @@ Based on PRD: `prd-zenith-medical-website.md`
   - [x] 1.1 Initialize Next.js project with TypeScript and required dependencies
   - [x] 1.2 Configure Tailwind CSS with silver/grey/blue medical color palette
   - [x] 1.3 Set up PostgreSQL database with encryption configuration
-  - [ ] 1.4 Create database schema for patient intake, admin users, and content
-  - [ ] 1.5 Configure NextAuth.js for admin authentication
-  - [ ] 1.6 Implement AES-256 encryption utilities for PHI data
-  - [ ] 1.7 Set up environment variables and security configuration
+  - [x] 1.4 Create database schema for patient intake, admin users, and content
+  - [x] 1.5 Configure NextAuth.js for admin authentication
+  - [x] 1.6 Implement AES-256 encryption utilities for PHI data
+  - [x] 1.7 Set up environment variables and security configuration
 - [ ] 2.0 Public Website Pages & Navigation
   - [ ] 2.1 Create responsive layout components (Header, Footer, Navigation)
   - [ ] 2.2 Build homepage with prominent appointment booking CTAs
