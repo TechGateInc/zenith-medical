@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .medical-gradient {
+    background: linear-gradient(135deg, #2563eb 0%, #64748b 100%);
+  }
+} 
