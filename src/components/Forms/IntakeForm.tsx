@@ -1,7 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Button from '../UI/Button'
+import { 
+  validatePatientIntakeField, 
+  validateIntakeForm, 
+  formatPhone, 
+  normalizePostalCode,
+  sanitizeInput
+} from '../../lib/utils/validation'
+import PrivacyPolicyAgreement from './PrivacyPolicyAgreement'
+import { 
+  announceToScreenReader,
+  formAccessibility,
+  responsiveAccessibility
+} from '../../lib/utils/accessibility'
 
 export interface PatientIntakeData {
   legalFirstName: string
@@ -43,6 +56,9 @@ interface IntakeFormProps {
 }
 
 export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFormProps) {
+  const formRef = useRef<HTMLFormElement>(null)
+  const errorSummaryRef = useRef<HTMLDivElement>(null)
+  
   const [formData, setFormData] = useState<PatientIntakeData>({
     legalFirstName: '',
     legalLastName: '',
@@ -63,66 +79,41 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
   const [errors, setErrors] = useState<FormErrors>({})
   const [touched, setTouched] = useState<Partial<Record<keyof PatientIntakeData, boolean>>>({})
 
-  const validateField = (name: keyof PatientIntakeData, value: string | boolean): string => {
-    switch (name) {
-      case 'legalFirstName':
-      case 'legalLastName':
-        return typeof value === 'string' && value.trim().length < 2 ? 'Must be at least 2 characters' : ''
-      
-      case 'dateOfBirth':
-        const dateRegex = /^\d{2}-\d{2}-\d{4}$/
-        if (typeof value === 'string' && !dateRegex.test(value)) {
-          return 'Please use DD-MM-YYYY format'
-        }
-        if (typeof value === 'string' && value) {
-          const [day, month, year] = value.split('-').map(Number)
-          const date = new Date(year, month - 1, day)
-          const today = new Date()
-          if (date > today) {
-            return 'Date of birth cannot be in the future'
-          }
-          if (year < 1900) {
-            return 'Please enter a valid year'
-          }
-        }
-        return ''
-      
-      case 'phoneNumber':
-        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/
-        const cleanPhone = typeof value === 'string' ? value.replace(/[\s\-\(\)\.]/g, '') : ''
-        return cleanPhone && !phoneRegex.test(cleanPhone) ? 'Please enter a valid phone number' : ''
-      
-      case 'emailAddress':
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        return typeof value === 'string' && value && !emailRegex.test(value) ? 'Please enter a valid email address' : ''
-      
-      case 'streetAddress':
-      case 'city':
-      case 'emergencyContactName':
-        return typeof value === 'string' && value.trim().length < 2 ? 'This field is required' : ''
-      
-      case 'provinceState':
-        return typeof value === 'string' && value.trim().length < 2 ? 'Please select or enter your province/state' : ''
-      
-      case 'postalZipCode':
-        // Canadian postal code (A1A 1A1) or US ZIP code (12345 or 12345-1234)
-        const postalRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$|^\d{5}(-\d{4})?$/
-        return typeof value === 'string' && value && !postalRegex.test(value) ? 'Please enter a valid postal/ZIP code' : ''
-      
-      case 'emergencyContactPhone':
-        const emergencyPhoneRegex = /^[\+]?[1-9][\d]{0,15}$/
-        const cleanEmergencyPhone = typeof value === 'string' ? value.replace(/[\s\-\(\)\.]/g, '') : ''
-        return cleanEmergencyPhone && !emergencyPhoneRegex.test(cleanEmergencyPhone) ? 'Please enter a valid emergency contact phone' : ''
-      
-      case 'relationshipToPatient':
-        return typeof value === 'string' && value.trim().length < 2 ? 'Please specify relationship' : ''
-      
-      case 'privacyPolicyAgreed':
-        return value !== true ? 'You must agree to the Privacy & Data-Use Policy' : ''
-      
-      default:
-        return ''
+  // Accessibility initialization
+  useEffect(() => {
+    const cleanupReducedMotion = responsiveAccessibility.respectReducedMotion()
+    const cleanupFocusVisible = responsiveAccessibility.addFocusVisibleSupport()
+    
+    // Announce form purpose to screen readers
+    announceToScreenReader(
+      'Patient intake form loaded. Please complete all required fields marked with an asterisk.',
+      'polite'
+    )
+
+    return () => {
+      cleanupReducedMotion?.()
+      cleanupFocusVisible?.()
     }
+  }, [])
+
+  // Announce validation errors to screen readers
+  useEffect(() => {
+    const errorCount = Object.keys(errors).filter(key => errors[key as keyof FormErrors]).length
+    if (errorCount > 0) {
+      formAccessibility.announceFormErrors(errors as Record<string, string>)
+      
+      // Move focus to error summary if it exists
+      if (errorSummaryRef.current) {
+        setTimeout(() => {
+          errorSummaryRef.current?.focus()
+        }, 100)
+      }
+    }
+  }, [errors])
+
+  const validateField = (name: keyof PatientIntakeData, value: string | boolean): string => {
+    const result = validatePatientIntakeField(name, value)
+    return result.isValid ? '' : (result.error || '')
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -131,23 +122,34 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     
     let newValue: string | boolean = value
     
-    // Format date input
-    if (fieldName === 'dateOfBirth' && type === 'text') {
-      // Auto-format as user types DD-MM-YYYY
-      const cleaned = value.replace(/\D/g, '')
-      let formatted = cleaned
-      if (cleaned.length >= 2) {
-        formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2)
-      }
-      if (cleaned.length >= 4) {
-        formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2, 4) + '-' + cleaned.slice(4, 8)
-      }
-      newValue = formatted
-    }
-    
     // Handle checkbox
     if (type === 'checkbox') {
       newValue = (e.target as HTMLInputElement).checked
+    } else {
+      // Sanitize string inputs
+      let sanitizedValue = sanitizeInput(value)
+      
+      // Format specific fields
+      if (fieldName === 'dateOfBirth' && type === 'text') {
+        // Auto-format as user types DD-MM-YYYY
+        const cleaned = sanitizedValue.replace(/\D/g, '')
+        let formatted = cleaned
+        if (cleaned.length >= 2) {
+          formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2)
+        }
+        if (cleaned.length >= 4) {
+          formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2, 4) + '-' + cleaned.slice(4, 8)
+        }
+        sanitizedValue = formatted
+      } else if (fieldName === 'postalZipCode') {
+        // Normalize postal code formatting
+        sanitizedValue = normalizePostalCode(sanitizedValue)
+      } else if (fieldName === 'phoneNumber' || fieldName === 'emergencyContactPhone') {
+        // Allow phone formatting characters while typing
+        sanitizedValue = value // Don't auto-format while typing to avoid cursor jumping
+      }
+      
+      newValue = sanitizedValue
     }
     
     setFormData(prev => ({
@@ -169,9 +171,28 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     const fieldName = e.target.name as keyof PatientIntakeData
     setTouched(prev => ({ ...prev, [fieldName]: true }))
     
-    const value = fieldName === 'privacyPolicyAgreed' 
+    let value = fieldName === 'privacyPolicyAgreed' 
       ? (e.target as HTMLInputElement).checked 
       : e.target.value
+    
+    // Format fields on blur for better UX
+    if (typeof value === 'string') {
+      if (fieldName === 'phoneNumber' || fieldName === 'emergencyContactPhone') {
+        const formatted = formatPhone(value)
+        setFormData(prev => ({
+          ...prev,
+          [fieldName]: formatted
+        }))
+        value = formatted
+      } else if (fieldName === 'postalZipCode') {
+        const normalized = normalizePostalCode(value)
+        setFormData(prev => ({
+          ...prev,
+          [fieldName]: normalized
+        }))
+        value = normalized
+      }
+    }
     
     const error = validateField(fieldName, value)
     setErrors(prev => ({
@@ -181,47 +202,26 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
   }
 
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {}
-    let isValid = true
+    const validation = validateIntakeForm(formData)
     
-    // Validate all required fields
-    const requiredFields: (keyof PatientIntakeData)[] = [
-      'legalFirstName', 'legalLastName', 'dateOfBirth', 'phoneNumber',
+    setErrors(validation.errors as FormErrors)
+    
+    // Mark all fields as touched to show errors
+    const allFields: (keyof PatientIntakeData)[] = [
+      'legalFirstName', 'legalLastName', 'preferredName', 'dateOfBirth', 'phoneNumber',
       'emailAddress', 'streetAddress', 'city', 'provinceState', 'postalZipCode',
       'emergencyContactName', 'emergencyContactPhone', 'relationshipToPatient',
       'privacyPolicyAgreed'
     ]
     
-    requiredFields.forEach(field => {
-      if (field === 'privacyPolicyAgreed') {
-        if (!formData[field]) {
-          newErrors[field] = 'You must agree to the Privacy & Data-Use Policy'
-          isValid = false
-        }
-      } else {
-        const value = formData[field] as string
-        if (!value || value.trim() === '') {
-          newErrors[field] = 'This field is required'
-          isValid = false
-        } else {
-          const error = validateField(field, value)
-          if (error) {
-            newErrors[field] = error
-            isValid = false
-          }
-        }
-      }
-    })
-    
-    setErrors(newErrors)
     setTouched(
-      requiredFields.reduce((acc, field) => ({
+      allFields.reduce((acc, field) => ({
         ...acc,
         [field]: true
       }), {})
     )
     
-    return isValid
+    return validation.isValid
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -319,27 +319,147 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
   ]
 
   const inputClassName = (fieldName: keyof FormErrors) => {
-    const baseClasses = 'w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-    const hasError = touched[fieldName as keyof PatientIntakeData] && errors[fieldName]
-    return hasError 
-      ? `${baseClasses} border-red-300 focus:ring-red-500 focus:border-red-500`
-      : `${baseClasses} border-slate-300`
+    const baseClasses = 'w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200'
+    const isTouched = touched[fieldName as keyof PatientIntakeData]
+    const hasError = isTouched && errors[fieldName]
+    const hasValue = formData[fieldName as keyof PatientIntakeData]
+    const isValid = isTouched && !errors[fieldName] && hasValue
+    
+    if (hasError) {
+      return `${baseClasses} border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50`
+    } else if (isValid) {
+      return `${baseClasses} border-green-300 focus:ring-green-500 focus:border-green-500 bg-green-50`
+    } else {
+      return `${baseClasses} border-slate-300 focus:ring-blue-500 focus:border-blue-500 bg-white`
+    }
   }
 
-  const ErrorMessage = ({ fieldName }: { fieldName: keyof FormErrors }) => {
-    if (!touched[fieldName as keyof PatientIntakeData] || !errors[fieldName]) return null
-    return (
-      <p className="mt-1 text-sm text-red-600" role="alert">
-        {errors[fieldName]}
-      </p>
-    )
+  const ValidationMessage = ({ fieldName }: { fieldName: keyof FormErrors }) => {
+    const isTouched = touched[fieldName as keyof PatientIntakeData]
+    const hasError = errors[fieldName]
+    const hasValue = formData[fieldName as keyof PatientIntakeData]
+    const isValid = isTouched && !hasError && hasValue
+    
+    if (!isTouched) return null
+    
+    if (hasError) {
+      return (
+        <div className="mt-1 flex items-center space-x-1">
+          <svg className="h-4 w-4 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm text-red-600" role="alert">
+            {hasError}
+          </p>
+        </div>
+      )
+    }
+    
+    if (isValid) {
+      return (
+        <div className="mt-1 flex items-center space-x-1">
+          <svg className="h-4 w-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <p className="text-sm text-green-600">
+            Valid
+          </p>
+        </div>
+      )
+    }
+    
+    return null
   }
+
+  // Generate field attributes with accessibility features
+  const getFieldAttributes = (fieldName: keyof PatientIntakeData, required: boolean = true) => {
+    const hasError = touched[fieldName] && errors[fieldName as keyof FormErrors]
+    return {
+      ...formAccessibility.generateFieldAttributes(fieldName, {
+        required,
+        invalid: !!hasError,
+        describedBy: hasError ? [`${fieldName}-error`] : undefined
+      }),
+      id: formAccessibility.generateFieldId(fieldName)
+    }
+  }
+
+  const hasFormErrors = Object.keys(errors).some(key => errors[key as keyof FormErrors])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-      {/* Personal Information Section */}
-      <section>
-        <h2 className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+    <div className="max-w-4xl mx-auto">
+      {/* Skip Link */}
+      <a 
+        href="#submit-section" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50 text-sm font-medium"
+      >
+        Skip to submit button
+      </a>
+
+      {/* Form Title and Description */}
+      <div className="text-center mb-8">
+        <h1 id="intake-form-title" className="text-3xl font-bold text-slate-800 mb-4">
+          Patient Intake Form
+        </h1>
+        <p id="intake-form-description" className="text-lg text-slate-600 max-w-2xl mx-auto">
+          Please complete all required fields marked with an asterisk (*). 
+          Your information is encrypted and protected according to HIPAA and PIPEDA standards.
+        </p>
+      </div>
+
+      {/* Error Summary */}
+      {hasFormErrors && (
+        <div 
+          ref={errorSummaryRef}
+          className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mb-8"
+          role="alert"
+          aria-labelledby="error-summary-title"
+          tabIndex={-1}
+        >
+          <h2 id="error-summary-title" className="text-lg font-semibold text-red-800 mb-4 flex items-center">
+            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Please correct the following {Object.keys(errors).filter(key => errors[key as keyof FormErrors]).length} error{Object.keys(errors).filter(key => errors[key as keyof FormErrors]).length !== 1 ? 's' : ''}:
+          </h2>
+          <ul className="list-disc list-inside space-y-2 text-red-700">
+            {Object.entries(errors).map(([field, error]) => 
+              error ? (
+                <li key={field}>
+                  <a 
+                    href={`#${formAccessibility.generateFieldId(field)}`}
+                    className="underline hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      const element = document.getElementById(formAccessibility.generateFieldId(field))
+                      if (element) {
+                        element.focus()
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        announceToScreenReader(`Moved to ${field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} field`, 'assertive')
+                      }
+                    }}
+                  >
+                    {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}: {error}
+                  </a>
+                </li>
+              ) : null
+            )}
+          </ul>
+        </div>
+      )}
+
+      <form 
+        ref={formRef}
+        onSubmit={handleSubmit} 
+        className="space-y-8"
+        role="form"
+        aria-labelledby="intake-form-title"
+        aria-describedby="intake-form-description"
+        noValidate
+      >
+        {/* Personal Information Section */}
+        <section aria-labelledby="personal-info-heading">
+        <h2 id="personal-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
           Personal Information
         </h2>
         
@@ -361,7 +481,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               aria-describedby="legalFirstName-error"
               autoComplete="given-name"
             />
-            <ErrorMessage fieldName="legalFirstName" />
+            <ValidationMessage fieldName="legalFirstName" />
           </div>
 
           <div>
@@ -381,7 +501,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               aria-describedby="legalLastName-error"
               autoComplete="family-name"
             />
-            <ErrorMessage fieldName="legalLastName" />
+            <ValidationMessage fieldName="legalLastName" />
           </div>
 
           <div>
@@ -400,7 +520,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               aria-describedby="preferredName-error"
               autoComplete="nickname"
             />
-            <ErrorMessage fieldName="preferredName" />
+            <ValidationMessage fieldName="preferredName" />
           </div>
 
           <div>
@@ -422,14 +542,14 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               autoComplete="bday"
             />
             <p className="mt-1 text-xs text-slate-500">Please use DD-MM-YYYY format (e.g., 15-03-1990)</p>
-            <ErrorMessage fieldName="dateOfBirth" />
+            <ValidationMessage fieldName="dateOfBirth" />
           </div>
         </div>
       </section>
 
       {/* Contact Information Section */}
-      <section>
-        <h2 className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+      <section aria-labelledby="contact-info-heading">
+        <h2 id="contact-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
           Contact Information
         </h2>
         
@@ -451,7 +571,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               aria-describedby="phoneNumber-error"
               autoComplete="tel"
             />
-            <ErrorMessage fieldName="phoneNumber" />
+            <ValidationMessage fieldName="phoneNumber" />
           </div>
 
           <div>
@@ -471,14 +591,14 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               aria-describedby="emailAddress-error"
               autoComplete="email"
             />
-            <ErrorMessage fieldName="emailAddress" />
+            <ValidationMessage fieldName="emailAddress" />
           </div>
         </div>
       </section>
 
       {/* Address Information Section */}
-      <section>
-        <h2 className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+      <section aria-labelledby="address-info-heading">
+        <h2 id="address-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
           Address Information
         </h2>
         
@@ -500,7 +620,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               aria-describedby="streetAddress-error"
               autoComplete="street-address"
             />
-            <ErrorMessage fieldName="streetAddress" />
+            <ValidationMessage fieldName="streetAddress" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -521,7 +641,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
                 aria-describedby="city-error"
                 autoComplete="address-level2"
               />
-              <ErrorMessage fieldName="city" />
+              <ValidationMessage fieldName="city" />
             </div>
 
             <div>
@@ -546,7 +666,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
                   </option>
                 ))}
               </select>
-              <ErrorMessage fieldName="provinceState" />
+              <ValidationMessage fieldName="provinceState" />
             </div>
 
             <div>
@@ -566,15 +686,15 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
                 aria-describedby="postalZipCode-error"
                 autoComplete="postal-code"
               />
-              <ErrorMessage fieldName="postalZipCode" />
+              <ValidationMessage fieldName="postalZipCode" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Emergency Contact Section */}
-      <section>
-        <h2 className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+      <section aria-labelledby="emergency-contact-heading">
+        <h2 id="emergency-contact-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
           Emergency Contact Information
         </h2>
         
@@ -595,7 +715,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               placeholder="Enter full name of emergency contact"
               aria-describedby="emergencyContactName-error"
             />
-            <ErrorMessage fieldName="emergencyContactName" />
+            <ValidationMessage fieldName="emergencyContactName" />
           </div>
 
           <div>
@@ -614,7 +734,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               placeholder="(555) 123-4567"
               aria-describedby="emergencyContactPhone-error"
             />
-            <ErrorMessage fieldName="emergencyContactPhone" />
+            <ValidationMessage fieldName="emergencyContactPhone" />
           </div>
 
           <div>
@@ -638,57 +758,41 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
                 </option>
               ))}
             </select>
-            <ErrorMessage fieldName="relationshipToPatient" />
+            <ValidationMessage fieldName="relationshipToPatient" />
           </div>
         </div>
       </section>
 
       {/* Privacy Policy Section */}
-      <section>
-        <h2 className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+      <section aria-labelledby="privacy-policy-heading">
+        <h2 id="privacy-policy-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
           Privacy & Data-Use Agreement
         </h2>
         
-        <div className="bg-slate-50 rounded-lg p-6 mb-6">
-          <div className="space-y-4 text-sm text-slate-700">
-            <p>
-              <strong>Privacy & Data Protection:</strong> Zenith Medical Centre is committed to protecting your personal health information (PHI) in accordance with HIPAA and PIPEDA regulations.
-            </p>
-            <p>
-              <strong>Data Collection:</strong> We collect only the information necessary to provide quality healthcare services and maintain accurate medical records.
-            </p>
-            <p>
-              <strong>Data Security:</strong> All patient information is encrypted using AES-256 encryption and stored securely. Access is limited to authorized healthcare personnel.
-            </p>
-            <p>
-              <strong>Data Use:</strong> Your information will be used for appointment scheduling, medical care coordination, billing, and healthcare quality improvement.
-            </p>
-            <p>
-              <strong>Data Sharing:</strong> We do not share your information with third parties except as required for your medical care, billing, or as required by law.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start space-x-3">
-          <input
-            type="checkbox"
-            id="privacyPolicyAgreed"
-            name="privacyPolicyAgreed"
-            checked={formData.privacyPolicyAgreed}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-            aria-describedby="privacyPolicyAgreed-error"
-          />
-          <label htmlFor="privacyPolicyAgreed" className="text-sm text-slate-700">
-            I acknowledge that I have read and agree to the Privacy & Data-Use Policy outlined above. I understand that my personal health information will be collected, used, and protected as described. *
-          </label>
-        </div>
-        <ErrorMessage fieldName="privacyPolicyAgreed" />
+        <PrivacyPolicyAgreement
+          agreed={formData.privacyPolicyAgreed}
+          onAgreementChange={(agreed) => {
+            setFormData(prev => ({
+              ...prev,
+              privacyPolicyAgreed: agreed
+            }))
+            
+            // Validate immediately when changed
+            if (touched.privacyPolicyAgreed) {
+              const error = validateField('privacyPolicyAgreed', agreed)
+              setErrors(prev => ({
+                ...prev,
+                privacyPolicyAgreed: error
+              }))
+            }
+          }}
+          showError={touched.privacyPolicyAgreed && !!errors.privacyPolicyAgreed}
+          errorMessage={errors.privacyPolicyAgreed}
+        />
       </section>
 
       {/* Submit Button */}
-      <div className="pt-6 border-t border-slate-200">
+      <div id="submit-section" className="pt-6 border-t border-slate-200">
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
           <p className="text-sm text-slate-600">
             * Required fields. All information is encrypted and securely stored.
@@ -698,11 +802,16 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
             disabled={isSubmitting}
             size="lg"
             className="w-full sm:w-auto min-w-[200px]"
+            aria-describedby="submit-description"
           >
             {isSubmitting ? 'Submitting...' : 'Complete Intake Form'}
           </Button>
         </div>
+        <p id="submit-description" className="sr-only">
+          Submit the patient intake form. All information will be encrypted and securely stored.
+        </p>
       </div>
     </form>
+    </div>
   )
 } 
