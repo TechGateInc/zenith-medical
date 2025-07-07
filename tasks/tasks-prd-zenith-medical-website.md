@@ -24,8 +24,11 @@ Based on PRD: `prd-zenith-medical-website.md`
 - `src/app/services/page.tsx` - Services page with comprehensive medical offerings
 - `src/app/contact/page.tsx` - Contact page with location, hours, and interactive contact form
 - `src/app/faq/page.tsx` - FAQ page with expandable questions organized by category
+- `src/app/blog/layout.tsx` - Blog section layout with SEO metadata
 - `src/app/blog/page.tsx` - Blog listing page with health articles and category filtering
 - `src/app/blog/[slug]/page.tsx` - Dynamic blog post pages with full article content
+- `src/app/contact/layout.tsx` - Contact page layout with SEO metadata
+- `src/app/faq/layout.tsx` - FAQ page layout with SEO metadata
 - `pages/intake/form.tsx` - Patient intake form component
 - `pages/intake/success.tsx` - Intake completion and booking redirect page
 - `pages/admin/login.tsx` - Admin authentication page
