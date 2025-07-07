@@ -68,8 +68,8 @@ Based on PRD: `prd-zenith-medical-website.md`
   - [x] 2.2 Build homepage with prominent appointment booking CTAs
   - [x] 2.3 Create About page with clinic information and team profiles
   - [x] 2.4 Develop Services page with medical offerings
-  - [ ] 2.5 Build Contact page with location, hours, and contact form
-  - [ ] 2.6 Create FAQ page with expandable question sections
+  - [x] 2.5 Build Contact page with location, hours, and contact form
+  - [x] 2.6 Create FAQ page with expandable question sections
   - [ ] 2.7 Implement blog listing and individual post pages
   - [ ] 2.8 Add SEO optimization and meta tags for all pages
 - [ ] 3.0 Patient Intake System
