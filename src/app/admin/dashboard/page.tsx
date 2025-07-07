@@ -360,7 +360,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link
             href="/admin/content/blog"
             className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
@@ -408,6 +408,23 @@ export default function AdminDashboard() {
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-gray-900">Manage Team</h3>
                 <p className="text-gray-500">Update team member profiles</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/notifications"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
+          >
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4 19h6v-2H4v2zM16 4H4a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6l-4-4H4z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">Notifications</h3>
+                <p className="text-gray-500">Manage appointment reminders</p>
               </div>
             </div>
           </Link>
