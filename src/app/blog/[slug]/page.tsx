@@ -669,136 +669,156 @@ export default function BlogPost({ params }: BlogPostPageProps) {
       />
       {/* Article Header */}
       <article className="bg-white">
-        <header className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">
+        <header className="bg-slate-50 py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               {/* Breadcrumb */}
-              <nav className="mb-6">
-                <Link href="/blog" className="text-blue-200 hover:text-white transition-colors">
-                  ← Back to Health Blog
+              <nav className="mb-8">
+                <Link href="/blog" className="text-blue-600 hover:text-blue-800 transition-colors font-medium inline-flex items-center">
+                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to Health Blog
                 </Link>
               </nav>
 
-              {/* Category Badge */}
-              <div className="mb-4">
-                <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(post.category).replace('text-', 'text-white bg-').replace('bg-', 'bg-opacity-20 bg-')}`}>
-                  {post.category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                </span>
+              {/* Section Badge */}
+              <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Health Article
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight text-gray-900">
                 {post.title}
               </h1>
 
               {/* Meta Information */}
-              <div className="flex flex-wrap items-center gap-6 text-blue-100">
+              <div className="flex flex-wrap items-center gap-6 text-gray-600">
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                    <span className="text-white font-semibold text-sm">
+                      {post.author.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
                   <div>
-                    <span className="font-medium text-white">{post.author}</span>
-                    <p className="text-sm">{post.authorTitle}</p>
+                    <span className="font-semibold text-gray-900">{post.author}</span>
+                    <p className="text-sm text-gray-500">{post.authorTitle}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
-                  <span>{formatDate(post.publishDate)}</span>
+                  <span className="text-sm">{formatDate(post.publishDate)}</span>
                 </div>
                 
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>{post.readTime}</span>
+                  <span className="text-sm">{post.readTime}</span>
                 </div>
+
+                {/* Category Badge */}
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(post.category)}`}>
+                  {post.category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                </span>
               </div>
             </div>
           </div>
         </header>
 
         {/* Article Content */}
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto">
-            {/* Featured Image Placeholder */}
-            <div className="mb-8 h-64 md:h-96 bg-gradient-to-br from-blue-100 to-slate-100 rounded-lg flex items-center justify-center">
-              <svg className="h-16 w-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-
-            {/* Article Body */}
-            <div className="prose prose-lg max-w-none">
-              <div className="text-slate-700 leading-relaxed">
-                {post.content.split('\n').map((paragraph, index) => {
-                  if (paragraph.trim() === '') return null
-                  
-                  if (paragraph.startsWith('# ')) {
-                    return <h1 key={index} className="text-3xl font-bold text-slate-800 mt-8 mb-4">{paragraph.replace('# ', '')}</h1>
-                  }
-                  
-                  if (paragraph.startsWith('## ')) {
-                    return <h2 key={index} className="text-2xl font-bold text-slate-800 mt-6 mb-3">{paragraph.replace('## ', '')}</h2>
-                  }
-                  
-                  if (paragraph.startsWith('### ')) {
-                    return <h3 key={index} className="text-xl font-semibold text-slate-800 mt-4 mb-2">{paragraph.replace('### ', '')}</h3>
-                  }
-                  
-                  if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                    return <h4 key={index} className="text-lg font-semibold text-slate-800 mt-3 mb-2">{paragraph.replace(/\*\*/g, '')}</h4>
-                  }
-                  
-                  if (paragraph.startsWith('- ')) {
-                    return <li key={index} className="ml-4 mb-1">{paragraph.replace('- ', '')}</li>
-                  }
-                  
-                  if (paragraph.startsWith('*') && paragraph.endsWith('*') && paragraph.includes('This article')) {
-                    return <p key={index} className="text-sm text-slate-500 italic mt-8 p-4 bg-slate-50 rounded-lg border-l-4 border-slate-300">{paragraph.replace(/\*/g, '')}</p>
-                  }
-                  
-                  if (paragraph.startsWith('---')) {
-                    return <hr key={index} className="my-8 border-slate-300" />
-                  }
-                  
-                  return <p key={index} className="mb-4">{paragraph}</p>
-                })}
+        <div className="bg-white py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              {/* Featured Image Placeholder */}
+              <div className="mb-12 h-64 md:h-96 bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl flex items-center justify-center border border-gray-200">
+                <svg className="h-16 w-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
               </div>
-            </div>
 
-            {/* Tags */}
-            <div className="mt-8 pt-8 border-t border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-800 mb-3">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag, index) => (
-                  <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Author Bio */}
-            <div className="mt-8 p-6 bg-slate-50 rounded-lg">
-              <div className="flex items-start">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                  <span className="text-white font-bold text-xl">
-                    {post.author.split(' ').map(n => n[0]).join('')}
-                  </span>
+              {/* Article Body */}
+              <div className="prose prose-lg max-w-none">
+                <div className="text-gray-700 leading-relaxed">
+                  {post.content.split('\n').map((paragraph, index) => {
+                    if (paragraph.trim() === '') return null
+                    
+                    if (paragraph.startsWith('# ')) {
+                      return <h1 key={index} className="text-3xl font-bold text-gray-900 mt-12 mb-6 first:mt-0">{paragraph.replace('# ', '')}</h1>
+                    }
+                    
+                    if (paragraph.startsWith('## ')) {
+                      return <h2 key={index} className="text-2xl font-bold text-gray-900 mt-10 mb-4">{paragraph.replace('## ', '')}</h2>
+                    }
+                    
+                    if (paragraph.startsWith('### ')) {
+                      return <h3 key={index} className="text-xl font-semibold text-gray-900 mt-8 mb-3">{paragraph.replace('### ', '')}</h3>
+                    }
+                    
+                    if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+                      return <h4 key={index} className="text-lg font-semibold text-gray-900 mt-6 mb-3">{paragraph.replace(/\*\*/g, '')}</h4>
+                    }
+                    
+                    if (paragraph.startsWith('- ')) {
+                      return <li key={index} className="ml-6 mb-2 text-gray-700">{paragraph.replace('- ', '')}</li>
+                    }
+                    
+                    if (paragraph.startsWith('*') && paragraph.endsWith('*') && paragraph.includes('This article')) {
+                      return <p key={index} className="text-sm text-gray-500 italic mt-12 p-6 bg-blue-50 rounded-2xl border border-blue-200">{paragraph.replace(/\*/g, '')}</p>
+                    }
+                    
+                    if (paragraph.startsWith('---')) {
+                      return <hr key={index} className="my-12 border-gray-200" />
+                    }
+                    
+                    return <p key={index} className="mb-6 text-gray-700 leading-relaxed">{paragraph}</p>
+                  })}
                 </div>
-                <div>
-                  <h4 className="text-lg font-semibold text-slate-800">{post.author}</h4>
-                  <p className="text-blue-600 mb-2">{post.authorTitle}</p>
-                  <p className="text-slate-600 text-sm">
-                    {post.author} is a dedicated healthcare professional at Zenith Medical Centre, 
-                    committed to providing compassionate, evidence-based care to patients and families. 
-                    With years of experience in family medicine, they focus on preventive care and 
-                    patient education to help individuals achieve their best health.
-                  </p>
+              </div>
+
+              {/* Tags Section */}
+              <div className="mt-12 pt-8 border-t border-gray-200">
+                <div className="bg-slate-50 p-6 rounded-2xl border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <svg className="h-5 w-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    Article Tags
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {post.tags.map((tag, index) => (
+                      <span key={index} className="bg-white border border-gray-200 hover:border-blue-300 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Author Bio */}
+              <div className="mt-8 p-8 bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl border border-gray-200">
+                <div className="flex items-start">
+                  <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mr-6 flex-shrink-0">
+                    <span className="text-white font-bold text-xl">
+                      {post.author.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-gray-900">{post.author}</h4>
+                    <p className="text-blue-600 font-semibold mb-3">{post.authorTitle}</p>
+                    <p className="text-gray-600 leading-relaxed">
+                      {post.author} is a dedicated healthcare professional at Zenith Medical Centre, 
+                      committed to providing compassionate, evidence-based care to patients and families. 
+                      With years of experience in family medicine, they focus on preventive care and 
+                      patient education to help individuals achieve their best health.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -807,31 +827,55 @@ export default function BlogPost({ params }: BlogPostPageProps) {
       </article>
 
       {/* Related Articles */}
-      <section className="bg-slate-50 py-12">
+      <section className="bg-slate-50 py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">Related Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                </svg>
+                More Health Insights
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Related Articles</h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                Continue your health journey with these expert insights and evidence-based medical guidance
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {otherPosts.map((relatedPost) => (
-                <article key={relatedPost.slug} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                  <div className="h-32 bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
-                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <article key={relatedPost.slug} className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-blue-300 hover:shadow-lg transition-all duration-300 group">
+                  <div className="h-40 bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center group-hover:from-blue-100 group-hover:to-green-100 transition-colors">
+                    <svg className="h-10 w-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                  <div className="p-6">
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${getCategoryColor(relatedPost.category)}`}>
+                      {relatedPost.category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    </span>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 leading-tight">
                       <Link href={`/blog/${relatedPost.slug}`} className="hover:text-blue-600 transition-colors">
                         {relatedPost.title}
                       </Link>
                     </h3>
-                    <p className="text-slate-600 text-sm mb-3 line-clamp-2">
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
                       {relatedPost.excerpt}
                     </p>
-                    <div className="text-xs text-slate-500">
-                      <span>{relatedPost.author}</span>
-                      <span className="mx-1">•</span>
-                      <span>{relatedPost.readTime}</span>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center">
+                        <span className="font-medium">{relatedPost.author}</span>
+                        <span className="mx-1">•</span>
+                        <span>{relatedPost.readTime}</span>
+                      </div>
+                      <Link 
+                        href={`/blog/${relatedPost.slug}`}
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        Read more →
+                      </Link>
                     </div>
                   </div>
                 </article>
@@ -842,25 +886,90 @@ export default function BlogPost({ params }: BlogPostPageProps) {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-slate-700 text-white py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Have Questions About Your Health?</h2>
-          <p className="text-lg mb-6 opacity-90">
-            Our healthcare professionals are here to provide personalized medical advice and care.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/contact"
-              className="bg-white text-blue-700 hover:bg-gray-100 font-semibold py-3 px-6 rounded-lg transition-colors"
-            >
-              Schedule Consultation
-            </Link>
-            <Link
-              href="/blog"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold py-3 px-6 rounded-lg transition-colors"
-            >
-              Read More Articles
-            </Link>
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl border border-gray-200 p-8 md:p-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                {/* Content Column */}
+                <div>
+                  <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Expert Medical Care
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                    Have Questions About Your Health?
+                  </h2>
+                  <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                    Our healthcare professionals are here to provide personalized medical advice and comprehensive care tailored to your unique needs.
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link
+                      href="/contact"
+                      className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-colors"
+                    >
+                      <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                      Schedule Consultation
+                    </Link>
+                    <Link
+                      href="/blog"
+                      className="inline-flex items-center justify-center border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-4 rounded-xl transition-colors"
+                    >
+                      <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                      Read More Articles
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Visual Column */}
+                <div className="lg:pl-8">
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-colors">
+                      <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                          <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                        <h3 className="font-semibold text-gray-900">Expert Physicians</h3>
+                      </div>
+                      <p className="text-sm text-gray-600">Board-certified doctors with specialized expertise</p>
+                    </div>
+                    
+                    <div className="bg-white rounded-xl p-6 border border-gray-200 hover:border-green-300 transition-colors">
+                      <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                          <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <h3 className="font-semibold text-gray-900">Personalized Care</h3>
+                      </div>
+                      <p className="text-sm text-gray-600">Tailored treatment plans for your unique needs</p>
+                    </div>
+                    
+                    <div className="bg-white rounded-xl p-6 border border-gray-200 hover:border-purple-300 transition-colors">
+                      <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                          <svg className="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <h3 className="font-semibold text-gray-900">24/7 Support</h3>
+                      </div>
+                      <p className="text-sm text-gray-600">Always available when you need medical assistance</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
