@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Upload, X, Camera, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { X, Camera, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
 interface ImageUploadProps {
   uploadType: 'team-member' | 'blog-image' | 'general';

@@ -56,7 +56,7 @@ interface TeamMemberFormData {
 
 interface ApiResponse {
   success: boolean;
-  data?: any;
+  data?: TeamMember[] | TeamMember;
   error?: string;
   message?: string;
   pagination?: {
@@ -241,7 +241,7 @@ const TeamManager: React.FC = () => {
   };
 
   // Handle image upload success
-  const handleImageUpload = (uploadResult: any) => {
+  const handleImageUpload = (uploadResult: { secure_url: string }) => {
     setFormData(prev => ({
       ...prev,
       photoUrl: uploadResult.secure_url

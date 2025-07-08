@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
 
-    // Build where clause
+    // Build where clause - using any for Prisma's dynamic where conditions
     const where: any = {};
     
     if (published !== null) {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    // Build query options
+    // Build query options - using any for Prisma's dynamic query building
     const queryOptions: any = {
       where,
       orderBy: {
