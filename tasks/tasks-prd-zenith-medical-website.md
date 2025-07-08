@@ -73,6 +73,11 @@ Based on PRD: `prd-zenith-medical-website.md`
 - `src/components/UI/AppointmentButton.tsx` - Updated appointment booking CTA component
 - `src/app/intake/success/page.tsx` - Intake success page with automatic appointment booking redirect
 - `src/lib/integrations/appointment-booking.ts` - Third-party appointment booking integration utilities
+- `src/components/Team/TeamMemberCard.tsx` - Reusable team member card component with multiple variants
+- `src/components/Team/TeamMemberGrid.tsx` - Team member grid container with search, filtering, and view toggle
+- `src/components/Team/TeamMemberList.tsx` - Team member list component for vertical layout display
+- `src/components/Team/TeamMemberProfile.tsx` - Detailed team member profile component with modal support
+- `src/components/Team/index.ts` - Team components index file for easy importing
 
 ### Notes
 
@@ -138,7 +143,7 @@ Based on PRD: `prd-zenith-medical-website.md`
   - [x] 6.2 Create team member API routes for CRUD operations
   - [x] 6.3 Build admin interface for managing team members
   - [x] 6.4 Implement Cloudinary image upload for team member photos
-  - [ ] 6.5 Create reusable team member display components
+  - [x] 6.5 Create reusable team member display components
   - [ ] 6.6 Update About page to use database team members
   - [ ] 6.7 Add team member search and filtering capabilities
   - [ ] 6.8 Implement team member role management and ordering
