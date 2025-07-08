@@ -1,168 +1,277 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../../../lib/auth/config'
-import { prisma } from '../../../../../lib/prisma'
-import { auditLog } from '../../../../../lib/audit/audit-logger'
-import { AdminRole } from '@prisma/client'
+/**
+ * Team Member API Routes
+ * Handles CRUD operations for team members
+ */
 
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../../../lib/auth/config';
+import { prisma } from '../../../../../lib/prisma';
+import { auditLog } from '../../../../../lib/audit/audit-logger';
+import { z } from 'zod';
+
+// Validation schema for team member data
+const TeamMemberSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
+  title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+  bio: z.string().optional(),
+  photoUrl: z.string().url().optional().or(z.literal('')),
+  email: z.string().email().optional().or(z.literal('')),
+  phone: z.string().optional(),
+  specialties: z.array(z.string()).default([]),
+  orderIndex: z.number().int().min(0).default(0),
+  published: z.boolean().default(true)
+});
+
+// GET - Fetch all team members
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication and authorization
-    const session = await getServerSession(authOptions)
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
-    // Get user details
-    const user = await prisma.adminUser.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, email: true, role: true }
-    })
+    // Get query parameters
+    const { searchParams } = new URL(request.url);
+    const published = searchParams.get('published');
+    const orderBy = searchParams.get('orderBy') || 'orderIndex';
+    const orderDirection = searchParams.get('orderDirection') || 'asc';
+    const search = searchParams.get('search');
+    const limit = searchParams.get('limit');
+    const offset = searchParams.get('offset');
 
-    if (!user || !user.role || ![AdminRole.SUPER_ADMIN, AdminRole.ADMIN, AdminRole.EDITOR].includes(user.role as AdminRole)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    // Build where clause
+    const where: any = {};
+    
+    if (published !== null) {
+      where.published = published === 'true';
     }
 
-    // Get team members
-    const teamMembers = await prisma.teamMember.findMany({
-      orderBy: { orderIndex: 'asc' },
-      select: {
-        id: true,
-        name: true,
-        title: true,
-        specialties: true,
-        bio: true,
-        email: true,
-        phone: true,
-        photoUrl: true,
-        orderIndex: true,
-        published: true,
-        createdAt: true,
-        updatedAt: true
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { title: { contains: search, mode: 'insensitive' } },
+        { bio: { contains: search, mode: 'insensitive' } },
+        { specialties: { hasSome: [search] } }
+      ];
+    }
+
+    // Build query options
+    const queryOptions: any = {
+      where,
+      orderBy: {
+        [orderBy]: orderDirection
       }
-    })
+    };
 
-    // Log access
+    if (limit) {
+      queryOptions.take = parseInt(limit);
+    }
+
+    if (offset) {
+      queryOptions.skip = parseInt(offset);
+    }
+
+    // Fetch team members
+    const [teamMembers, totalCount] = await Promise.all([
+      prisma.teamMember.findMany(queryOptions),
+      prisma.teamMember.count({ where })
+    ]);
+
+    // Audit log
     await auditLog({
-      action: 'TEAM_LIST_VIEW',
-      userId: user.id,
-      userEmail: user.email,
-      details: { teamMembersCount: teamMembers.length },
-      ipAddress: request.headers.get('x-forwarded-for') || 
-                 request.headers.get('x-real-ip') || 
-                 'unknown',
-      userAgent: request.headers.get('user-agent') || 'unknown'
-    })
+      userId: session.user?.id,
+      action: 'READ',
+      resource: 'team_members',
+      details: { 
+        count: teamMembers.length,
+        filters: { published, search, orderBy, orderDirection }
+      }
+    });
 
-    return NextResponse.json({ teamMembers })
+    return NextResponse.json({
+      success: true,
+      data: teamMembers,
+      pagination: {
+        total: totalCount,
+        limit: limit ? parseInt(limit) : teamMembers.length,
+        offset: offset ? parseInt(offset) : 0
+      }
+    });
 
   } catch (error) {
-    console.error('Team members fetch error:', error)
+    console.error('Failed to fetch team members:', error);
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Failed to fetch team members',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
-    )
+    );
   }
 }
 
+// POST - Create new team member
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication and authorization
-    const session = await getServerSession(authOptions)
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user details
-    const user = await prisma.adminUser.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, email: true, role: true }
-    })
-
-    if (!user || !user.role || ![AdminRole.SUPER_ADMIN, AdminRole.ADMIN, AdminRole.EDITOR].includes(user.role as AdminRole)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
     // Parse and validate request body
-    const body = await request.json()
-    const {
-      name,
-      title,
-      specialties,
-      bio,
-      email,
-      phone,
-      photoUrl,
-      published = false,
-      orderIndex
-    } = body
+    const body = await request.json();
+    const validationResult = TeamMemberSchema.safeParse(body);
 
-    // Basic validation
-    if (!name || !title) {
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Name and title are required' },
+        { 
+          error: 'Validation failed',
+          details: validationResult.error.errors
+        },
         { status: 400 }
-      )
+      );
     }
 
-    // Validate email format if provided
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const teamMemberData = validationResult.data;
+
+    // Check if name already exists
+    const existingMember = await prisma.teamMember.findFirst({
+      where: {
+        name: teamMemberData.name
+      }
+    });
+
+    if (existingMember) {
       return NextResponse.json(
-        { error: 'Please provide a valid email address' },
-        { status: 400 }
-      )
+        { error: 'A team member with this name already exists' },
+        { status: 409 }
+      );
     }
 
-    // Get the next order index if not provided
-    let finalOrderIndex = orderIndex
-    if (finalOrderIndex === undefined) {
-      const lastMember = await prisma.teamMember.findFirst({
-        orderBy: { orderIndex: 'desc' },
-        select: { orderIndex: true }
-      })
-      finalOrderIndex = (lastMember?.orderIndex || 0) + 1
+    // If no orderIndex provided, set to highest + 1
+    if (!body.orderIndex) {
+      const maxOrder = await prisma.teamMember.findFirst({
+        select: { orderIndex: true },
+        orderBy: { orderIndex: 'desc' }
+      });
+      teamMemberData.orderIndex = (maxOrder?.orderIndex || 0) + 1;
     }
 
     // Create team member
-    const teamMember = await prisma.teamMember.create({
-      data: {
-        name,
-        title,
-        specialties: specialties || null,
-        bio: bio || null,
-        email: email || null,
-        phone: phone || null,
-        photoUrl: photoUrl || null,
-        orderIndex: finalOrderIndex,
-        published
-      }
-    })
+    const newTeamMember = await prisma.teamMember.create({
+      data: teamMemberData
+    });
 
-    // Log creation
+    // Audit log
     await auditLog({
-      action: 'TEAM_MEMBER_CREATE',
-      userId: user.id,
-      userEmail: user.email,
-      details: { 
-        teamMemberId: teamMember.id,
-        name: teamMember.name,
-        title: teamMember.title,
-        published: teamMember.published,
-        orderIndex: teamMember.orderIndex
-      },
-      ipAddress: request.headers.get('x-forwarded-for') || 
-                 request.headers.get('x-real-ip') || 
-                 'unknown',
-      userAgent: request.headers.get('user-agent') || 'unknown'
-    })
+      userId: session.user?.id,
+      action: 'CREATE',
+      resource: 'team_members',
+      resourceId: newTeamMember.id,
+      details: { teamMember: newTeamMember }
+    });
 
-    return NextResponse.json({ teamMember }, { status: 201 })
+    return NextResponse.json({
+      success: true,
+      data: newTeamMember,
+      message: 'Team member created successfully'
+    }, { status: 201 });
 
   } catch (error) {
-    console.error('Team member creation error:', error)
+    console.error('Failed to create team member:', error);
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Failed to create team member',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
-    )
+    );
+  }
+}
+
+// PUT - Bulk update team members (for reordering)
+export async function PUT(request: NextRequest) {
+  try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Parse request body
+    const body = await request.json();
+    const { updates } = body;
+
+    if (!Array.isArray(updates)) {
+      return NextResponse.json(
+        { error: 'Updates must be an array' },
+        { status: 400 }
+      );
+    }
+
+    // Validate each update
+    const validUpdates = [];
+    for (const update of updates) {
+      if (!update.id || typeof update.orderIndex !== 'number') {
+        return NextResponse.json(
+          { error: 'Each update must have id and orderIndex' },
+          { status: 400 }
+        );
+      }
+      validUpdates.push(update);
+    }
+
+    // Perform bulk update
+    const updatePromises = validUpdates.map(update =>
+      prisma.teamMember.update({
+        where: { id: update.id },
+        data: { orderIndex: update.orderIndex }
+      })
+    );
+
+    const updatedMembers = await Promise.all(updatePromises);
+
+    // Audit log
+    await auditLog({
+      userId: session.user?.id,
+      action: 'UPDATE',
+      resource: 'team_members',
+      details: { 
+        bulkUpdate: true,
+        updatedCount: updatedMembers.length,
+        updates: validUpdates
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: updatedMembers,
+      message: 'Team members updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Failed to update team members:', error);
+    
+    return NextResponse.json(
+      { 
+        error: 'Failed to update team members',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
   }
 } 
