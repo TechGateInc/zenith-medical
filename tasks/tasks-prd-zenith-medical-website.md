@@ -51,6 +51,25 @@ Based on PRD: `prd-zenith-medical-website.md`
 - `components/Admin/Dashboard.tsx` - Admin dashboard interface
 - `components/Admin/IntakeManager.tsx` - Intake submission management
 - `styles/globals.css` - Global styles with medical color palette
+- `src/app/api/admin/backup/database/route.ts` - Database backup API with cloud storage integration
+- `.env.production` - Production environment variables for cloud storage configuration
+- `DEPLOYMENT.md` - Deployment documentation including backup storage setup
+- `package.json` - Dependencies configuration for cloud storage SDK
+- `src/app/api/admin/content/team/route.ts` - API routes for team member CRUD operations
+- `src/app/api/admin/content/team/[id]/route.ts` - API routes for individual team member management
+- `src/app/api/admin/content/blog/route.ts` - API routes for blog post CRUD operations
+- `src/app/api/admin/content/blog/[id]/route.ts` - API routes for individual blog post management
+- `src/app/api/uploads/images/route.ts` - Cloudinary image upload API endpoint
+- `src/components/Admin/TeamManager.tsx` - Admin interface for managing team members
+- `src/components/Admin/BlogManager.tsx` - Admin interface for managing blog posts
+- `src/components/Admin/ImageUpload.tsx` - Reusable Cloudinary image upload component
+- `src/components/Team/TeamMember.tsx` - Team member display component
+- `src/components/Blog/BlogCard.tsx` - Blog post card component
+- `src/lib/cloudinary/config.ts` - Cloudinary configuration and upload utilities
+- `src/lib/cloudinary/image-upload.ts` - Image upload helper functions for Cloudinary
+- `src/components/UI/AppointmentButton.tsx` - Updated appointment booking CTA component
+- `src/app/intake/success/page.tsx` - Intake success page with automatic appointment booking redirect
+- `src/lib/integrations/appointment-booking.ts` - Third-party appointment booking integration utilities
 
 ### Notes
 
@@ -97,9 +116,44 @@ Based on PRD: `prd-zenith-medical-website.md`
   - [x] 4.8 Implement data export functionality (PDF, Excel/CSV)
 - [ ] 5.0 Integration, Security & Deployment
   - [x] 5.1 Integrate third-party appointment booking system
-  - [ ] 5.2 Set up email/SMS notification services (Twilio, SendGrid)
-  - [ ] 5.3 Implement Google Analytics integration
-  - [ ] 5.4 Add comprehensive security measures and audit logging
-  - [ ] 5.5 Perform HIPAA/PIPEDA compliance review and testing
+  - [x] 5.2 Set up email/SMS notification services (Twilio, SendGrid)
+  - [x] 5.3 Implement Google Analytics integration
+  - [x] 5.4 Add comprehensive security measures and audit logging
+  - [x] 5.5 Perform HIPAA/PIPEDA compliance review and testing
   - [ ] 5.6 Configure deployment pipeline with automated backups
-  - [x] 5.7 Conduct full application testing and performance optimization 
+  - [ ] 5.7 Migrate from AWS S3 to Cloudinary for backup storage
+    - [x] 5.7.1 Replace AWS S3 dependencies with Cloudinary SDK
+    - [x] 5.7.2 Update backup upload functionality to use Cloudinary
+    - [x] 5.7.3 Modify environment variables from AWS to Cloudinary configuration
+    - [x] 5.7.4 Update deployment documentation to reference Cloudinary
+    - [ ] 5.7.5 Update Vercel environment variable configuration
+    - [ ] 5.7.6 Test backup and restore functionality with Cloudinary
+  - [x] 5.8 Conduct full application testing and performance optimization
+- [ ] 6.0 Dynamic Team Member Management System
+  - [ ] 6.1 Set up Cloudinary configuration and image upload utilities
+  - [ ] 6.2 Create team member API routes for CRUD operations
+  - [ ] 6.3 Build admin interface for managing team members
+  - [ ] 6.4 Implement Cloudinary image upload for team member photos
+  - [ ] 6.5 Create reusable team member display components
+  - [ ] 6.6 Update About page to use database team members
+  - [ ] 6.7 Add team member search and filtering capabilities
+  - [ ] 6.8 Implement team member role management and ordering
+- [ ] 7.0 Dynamic Blog Content Management System
+  - [ ] 7.1 Update blog post database schema for enhanced content
+  - [ ] 7.2 Create blog post API routes for CRUD operations
+  - [ ] 7.3 Build admin interface for managing blog posts
+  - [ ] 7.4 Implement Cloudinary image upload for blog post images
+  - [ ] 7.5 Create rich text editor for blog post content
+  - [ ] 7.6 Update blog listing page to use database content
+  - [ ] 7.7 Update individual blog post pages to use database content
+  - [ ] 7.8 Add blog post categories and tagging system
+  - [ ] 7.9 Implement blog post SEO optimization with dynamic metadata
+- [ ] 8.0 Streamline Appointment Booking Workflow
+  - [ ] 8.1 Update all "Book Appointment Now" CTAs to redirect to patient intake form
+  - [ ] 8.2 Modify patient intake success page for automatic appointment booking redirect
+  - [ ] 8.3 Create seamless transition messaging between intake and appointment booking
+  - [ ] 8.4 Update appointment booking integration to accept intake form data
+  - [ ] 8.5 Implement progress indicators for the complete workflow
+  - [ ] 8.6 Add fallback options for users who want to book without intake
+  - [ ] 8.7 Update website copy and messaging to reflect the new workflow
+  - [ ] 8.8 Test complete user journey from homepage to booked appointment 
