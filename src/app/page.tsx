@@ -55,7 +55,7 @@ export default async function Home() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
                 <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
-                  Family Healthcare
+                  Modern Medical Centre
                 </span>
               </div>
             </div>
@@ -64,11 +64,10 @@ export default async function Home() {
               {/* Left Content */}
               <div className="text-center lg:text-left">
                 <h1 className="text-5xl lg:text-6xl font-bold mb-6 text-slate-800 leading-tight">
-                  Your Health, Our Priority
+                  Your Health, Our Innovation
                 </h1>
                 <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                  Comprehensive family healthcare with modern medical expertise and compassionate patient care. 
-                  Experience quality medicine that puts you first.
+                  Experience healthcare reimagined at our state-of-the-art medical centre. We combine cutting-edge medical technology with compassionate patient care to deliver exceptional healthcare for you and your family.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
@@ -79,7 +78,7 @@ export default async function Home() {
                     <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
-                    Book Appointment Now
+                    Book Appointment
                   </Link>
                   <Link
                     href="/intake"
@@ -92,14 +91,14 @@ export default async function Home() {
                   </Link>
                 </div>
 
-                <div className="inline-flex items-center justify-center lg:justify-start px-4 py-3 bg-red-50 border border-red-200 rounded-lg">
-                  <svg className="h-5 w-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                <div className="inline-flex items-center justify-center lg:justify-start px-4 py-3 bg-green-50 border border-green-200 rounded-lg">
+                  <svg className="h-5 w-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <div className="text-slate-700">
-                    <span className="text-sm">Emergency:</span>
-                    <span className="font-semibold ml-1">(555) 123-CARE</span>
-                    <span className="text-sm ml-2">• 24/7 Support</span>
+                    <span className="text-sm">Now Open:</span>
+                    <span className="font-semibold ml-1">Accepting New Patients</span>
+                    <span className="text-sm ml-2">• Same-Day Appointments Available</span>
                   </div>
                 </div>
               </div>
@@ -118,11 +117,11 @@ export default async function Home() {
                   <div className="text-center relative z-10">
                     <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                       <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
                     </div>
-                    <h3 className="text-2xl font-bold text-blue-800 mb-2">Trusted Healthcare</h3>
-                    <p className="text-blue-700">Serving our community with excellence</p>
+                    <h3 className="text-2xl font-bold text-blue-800 mb-2">State-of-the-Art Facility</h3>
+                    <p className="text-blue-700">Brand new modern medical centre</p>
                   </div>
                 </div>
               </div>
@@ -188,12 +187,12 @@ export default async function Home() {
             <div className="text-center mb-12">
               <div className="inline-flex items-center justify-center px-4 py-2 bg-purple-50 border border-purple-200 rounded-full mb-6">
                 <span className="text-sm font-semibold text-purple-700 uppercase tracking-wider">
-                  Our Advantages
+                  Why Choose Us
                 </span>
               </div>
               <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Why Choose Zenith Medical Centre?</h2>
               <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Experience the difference that quality care, modern facilities, and patient-focused service can make
+                Experience the difference that our modern medical facility, advanced technology, and patient-focused care make in your healthcare journey
               </p>
             </div>
 
@@ -383,12 +382,12 @@ export default async function Home() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
               <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
-                News and Insights
+                Health Insights
               </span>
             </div>
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">Stay in the loop</h2>
+            <h2 className="text-4xl font-bold text-slate-800 mb-4">Latest Health Insights</h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Stay up-to-date with the latest news, announcements, and insights from Zenith Medical Centre and our healthcare professionals.
+              Stay informed with the latest health tips, medical insights, and updates from our healthcare professionals.
             </p>
           </div>
 
@@ -436,8 +435,8 @@ export default async function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-slate-800 mb-2">No articles yet</h3>
-              <p className="text-slate-600">Check back soon for the latest health insights and news.</p>
+              <h3 className="text-lg font-medium text-slate-800 mb-2">Health insights coming soon</h3>
+              <p className="text-slate-600">Check back for the latest health tips and medical insights from our team.</p>
             </div>
           )}
 

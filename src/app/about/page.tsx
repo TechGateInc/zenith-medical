@@ -23,6 +23,10 @@ async function getTeamMembers() {
     
     return teamMembers.map(member => ({
       ...member,
+      bio: member.bio || undefined,
+      photoUrl: member.photoUrl || undefined,
+      email: member.email || undefined,
+      phone: member.phone || undefined,
       createdAt: member.createdAt.toISOString(),
       updatedAt: member.updatedAt.toISOString()
     }))
@@ -44,7 +48,7 @@ export default async function About() {
       credentials: "MD, CCFP",
       experience: "15+ years",
       specialties: ["Family Medicine", "Preventive Care", "Women's Health"],
-      bio: "Board-certified family physician dedicated to comprehensive patient care with expertise in preventive medicine and chronic disease management.",
+      bio: "Board-certified family physician with 15+ years of excellence, leading our medical centre with expertise in preventive medicine and comprehensive patient care.",
       image: "/team/dr-mitchell.jpg" // Placeholder for actual image
     },
     {
@@ -53,7 +57,7 @@ export default async function About() {
       credentials: "MD, CCFP",
       experience: "12+ years",
       specialties: ["Family Medicine", "Chronic Care", "Geriatrics"],
-      bio: "Experienced family doctor with special interest in chronic disease management and geriatric medicine, committed to patient-centered care.",
+      bio: "Accomplished family doctor with 12+ years of experience, specializing in chronic disease management and geriatric medicine with a patient-centered approach.",
       image: "/team/dr-chen.jpg" // Placeholder for actual image
     },
     {
@@ -62,7 +66,7 @@ export default async function About() {
       credentials: "MD, CCFP",
       experience: "8+ years",
       specialties: ["Family Medicine", "Pediatrics", "Mental Health"],
-      bio: "Compassionate physician specializing in family medicine with additional training in pediatric care and mental health support.",
+      bio: "Compassionate physician with 8+ years of experience, providing specialized expertise in pediatric care and mental health support for all ages.",
       image: "/team/dr-rodriguez.jpg" // Placeholder for actual image
     },
     {
@@ -71,7 +75,7 @@ export default async function About() {
       credentials: "NP, RN, BScN",
       experience: "10+ years",
       specialties: ["Primary Care", "Health Promotion", "Patient Education"],
-      bio: "Experienced nurse practitioner focused on primary care, health promotion, and patient education with a holistic approach to wellness.",
+      bio: "Experienced nurse practitioner with 10+ years in primary care, providing holistic patient education and health promotion services.",
       image: "/team/np-thompson.jpg" // Placeholder for actual image
     }
   ]
@@ -99,89 +103,200 @@ export default async function About() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
         />
       ))}
+      
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">About Zenith Medical Centre</h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto opacity-90">
-            Providing exceptional healthcare services to our community with compassion, expertise, and modern medical care.
-          </p>
+      <section className="bg-white py-20 lg:py-28">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full text-blue-700 text-sm font-medium mb-8">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              ABOUT ZENITH MEDICAL CENTRE
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-8 leading-tight max-w-4xl mx-auto">
+              Modern Healthcare Innovation
+            </h1>
+            
+            <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
+              Our state-of-the-art medical centre combines cutting-edge technology, experienced medical professionals, and patient-centered care to deliver exceptional healthcare to our growing community.
+            </p>
+
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">Modern</div>
+                <div className="text-slate-600 font-medium">State-of-the-Art Facility</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">Advanced</div>
+                <div className="text-slate-600 font-medium">Medical Technology</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">4</div>
+                <div className="text-slate-600 font-medium">Experienced Healthcare Professionals</div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         {/* Mission & Vision */}
-        <section className="mb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-slate-800 mb-6">Our Mission</h2>
-              <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-                At Zenith Medical Centre, our mission is to provide comprehensive, patient-centered healthcare that promotes wellness, 
-                prevents illness, and treats medical conditions with the highest standards of clinical excellence and compassionate care.
-              </p>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                We are committed to building lasting relationships with our patients, understanding their unique healthcare needs, 
-                and empowering them to make informed decisions about their health and well-being.
-              </p>
+        <section className="mb-20 lg:mb-32">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-6">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              OUR MISSION
             </div>
-            <div className="bg-blue-50 p-8 rounded-lg">
-              <h3 className="text-2xl font-semibold text-blue-800 mb-4">Our Values</h3>
-              <ul className="space-y-3">
-                <li className="flex items-center">
-                  <svg className="h-5 w-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-slate-700"><strong>Compassion:</strong> Caring for every patient with empathy and respect</span>
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-5 w-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-slate-700"><strong>Excellence:</strong> Maintaining the highest standards of medical care</span>
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-5 w-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-slate-700"><strong>Integrity:</strong> Honest, transparent, and ethical healthcare practices</span>
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-5 w-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-slate-700"><strong>Innovation:</strong> Embracing modern medical technology and practices</span>
-                </li>
-              </ul>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-8 leading-tight">
+                Patient-Centered Healthcare Excellence
+              </h2>
+              <div className="space-y-6">
+                <p className="text-lg text-slate-600 leading-relaxed">
+                  At Zenith Medical Centre, our mission is to provide comprehensive, patient-centered healthcare that promotes wellness, 
+                  prevents illness, and treats medical conditions with the highest standards of clinical excellence and compassionate care.
+                </p>
+                <p className="text-lg text-slate-600 leading-relaxed">
+                  We are committed to building lasting relationships with our patients, understanding their unique healthcare needs, 
+                  and empowering them to make informed decisions about their health and well-being.
+                </p>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 lg:p-10 rounded-2xl shadow-lg">
+                <h3 className="text-2xl lg:text-3xl font-bold text-green-800 mb-8">Our Core Values</h3>
+                <div className="space-y-6">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 mb-1">Compassion</h4>
+                      <p className="text-slate-600">Caring for every patient with empathy and respect</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 mb-1">Excellence</h4>
+                      <p className="text-slate-600">Maintaining the highest standards of medical care</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 mb-1">Integrity</h4>
+                      <p className="text-slate-600">Honest, transparent, and ethical healthcare practices</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 mb-1">Innovation</h4>
+                      <p className="text-slate-600">Embracing modern medical technology and practices</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute -top-6 -right-6 w-12 h-12 bg-green-200 rounded-full opacity-60"></div>
+              <div className="absolute -bottom-6 -left-6 w-8 h-8 bg-emerald-300 rounded-full opacity-40"></div>
             </div>
           </div>
         </section>
 
         {/* Our Story */}
-        <section className="bg-white rounded-lg shadow-lg p-8 mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-6 text-center">Our Story</h2>
-          <div className="max-w-4xl mx-auto">
-            <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-              Founded in 2010, Zenith Medical Centre began with a simple vision: to create a healthcare practice that truly puts patients first. 
-              Dr. Sarah Mitchell established the clinic with the goal of providing comprehensive family medicine in a warm, welcoming environment 
-              where patients feel heard, respected, and cared for.
-            </p>
-            <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-              Over the years, we&apos;ve grown from a single-physician practice to a comprehensive medical team, but our core values remain unchanged. 
-              We continue to prioritize building meaningful relationships with our patients, staying current with medical advances, 
-              and maintaining the personalized care that sets us apart.
-            </p>
-            <p className="text-lg text-slate-600 leading-relaxed">
-              Today, Zenith Medical Centre serves thousands of patients across all age groups, from newborns to seniors, 
-              providing a full spectrum of family medicine services in our modern, state-of-the-art facility.
-            </p>
+        <section className="mb-20 lg:mb-32">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full text-purple-700 text-sm font-medium mb-6">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              OUR APPROACH
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-8 leading-tight">
+              Redefining Healthcare Excellence
+            </h2>
+          </div>
+          
+          <div className="bg-gradient-to-br from-slate-50 to-gray-50 rounded-3xl p-8 lg:p-12 shadow-lg">
+            <div className="max-w-4xl mx-auto">
+              <div className="space-y-8 text-lg text-slate-600 leading-relaxed">
+                <p>
+                  At Zenith Medical Centre, we've created a healthcare experience that puts innovation and patient care at the forefront. 
+                  Our team of experienced medical professionals combines years of clinical expertise with the latest in medical technology 
+                  and evidence-based treatment approaches.
+                </p>
+                <p>
+                  Led by Dr. Sarah Mitchell and our dedicated medical team, we provide comprehensive healthcare in our purpose-built facility. 
+                  Our state-of-the-art medical centre features the latest diagnostic equipment, modern treatment rooms, and comfortable 
+                  spaces designed to enhance patient wellness and comfort.
+                </p>
+                <p>
+                  Today, we proudly serve patients across all age groups, from newborns to seniors, providing a full spectrum of family 
+                  medicine services with a focus on preventive care, chronic disease management, and personalized treatment plans.
+                </p>
+              </div>
+              
+              {/* Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 pt-8 border-t border-slate-200">
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">Modern</div>
+                  <div className="text-slate-600 font-medium">Healthcare Facility</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">Advanced</div>
+                  <div className="text-slate-600 font-medium">Medical Technology</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">4</div>
+                  <div className="text-slate-600 font-medium">Healthcare Professionals</div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Meet Our Team */}
-        <section className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">Meet Our Medical Team</h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+        <section className="mb-20 lg:mb-32">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-6">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              OUR TEAM
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+              Meet Our Medical Team
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Our experienced healthcare professionals are dedicated to providing exceptional care for you and your family.
             </p>
           </div>
@@ -202,32 +317,32 @@ export default async function About() {
               ))}
             </div>
           ) : (
-            // Fallback to original hardcoded display
+            // Enhanced fallback display
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {fallbackTeamMembers.map((member, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                  <div className="p-6">
+                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="p-8">
                     {/* Placeholder for team member photo */}
-                    <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-slate-100 rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-slate-100 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                       <svg className="h-16 w-16 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
                     
-                    <div className="text-center mb-4">
-                      <h3 className="text-xl font-bold text-slate-800">{member.name}</h3>
-                      <p className="text-blue-600 font-semibold">{member.role}</p>
-                      <p className="text-slate-500">{member.credentials}</p>
+                    <div className="text-center mb-6">
+                      <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">{member.name}</h3>
+                      <p className="text-blue-600 font-semibold text-lg">{member.role}</p>
+                      <p className="text-slate-500 font-medium">{member.credentials}</p>
                       <p className="text-slate-500 text-sm">{member.experience} experience</p>
                     </div>
 
-                    <p className="text-slate-600 mb-4 leading-relaxed">{member.bio}</p>
+                    <p className="text-slate-600 mb-6 leading-relaxed text-center">{member.bio}</p>
 
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold text-slate-800 mb-2">Specialties:</h4>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="border-t pt-6">
+                      <h4 className="font-semibold text-slate-800 mb-3 text-center">Specialties</h4>
+                      <div className="flex flex-wrap gap-2 justify-center">
                         {member.specialties.map((specialty, idx) => (
-                          <span key={idx} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
+                          <span key={idx} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
                             {specialty}
                           </span>
                         ))}
@@ -241,60 +356,155 @@ export default async function About() {
         </section>
 
         {/* Facilities & Technology */}
-        <section className="bg-slate-50 rounded-lg p-8 mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Our Facilities & Technology</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <section className="mb-20 lg:mb-32">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-slate-100 rounded-full text-slate-700 text-sm font-medium mb-6">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              FACILITIES
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+              Modern Facilities & Technology
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              State-of-the-art equipment and comfortable spaces designed for optimal patient care.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <svg className="h-10 w-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">Modern Laboratory</h3>
-              <p className="text-slate-600">On-site lab facilities for quick diagnostic testing and results.</p>
+              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-3">Modern Laboratory</h3>
+              <p className="text-slate-600 leading-relaxed">On-site lab facilities for quick diagnostic testing and results.</p>
             </div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">Digital Records</h3>
-              <p className="text-slate-600">Secure electronic health records for comprehensive patient care.</p>
+              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-3">Digital Records</h3>
+              <p className="text-slate-600 leading-relaxed">Secure electronic health records for comprehensive patient care.</p>
             </div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <svg className="h-10 w-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">Comfortable Environment</h3>
-              <p className="text-slate-600">Welcoming, clean, and comfortable spaces designed for patient wellness.</p>
+              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-3">Comfortable Environment</h3>
+              <p className="text-slate-600 leading-relaxed">Welcoming, clean, and comfortable spaces designed for patient wellness.</p>
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-slate-700 text-white rounded-xl p-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Join Our Patient Family?</h2>
-          <p className="text-xl mb-6 opacity-90">
-            Experience the difference of personalized, comprehensive healthcare.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/contact"
-              className="bg-white text-blue-700 hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg transition-colors"
-            >
-              Schedule Your First Appointment
-            </Link>
-            <Link
-              href="/intake"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold py-3 px-8 rounded-lg transition-colors"
-            >
-              Complete Patient Intake
-            </Link>
+        <section className="bg-slate-50 rounded-xl p-8 mb-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+              <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                Join Our Patients
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              {/* Left Content */}
+              <div>
+                <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+                  Ready to Experience Exceptional Care?
+                </h2>
+                <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                  Join our growing community of patients who trust Zenith Medical Centre for their healthcare needs. 
+                  Experience personalized care in our modern, state-of-the-art facility.
+                </p>
+
+                {/* Feature Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Same-Day Appointments</h3>
+                    <p className="text-sm text-slate-600">
+                      Get immediate care when you need it most with flexible scheduling.
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Secure Health Records</h3>
+                    <p className="text-sm text-slate-600">
+                      HIPAA-compliant digital records with secure patient portal access.
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 3v12m0 0l3-3m-3 3l-3-3m12-9a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Instant Updates</h3>
+                    <p className="text-sm text-slate-600">
+                      Get real-time notifications about appointments and health updates.
+                    </p>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
+                  >
+                    <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Book Appointment
+                  </Link>
+                  <Link
+                    href="/intake"
+                    className="inline-flex items-center justify-center px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-colors text-lg whitespace-nowrap"
+                  >
+                    <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Patient Intake Form
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right Content - Visual Element */}
+              <div className="hidden lg:block">
+                <div className="relative">
+                  <div className="w-full h-96 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold text-blue-800 mb-2">Your Health Journey</h3>
+                      <p className="text-blue-700">Starts with a single appointment</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>
