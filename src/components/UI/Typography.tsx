@@ -14,7 +14,7 @@ interface BaseTypographyProps {
   className?: string
   color?: TextColor
   weight?: TextWeight
-  as?: keyof JSX.IntrinsicElements
+  as?: React.ElementType
 }
 
 // Heading component props
