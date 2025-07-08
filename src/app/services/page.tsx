@@ -127,97 +127,148 @@ export default function Services() {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-full text-white text-sm font-medium mb-6">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            COMPREHENSIVE HEALTHCARE SERVICES
+      <section className="bg-slate-50 py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                  Comprehensive Healthcare Services
+                </span>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-8 leading-tight">
+                Our Medical Services
+              </h1>
+              <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-4xl mx-auto">
+                Comprehensive healthcare services in our modern medical facility, designed to keep you and your family healthy throughout every stage of life.
+              </p>
+
+              {/* Stats or Key Features */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">3</div>
+                  <div className="text-slate-600 font-medium">Primary Care Areas</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">4+</div>
+                  <div className="text-slate-600 font-medium">Specialty Care Services</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">24/7</div>
+                  <div className="text-slate-600 font-medium">Emergency Support</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Medical Services</h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto opacity-90">
-            Comprehensive healthcare services in our modern medical facility, designed to keep you and your family healthy throughout every stage of life.
-          </p>
         </div>
       </section>
 
       <div className="container mx-auto px-4 py-12">
         {/* Primary Services */}
-        <section className="mb-16">
+        <section className="mb-20">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">Primary Care Services</h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Our core medical services provide the foundation for your ongoing health and wellness.
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-green-700 uppercase tracking-wider">
+                  Primary Care
+                </span>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Primary Care Services</h2>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                Our core medical services provide the foundation for your ongoing health and wellness journey with comprehensive care for every age.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {primaryServices.map((service, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div key={index} className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 text-blue-600">
                   {service.icon}
                 </div>
                 <h3 className="text-2xl font-bold text-slate-800 mb-4">{service.title}</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-                <ul className="space-y-2">
+                  <ul className="space-y-3">
                   {service.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center text-slate-600">
-                      <svg className="h-4 w-4 text-blue-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
                       {feature}
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
+            </div>
           </div>
         </section>
 
         {/* Specialty Services */}
-        <section className="mb-16">
+        <section className="mb-20">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">Specialty Care Areas</h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Specialized healthcare services tailored to specific patient populations and health needs.
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-purple-50 border border-purple-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-purple-700 uppercase tracking-wider">
+                  Specialized Care
+                </span>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Specialty Care Areas</h2>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                Specialized healthcare services tailored to specific patient populations and unique health needs across all life stages.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {specialtyServices.map((service, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-6 border border-slate-200">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">{service.title}</h3>
-                <p className="text-slate-600 mb-4">{service.description}</p>
-                <ul className="space-y-2">
+                <div key={index} className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4">{service.title}</h3>
+                  <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
+                  <ul className="space-y-3">
                   {service.services.map((item, idx) => (
                     <li key={idx} className="flex items-center text-slate-600">
-                      <svg className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
-                      </svg>
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 flex-shrink-0"></div>
                       {item}
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
+            </div>
           </div>
         </section>
 
         {/* Additional Services */}
-        <section className="bg-slate-50 rounded-lg p-8 mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Additional Services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <section className="mb-20">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                  Additional Services
+                </span>
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">Extended Medical Services</h2>
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Comprehensive additional medical services to meet all your healthcare needs
+              </p>
+            </div>
+            
+            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {additionalServices.map((service, index) => (
-              <div key={index} className="bg-white p-4 rounded-lg shadow border border-slate-200">
+                  <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-slate-700 font-medium">{service}</span>
+                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
+                      <span className="text-slate-700 font-medium leading-relaxed">{service}</span>
                 </div>
               </div>
             ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -268,95 +319,214 @@ export default function Services() {
         </section>
 
         {/* Insurance & Payment */}
-        <section className="bg-white rounded-lg shadow-lg p-8 mb-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-6 text-center">Insurance & Payment Options</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold text-slate-800 mb-4">Accepted Insurance Plans</h3>
-              <p className="text-slate-600 mb-4">
-                We accept most major insurance plans and work with you to maximize your benefits:
+        <section className="mb-20">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-green-700 uppercase tracking-wider">
+                  Insurance & Payment
+                </span>
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">Payment & Insurance Options</h2>
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                We accept most major insurance plans and offer flexible payment options for your convenience
               </p>
-              <ul className="space-y-2 text-slate-600">
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Provincial health insurance (OHIP, MSP, etc.)
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Extended health insurance plans
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Workers&apos; compensation claims
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Third-party insurance claims
-                </li>
-              </ul>
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-slate-800 mb-4">Payment Options</h3>
-              <p className="text-slate-600 mb-4">
-                For services not covered by insurance, we offer flexible payment options:
-              </p>
-              <ul className="space-y-2 text-slate-600">
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              {/* Left Content - Payment Options */}
+              <div className="space-y-8">
+                <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                      <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-800">Insurance Plans</h3>
+                  </div>
+                  <p className="text-slate-600 mb-6 leading-relaxed">
+                    We work with most major insurance providers to ensure you get the coverage you deserve.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <span className="text-slate-700">Most major health insurance plans</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <span className="text-slate-700">Medicare and Medicaid accepted</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <span className="text-slate-700">Workers' compensation cases</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                      <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
-                  Cash and debit payments
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-800">Payment Options</h3>
+                  </div>
+                  <p className="text-slate-600 mb-6 leading-relaxed">
+                    Flexible payment solutions to make healthcare accessible and affordable.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <span className="text-slate-700">Cash, check, and all major credit cards</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <span className="text-slate-700">Flexible payment plans available</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <span className="text-slate-700">HSA and FSA accounts accepted</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Content - Visual Element */}
+              <div className="relative">
+                <div className="w-full h-96 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-6 left-6 w-12 h-12 bg-green-600 rounded-full"></div>
+                    <div className="absolute top-16 right-12 w-8 h-8 bg-green-500 rounded-full"></div>
+                    <div className="absolute bottom-12 left-12 w-6 h-6 bg-green-700 rounded-full"></div>
+                    <div className="absolute bottom-6 right-6 w-16 h-16 bg-green-400 rounded-full"></div>
+                  </div>
+                  
+                  <div className="text-center relative z-10">
+                    <div className="w-24 h-24 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
-                  Major credit cards accepted
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Payment plans available
-                </li>
-                <li className="flex items-center">
-                  <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Direct billing when possible
-                </li>
-              </ul>
+                    </div>
+                    <h3 className="text-2xl font-bold text-green-800 mb-2">Affordable Healthcare</h3>
+                    <p className="text-green-700">Accessible to everyone</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-slate-700 text-white rounded-xl p-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Experience Our Comprehensive Care?</h2>
-          <p className="text-xl mb-6 opacity-90">
-            Schedule an appointment today and discover how our modern medical facility and experienced team can serve your healthcare needs.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <section className="bg-slate-50 rounded-xl p-8 mb-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+              <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                Healthcare Access
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              {/* Left Content */}
+              <div>
+                <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+                  Ready to Experience Our Comprehensive Care?
+                </h2>
+                <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                  Schedule an appointment today and discover how our modern medical facility and experienced team can serve your healthcare needs.
+                </p>
+
+                {/* Feature Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Same-Day Appointments</h3>
+                    <p className="text-sm text-slate-600">
+                      Get immediate care when you need it most with flexible scheduling.
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Secure Health Records</h3>
+                    <p className="text-sm text-slate-600">
+                      HIPAA-compliant digital records with secure patient portal access.
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 3v12m0 0l3-3m-3 3l-3-3m12-9a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Instant Updates</h3>
+                    <p className="text-sm text-slate-600">
+                      Get real-time notifications about appointments and health updates.
+                    </p>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/contact"
-              className="bg-white text-blue-700 hover:bg-gray-100 font-semibold py-4 px-8 rounded-lg transition-colors shadow-lg"
+                    className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
             >
-              Book Appointment
+                    <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Book Appointment
             </Link>
             <Link
               href="/intake"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold py-4 px-8 rounded-lg transition-colors"
+                    className="inline-flex items-center justify-center px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-colors text-lg whitespace-nowrap"
             >
-              Patient Intake Form
+                    <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Patient Intake Form
             </Link>
+                </div>
+              </div>
+
+              {/* Right Content - Visual Element */}
+              <div className="hidden lg:block">
+                <div className="relative">
+                  <div className="w-full h-96 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-4 left-4 w-8 h-8 bg-blue-600 rounded-full"></div>
+                      <div className="absolute top-12 right-8 w-6 h-6 bg-blue-500 rounded-full"></div>
+                      <div className="absolute bottom-8 left-8 w-4 h-4 bg-blue-700 rounded-full"></div>
+                      <div className="absolute bottom-4 right-4 w-10 h-10 bg-blue-400 rounded-full"></div>
+                    </div>
+                    
+                    <div className="text-center relative z-10">
+                      <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold text-blue-800 mb-2">Your Health Journey</h3>
+                      <p className="text-blue-700">Starts with comprehensive care</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>

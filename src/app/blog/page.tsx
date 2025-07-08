@@ -169,12 +169,43 @@ export default function Blog() {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Health & Wellness Blog</h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto opacity-90">
-            Expert medical insights, health tips, and wellness guidance from our healthcare professionals.
-          </p>
+      <section className="bg-slate-50 py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                  Health & Wellness
+                </span>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-8 leading-tight">
+                Health & Wellness Blog
+              </h1>
+              <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-4xl mx-auto">
+                Expert medical insights, health tips, and wellness guidance from our healthcare professionals to help you make informed decisions about your health.
+              </p>
+
+              {/* Blog Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Expert</div>
+                  <div className="text-slate-600 font-medium">Medical Insights</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Evidence</div>
+                  <div className="text-slate-600 font-medium">Based Content</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Latest</div>
+                  <div className="text-slate-600 font-medium">Health Updates</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

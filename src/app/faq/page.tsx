@@ -167,12 +167,43 @@ export default function FAQ() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
       />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-slate-700 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Frequently Asked Questions</h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto opacity-90">
-            Find answers to common questions about our medical services, appointments, and patient care.
-          </p>
+      <section className="bg-slate-50 py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                  Patient Support
+                </span>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-8 leading-tight">
+                Frequently Asked Questions
+              </h1>
+              <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-4xl mx-auto">
+                Find answers to common questions about our medical services, appointments, and patient care to help make your healthcare experience seamless.
+              </p>
+
+              {/* FAQ Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Quick</div>
+                  <div className="text-slate-600 font-medium">Answers</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Common</div>
+                  <div className="text-slate-600 font-medium">Questions</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">24/7</div>
+                  <div className="text-slate-600 font-medium">Available</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

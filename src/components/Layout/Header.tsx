@@ -27,15 +27,19 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <div className="h-10 w-10 relative">
+              <div className="h-10 w-10 relative mr-3 flex-shrink-0">
                 <Image
-                  src="/images/zenith-medical-logo.png"
+                  src="/images/zenith-medical-logo 1.png"
                   alt="Zenith Medical Centre Logo"
                   width={40}
                   height={40}
                   className="object-contain"
                   priority
                 />
+              </div>
+              <div className="hidden sm:flex flex-col justify-center">
+                <span className="text-xl font-bold text-slate-800 leading-tight">Zenith Medical Centre</span>
+                <span className="text-sm text-slate-600 leading-tight">Your Health, Our Innovation</span>
               </div>
             </Link>
           </div>
