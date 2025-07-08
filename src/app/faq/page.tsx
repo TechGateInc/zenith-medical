@@ -209,160 +209,250 @@ export default function FAQ() {
 
       <div className="container mx-auto px-4 py-12">
         {/* Quick Contact CTA */}
-        <section className="mb-12">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-            <p className="text-lg text-slate-700 mb-4">
-              Can&apos;t find the answer you&apos;re looking for? We&apos;re here to help!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/contact"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
-              >
-                Contact Us
-              </Link>
-              <a
-                href="tel:5551234567"
-                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-2 px-6 rounded-lg transition-colors"
-              >
-                Call (555) 123-CARE
-              </a>
+        <section className="mb-16">
+          <div className="max-w-4xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-green-700 uppercase tracking-wider">
+                  Need Help?
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+              <div className="text-center">
+                <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">Can't Find What You're Looking For?</h2>
+                <p className="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                  Our healthcare team is here to help! Contact us directly for personalized assistance with any questions about our services.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link
+                    href="/contact"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Contact Us
+                  </Link>
+                  <a
+                    href="tel:5551234567"
+                    className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    Call (555) 123-CARE
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Category Filter */}
-        <section className="mb-8">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  activeCategory === category.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-300'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
+        <section className="mb-12">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">Browse by Category</h2>
+              <p className="text-lg text-slate-600">Filter questions by topic to find exactly what you need</p>
+            </div>
+            <div className="flex flex-wrap gap-3 justify-center">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                    activeCategory === category.id
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-300 hover:border-blue-300 hover:shadow-md'
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* FAQ Items */}
-        <section className="max-w-4xl mx-auto">
-          <div className="space-y-4">
-            {filteredFAQs.map((faq) => (
-              <div key={faq.id} className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden">
-                <button
-                  onClick={() => toggleExpanded(faq.id)}
-                  className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-                >
-                  <h3 className="text-lg font-semibold text-slate-800 pr-4">
-                    {faq.question}
-                  </h3>
-                  <div className="flex-shrink-0">
-                    <svg
-                      className={`h-5 w-5 text-slate-500 transform transition-transform duration-200 ${
-                        expandedItems.includes(faq.id) ? 'rotate-180' : ''
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </button>
-                
-                {expandedItems.includes(faq.id) && (
-                  <div className="px-6 pb-4">
-                    <div className="border-t border-slate-200 pt-4">
-                      <p className="text-slate-600 leading-relaxed">
-                        {faq.answer}
-                      </p>
+        <section className="mb-20">
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-4">
+              {filteredFAQs.map((faq) => (
+                <div key={faq.id} className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                  <button
+                    onClick={() => toggleExpanded(faq.id)}
+                    className="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                  >
+                    <h3 className="text-lg font-semibold text-slate-800 pr-4 leading-relaxed">
+                      {faq.question}
+                    </h3>
+                    <div className="flex-shrink-0">
+                      <div className={`w-8 h-8 rounded-full border-2 border-slate-300 flex items-center justify-center transition-all ${
+                        expandedItems.includes(faq.id) ? 'border-blue-500 bg-blue-500' : 'hover:border-blue-400'
+                      }`}>
+                        <svg
+                          className={`h-4 w-4 transition-all duration-200 ${
+                            expandedItems.includes(faq.id) ? 'rotate-180 text-white' : 'text-slate-500'
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  </button>
+                  
+                  {expandedItems.includes(faq.id) && (
+                    <div className="px-8 pb-6">
+                      <div className="border-t border-slate-200 pt-6">
+                        <p className="text-slate-600 leading-relaxed text-lg">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Additional Resources */}
-        <section className="mt-16">
-          <h2 className="text-3xl font-bold text-slate-800 mb-8 text-center">Additional Resources</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+        <section className="mb-20">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-purple-50 border border-purple-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-purple-700 uppercase tracking-wider">
+                  Additional Resources
+                </span>
               </div>
-              <h3 className="text-xl font-semibold text-slate-800 mb-3">Patient Intake</h3>
-              <p className="text-slate-600 mb-4">
-                Complete your intake form before your first visit to save time and ensure we have all necessary information.
+              <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">Helpful Resources</h2>
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Access essential tools and information to support your healthcare journey
               </p>
-              <Link
-                href="/intake"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-              >
-                Start Intake Form
-              </Link>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-white rounded-2xl shadow-lg p-8 text-center border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Patient Intake</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  Complete your intake form before your first visit to save time and ensure we have all necessary information.
+                </p>
+                <Link
+                  href="/intake"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Start Intake Form
+                </Link>
               </div>
-              <h3 className="text-xl font-semibold text-slate-800 mb-3">Schedule Appointment</h3>
-              <p className="text-slate-600 mb-4">
-                Book your next appointment online or call our office. We offer both routine and same-day appointments.
-              </p>
-              <Link
-                href="/contact"
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-              >
-                Book Appointment
-              </Link>
-            </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
+              <div className="bg-white rounded-2xl shadow-lg p-8 text-center border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Schedule Appointment</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  Book your next appointment online or call our office. We offer both routine and same-day appointments.
+                </p>
+                <Link
+                  href="/contact"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  Book Appointment
+                </Link>
               </div>
-              <h3 className="text-xl font-semibold text-slate-800 mb-3">Health Resources</h3>
-              <p className="text-slate-600 mb-4">
-                Access our health blog for medical information, wellness tips, and updates from our medical team.
-              </p>
-              <Link
-                href="/blog"
-                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-              >
-                Visit Health Blog
-              </Link>
+
+              <div className="bg-white rounded-2xl shadow-lg p-8 text-center border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Health Resources</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  Access our health blog for medical information, wellness tips, and updates from our medical team.
+                </p>
+                <Link
+                  href="/blog"
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  Visit Health Blog
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Emergency Notice */}
-        <section className="mt-16">
-          <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
-            <div className="flex items-center">
-              <svg className="h-8 w-8 text-red-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <div>
-                <h3 className="text-lg font-semibold text-red-800">Medical Emergency</h3>
-                <p className="text-red-700">
-                  For life-threatening emergencies, do not delay seeking care. Call 911 immediately 
-                  or go to your nearest emergency room.
-                </p>
+        <section className="mb-12">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 rounded-r-2xl p-8 shadow-lg relative overflow-hidden">
+              {/* Decorative Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-4 right-4 w-16 h-16 border-2 border-red-400 rounded-full"></div>
+                <div className="absolute bottom-4 left-4 w-12 h-12 border-2 border-red-400 rounded-full"></div>
+                <div className="absolute top-1/2 right-12 w-8 h-8 border-2 border-red-400 rounded-full"></div>
+              </div>
+              
+              <div className="relative z-10">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-6">
+                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                      <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="flex-grow">
+                    <h3 className="text-2xl font-bold text-red-800 mb-4">Medical Emergency</h3>
+                    <p className="text-red-700 text-lg mb-6 leading-relaxed">
+                      For life-threatening emergencies, do not delay seeking care. Call 911 immediately 
+                      or go to your nearest emergency room. Our clinic provides follow-up care and routine medical services.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <a
+                        href="tel:911"
+                        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
+                      >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        Call 911
+                      </a>
+                      <Link
+                        href="/contact"
+                        className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-semibold py-3 px-6 rounded-xl transition-all inline-flex items-center justify-center"
+                      >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        Non-Emergency Contact
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

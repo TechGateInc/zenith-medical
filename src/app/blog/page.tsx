@@ -211,21 +211,34 @@ export default function Blog() {
 
       <div className="container mx-auto px-4 py-12">
         {/* Newsletter Signup */}
-        <section className="mb-12">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-            <h2 className="text-2xl font-bold text-slate-800 mb-3">Stay Informed</h2>
-            <p className="text-lg text-slate-700 mb-4">
-              Subscribe to receive the latest health tips and medical insights directly in your inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
-                Subscribe
-              </button>
+        <section className="mb-16">
+          <div className="max-w-4xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-green-700 uppercase tracking-wider">
+                  Stay Updated
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+              <div className="text-center">
+                <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">Stay Informed</h2>
+                <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                  Subscribe to receive the latest health tips and medical insights directly in your inbox from our healthcare professionals.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                  <input
+                    type="email"
+                    placeholder="Enter your email address"
+                    className="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  />
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all hover:shadow-lg">
+                    Subscribe
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -251,47 +264,58 @@ export default function Blog() {
 
         {/* Featured Article */}
         {filteredPosts.length > 0 && (
-          <section className="mb-12">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="md:flex">
-                <div className="md:w-1/3">
-                  <div className="h-64 md:h-full bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
-                    <svg className="h-16 w-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
+          <section className="mb-16">
+            <div className="max-w-6xl mx-auto">
+              {/* Section Badge */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+                  <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                    Featured Article
+                  </span>
                 </div>
-                <div className="md:w-2/3 p-8">
-                  <div className="flex items-center mb-3">
-                    <span className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full mr-3">
-                      Featured Article
-                    </span>
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${getCategoryColor(filteredPosts[0].category)}`}>
-                      {categories.find(cat => cat.id === filteredPosts[0].category)?.name}
-                    </span>
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-4">
-                    <Link href={`/blog/${filteredPosts[0].slug}`} className="hover:text-blue-600 transition-colors">
-                      {filteredPosts[0].title}
-                    </Link>
-                  </h2>
-                  <p className="text-slate-600 mb-4 leading-relaxed">
-                    {filteredPosts[0].excerpt}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-slate-500">
-                      <span className="font-medium text-slate-700">{filteredPosts[0].author}</span>
-                      <span className="mx-2">•</span>
-                      <span>{formatDate(filteredPosts[0].publishDate)}</span>
-                      <span className="mx-2">•</span>
-                      <span>{filteredPosts[0].readTime}</span>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-xl transition-all duration-300">
+                <div className="md:flex">
+                  <div className="md:w-1/3">
+                    <div className="h-64 md:h-full bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
+                      <svg className="h-16 w-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
                     </div>
-                    <Link
-                      href={`/blog/${filteredPosts[0].slug}`}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-                    >
-                      Read Article
-                    </Link>
+                  </div>
+                  <div className="md:w-2/3 p-8">
+                    <div className="flex items-center mb-4">
+                      <span className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full mr-3">
+                        Featured
+                      </span>
+                      <span className={`text-xs font-medium px-3 py-1 rounded-full ${getCategoryColor(filteredPosts[0].category)}`}>
+                        {categories.find(cat => cat.id === filteredPosts[0].category)?.name}
+                      </span>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-4 leading-tight">
+                      <Link href={`/blog/${filteredPosts[0].slug}`} className="hover:text-blue-600 transition-colors">
+                        {filteredPosts[0].title}
+                      </Link>
+                    </h2>
+                    <p className="text-slate-600 mb-6 leading-relaxed text-lg">
+                      {filteredPosts[0].excerpt}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-sm text-slate-500">
+                        <span className="font-medium text-slate-700">{filteredPosts[0].author}</span>
+                        <span className="mx-2">•</span>
+                        <span>{formatDate(filteredPosts[0].publishDate)}</span>
+                        <span className="mx-2">•</span>
+                        <span>{filteredPosts[0].readTime}</span>
+                      </div>
+                      <Link
+                        href={`/blog/${filteredPosts[0].slug}`}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg"
+                      >
+                        Read Article
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -300,55 +324,73 @@ export default function Blog() {
         )}
 
         {/* Blog Posts Grid */}
-        <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.slice(1).map((post) => (
-              <article key={post.slug} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
-                  <svg className="h-12 w-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center mb-3">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${getCategoryColor(post.category)}`}>
-                      {categories.find(cat => cat.id === post.category)?.name}
-                    </span>
+        <section className="mb-16">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-purple-50 border border-purple-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-purple-700 uppercase tracking-wider">
+                  Latest Articles
+                </span>
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">Recent Health Insights</h2>
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Discover the latest medical insights and health tips from our healthcare professionals
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredPosts.slice(1).map((post) => (
+                <article key={post.slug} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-slate-200">
+                  <div className="h-48 bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
+                    <svg className="h-12 w-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                   </div>
                   
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">
-                    <Link href={`/blog/${post.slug}`} className="hover:text-blue-600 transition-colors">
-                      {post.title}
-                    </Link>
-                  </h3>
-                  
-                  <p className="text-slate-600 mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-sm text-slate-500">
+                  <div className="p-6">
+                    <div className="flex items-center mb-4">
+                      <span className={`text-xs font-medium px-3 py-1 rounded-full ${getCategoryColor(post.category)}`}>
+                        {categories.find(cat => cat.id === post.category)?.name}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-slate-800 mb-3 leading-tight">
+                      <Link href={`/blog/${post.slug}`} className="hover:text-blue-600 transition-colors">
+                        {post.title}
+                      </Link>
+                    </h3>
+                    
+                    <p className="text-slate-600 mb-6 line-clamp-3 leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
+                      <div>
+                        <span className="font-medium text-slate-700">{post.author}</span>
+                        <p className="text-xs">{post.authorTitle}</p>
+                      </div>
+                      <div className="text-right">
+                        <p>{formatDate(post.publishDate)}</p>
+                        <p className="text-xs">{post.readTime}</p>
+                      </div>
+                    </div>
+                    
                     <div>
-                      <span className="font-medium text-slate-700">{post.author}</span>
-                      <p className="text-xs">{post.authorTitle}</p>
-                    </div>
-                    <div className="text-right">
-                      <p>{formatDate(post.publishDate)}</p>
-                      <p className="text-xs">{post.readTime}</p>
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors"
+                      >
+                        Read More
+                        <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </Link>
                     </div>
                   </div>
-                  
-                  <div className="mt-4">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors"
-                    >
-                      Read More →
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -366,25 +408,101 @@ export default function Blog() {
         )}
 
         {/* Health Resources CTA */}
-        <section className="mt-16">
-          <div className="bg-gradient-to-r from-blue-600 to-slate-700 text-white rounded-lg p-8 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Need Personalized Health Advice?</h2>
-            <p className="text-lg mb-6 opacity-90">
-              Our healthcare professionals are here to provide personalized care and answer your health questions.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/contact"
-                className="bg-white text-blue-700 hover:bg-gray-100 font-semibold py-3 px-6 rounded-lg transition-colors"
-              >
-                Schedule Consultation
-              </Link>
-              <Link
-                href="/intake"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold py-3 px-6 rounded-lg transition-colors"
-              >
-                Patient Intake Form
-              </Link>
+        <section className="mt-20">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+                <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                  Personalized Care
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 rounded-xl overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center p-8 lg:p-12">
+                {/* Left Content */}
+                <div className="text-center lg:text-left">
+                  <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">
+                    Need Personalized Health Advice?
+                  </h2>
+                  <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+                    Our healthcare professionals are here to provide personalized care and answer your health questions with evidence-based medical expertise.
+                  </p>
+
+                  {/* Feature List */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                    <div className="text-center lg:text-left">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-3">
+                        <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div className="text-sm font-semibold text-slate-800">Expert Consultations</div>
+                    </div>
+                    <div className="text-center lg:text-left">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-3">
+                        <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div className="text-sm font-semibold text-slate-800">Personalized Care Plans</div>
+                    </div>
+                    <div className="text-center lg:text-left">
+                      <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-3">
+                        <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </div>
+                      <div className="text-sm font-semibold text-slate-800">Immediate Support</div>
+                    </div>
+                  </div>
+
+                  {/* CTA Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <Link
+                      href="/contact"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                      Schedule Consultation
+                    </Link>
+                    <Link
+                      href="/intake"
+                      className="border-2 border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Patient Intake Form
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Right Visual Element */}
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white relative overflow-hidden">
+                    <div className="relative z-10">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </div>
+                        <div className="text-lg font-semibold mb-2">Comprehensive Healthcare</div>
+                        <div className="text-sm opacity-90">Trusted by families for quality medical care</div>
+                      </div>
+                    </div>
+                    
+                    {/* Decorative Elements */}
+                    <div className="absolute top-4 right-4 w-8 h-8 bg-white/10 rounded-full"></div>
+                    <div className="absolute bottom-4 left-4 w-6 h-6 bg-white/10 rounded-full"></div>
+                    <div className="absolute top-1/2 right-8 w-4 h-4 bg-white/10 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
