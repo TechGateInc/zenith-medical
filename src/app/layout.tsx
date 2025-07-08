@@ -32,6 +32,23 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: [
+      {
+        url: '/images/zenith-medical-logo single.png',
+        sizes: 'any',
+        type: 'image/png',
+      },
+    ],
+    shortcut: '/images/zenith-medical-logo single.png',
+    apple: [
+      {
+        url: '/images/zenith-medical-logo single.png',
+        sizes: '180x180',
+        type: 'image/png',
+      },
+    ],
+  },
   robots: {
     index: true,
     follow: true,
