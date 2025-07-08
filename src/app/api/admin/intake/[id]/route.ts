@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../../lib/auth/config'
 import { prisma } from '../../../../../lib/prisma'
 import { decryptPatientData } from '../../../../../lib/utils/encryption'
-import { AdminRole } from '../../../../../generated/prisma'
+import { AdminRole } from '@prisma/client'
 
 export async function GET(
   request: NextRequest,

@@ -5,7 +5,7 @@
  * Run this script once to set up the first admin user
  */
 
-const { PrismaClient } = require('../src/generated/prisma');
+const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const readline = require('readline');
 

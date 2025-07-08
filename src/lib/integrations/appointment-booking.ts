@@ -280,52 +280,132 @@ export class AppointmentBookingService {
   }
 
   private async createCalendlyAppointment(appointmentData: AppointmentData, provider: BookingProvider): Promise<BookingResponse> {
-    const { apiKey, embedUrl } = provider.config
+    const { embedUrl, redirectUrl } = provider.config
 
-    // Calendly typically uses embed URLs or direct scheduling links
-    // For API integration, we'd need to use their API to create invitee
-    if (embedUrl) {
+    // NOTE: Calendly API v2 does NOT support creating appointments programmatically
+    // Calendly's approach is embed-based or direct booking page redirection
+    // The API is primarily for reading scheduled events and webhook notifications
+    
+    if (!embedUrl) {
+      return {
+        success: false,
+        error: 'Calendly embed URL not configured. Please set CALENDLY_EMBED_URL environment variable.'
+      }
+    }
+
+    try {
+      // Create a personalized booking URL with pre-filled information
       const bookingUrl = new URL(embedUrl)
+      
+      // Add query parameters that Calendly supports for pre-filling forms
       bookingUrl.searchParams.set('name', appointmentData.patientName)
       bookingUrl.searchParams.set('email', appointmentData.patientEmail)
       
+      // Some Calendly forms support phone number pre-filling
+      if (appointmentData.patientPhone) {
+        bookingUrl.searchParams.set('phone', appointmentData.patientPhone)
+      }
+      
+      // Add custom fields if supported
+      if (appointmentData.notes) {
+        bookingUrl.searchParams.set('notes', appointmentData.notes)
+      }
+      
+      // Generate a unique identifier for tracking this booking attempt
+      const trackingId = `zenith_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      bookingUrl.searchParams.set('utm_source', 'zenith_medical')
+      bookingUrl.searchParams.set('utm_medium', 'intake_form')
+      bookingUrl.searchParams.set('utm_campaign', trackingId)
+
       return {
         success: true,
+        appointmentId: trackingId, // Use tracking ID as appointment identifier
         bookingUrl: bookingUrl.toString(),
-        redirectUrl: bookingUrl.toString()
+        redirectUrl: bookingUrl.toString(),
+        metadata: {
+          provider: 'calendly',
+          trackingId,
+          prefilledData: {
+            name: appointmentData.patientName,
+            email: appointmentData.patientEmail,
+            phone: appointmentData.patientPhone
+          }
+        }
       }
-    }
-
-    if (!apiKey) {
+    } catch (error) {
       return {
         success: false,
-        error: 'Calendly configuration incomplete'
+        error: error instanceof Error ? error.message : 'Failed to create Calendly booking URL'
       }
-    }
-
-    // Calendly API v2 integration would go here
-    // For now, return the embed URL approach
-    return {
-      success: false,
-      error: 'Calendly API integration not yet implemented'
     }
   }
 
   private async createSimplePracticeAppointment(appointmentData: AppointmentData, provider: BookingProvider): Promise<BookingResponse> {
-    const { apiKey, subdomain } = provider.config
+    const { embedUrl, subdomain, redirectUrl } = provider.config
 
-    if (!apiKey || !subdomain) {
+    // NOTE: SimplePractice does NOT provide a public API for creating appointments
+    // SimplePractice uses an appointment request widget that practitioners embed on their websites
+    // The integration works through their online appointment request system
+    
+    if (!embedUrl && !subdomain) {
       return {
         success: false,
-        error: 'SimplePractice configuration incomplete'
+        error: 'SimplePractice configuration incomplete. Please set SIMPLEPRACTICE_EMBED_URL or SIMPLEPRACTICE_SUBDOMAIN.'
       }
     }
 
-    // SimplePractice API integration would go here
-    // This is a placeholder for the actual implementation
-    return {
-      success: false,
-      error: 'SimplePractice API integration not yet implemented'
+    try {
+      let bookingUrl: URL
+
+      if (embedUrl) {
+        // Direct widget URL provided
+        bookingUrl = new URL(embedUrl)
+      } else if (subdomain) {
+        // Construct URL from subdomain
+        bookingUrl = new URL(`https://${subdomain}.simplepractice.com/appointment_requests/new`)
+      } else {
+        throw new Error('No valid SimplePractice booking URL could be constructed')
+      }
+
+      // Add pre-fill parameters where supported
+      // SimplePractice appointment request forms may support some pre-filling
+      bookingUrl.searchParams.set('first_name', appointmentData.patientName.split(' ')[0] || '')
+      bookingUrl.searchParams.set('last_name', appointmentData.patientName.split(' ').slice(1).join(' ') || '')
+      bookingUrl.searchParams.set('email', appointmentData.patientEmail)
+      bookingUrl.searchParams.set('phone', appointmentData.patientPhone)
+      
+      if (appointmentData.notes) {
+        bookingUrl.searchParams.set('notes', appointmentData.notes)
+      }
+
+      // Add tracking parameters
+      const trackingId = `zenith_sp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      bookingUrl.searchParams.set('utm_source', 'zenith_medical')
+      bookingUrl.searchParams.set('utm_medium', 'patient_intake')
+      bookingUrl.searchParams.set('utm_campaign', trackingId)
+
+      return {
+        success: true,
+        appointmentId: trackingId,
+        bookingUrl: bookingUrl.toString(),
+        redirectUrl: redirectUrl || bookingUrl.toString(),
+        metadata: {
+          provider: 'simplepractice',
+          trackingId,
+          subdomain,
+          prefilledData: {
+            firstName: appointmentData.patientName.split(' ')[0] || '',
+            lastName: appointmentData.patientName.split(' ').slice(1).join(' ') || '',
+            email: appointmentData.patientEmail,
+            phone: appointmentData.patientPhone
+          }
+        }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create SimplePractice booking URL'
+      }
     }
   }
 

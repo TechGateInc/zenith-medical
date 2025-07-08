@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../lib/auth/config'
 import { prisma } from '../../../../../lib/prisma'
 import { auditLog } from '../../../../../lib/audit/audit-logger'
-import { AdminRole } from '../../../../../generated/prisma'
+import { AdminRole } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -24,18 +24,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Get FAQs
-    const faqs = await prisma.fAQItem.findMany({
-      orderBy: { sortOrder: 'asc' },
+    const faqs = await prisma.fAQ.findMany({
+      orderBy: { orderIndex: 'asc' },
       select: {
         id: true,
         question: true,
         answer: true,
         category: true,
-        sortOrder: true,
+        orderIndex: true,
         published: true,
         createdAt: true,
-        updatedAt: true,
-        createdBy: true
+        updatedAt: true
       }
     })
 
@@ -71,7 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -87,7 +86,7 @@ export async function POST(request: NextRequest) {
       answer,
       category,
       published = false,
-      sortOrder
+      orderIndex
     } = body
 
     // Basic validation
@@ -98,25 +97,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get the next sort order if not provided
-    let finalSortOrder = sortOrder
-    if (finalSortOrder === undefined) {
-      const lastFAQ = await prisma.fAQItem.findFirst({
-        orderBy: { sortOrder: 'desc' },
-        select: { sortOrder: true }
+    // Get the next order index if not provided
+    let finalOrderIndex = orderIndex
+    if (finalOrderIndex === undefined) {
+      const lastFAQ = await prisma.fAQ.findFirst({
+        orderBy: { orderIndex: 'desc' },
+        select: { orderIndex: true }
       })
-      finalSortOrder = (lastFAQ?.sortOrder || 0) + 1
+      finalOrderIndex = (lastFAQ?.orderIndex || 0) + 1
     }
 
     // Create FAQ
-    const faq = await prisma.fAQItem.create({
+    const faq = await prisma.fAQ.create({
       data: {
         question,
         answer,
         category: category || null,
-        sortOrder: finalSortOrder,
-        published,
-        createdBy: user.id
+        orderIndex: finalOrderIndex,
+        published
       }
     })
 
@@ -130,7 +128,7 @@ export async function POST(request: NextRequest) {
         question: faq.question,
         category: faq.category,
         published: faq.published,
-        sortOrder: faq.sortOrder
+        orderIndex: faq.orderIndex
       },
       ipAddress: request.headers.get('x-forwarded-for') || 
                  request.headers.get('x-real-ip') || 

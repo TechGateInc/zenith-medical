@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -229,4 +228,37 @@ model BookingProvider {
   
   @@unique([type])
   @@map("booking_providers")
+}
+
+// Notification Templates
+model NotificationTemplate {
+  id            String              @id @default(cuid())
+  name          String
+  type          NotificationType
+  method        NotificationMethod
+  subject       String?
+  message       String
+  triggerHours  Int                 // Hours before appointment to send
+  active        Boolean             @default(true)
+  
+  // Audit
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  createdBy     String
+  
+  @@map("notification_templates")
+}
+
+// Additional Enums for Notifications
+enum NotificationType {
+  APPOINTMENT_REMINDER
+  APPOINTMENT_CONFIRMATION
+  FOLLOW_UP
+  GENERAL
+}
+
+enum NotificationMethod {
+  EMAIL
+  SMS
+  BOTH
 }

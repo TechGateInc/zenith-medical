@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../lib/auth/config'
 import { prisma } from '../../../../../lib/prisma'
 import { auditLog } from '../../../../../lib/audit/audit-logger'
-import { AdminRole } from '../../../../../generated/prisma'
+import { AdminRole } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
     // Get team members
     const teamMembers = await prisma.teamMember.findMany({
-      orderBy: { sortOrder: 'asc' },
+      orderBy: { orderIndex: 'asc' },
       select: {
         id: true,
         name: true,
@@ -35,11 +35,10 @@ export async function GET(request: NextRequest) {
         email: true,
         phone: true,
         photoUrl: true,
-        sortOrder: true,
+        orderIndex: true,
         published: true,
         createdAt: true,
-        updatedAt: true,
-        createdBy: true
+        updatedAt: true
       }
     })
 
@@ -75,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -95,7 +94,7 @@ export async function POST(request: NextRequest) {
       phone,
       photoUrl,
       published = false,
-      sortOrder
+      orderIndex
     } = body
 
     // Basic validation
@@ -114,14 +113,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get the next sort order if not provided
-    let finalSortOrder = sortOrder
-    if (finalSortOrder === undefined) {
+    // Get the next order index if not provided
+    let finalOrderIndex = orderIndex
+    if (finalOrderIndex === undefined) {
       const lastMember = await prisma.teamMember.findFirst({
-        orderBy: { sortOrder: 'desc' },
-        select: { sortOrder: true }
+        orderBy: { orderIndex: 'desc' },
+        select: { orderIndex: true }
       })
-      finalSortOrder = (lastMember?.sortOrder || 0) + 1
+      finalOrderIndex = (lastMember?.orderIndex || 0) + 1
     }
 
     // Create team member
@@ -134,9 +133,8 @@ export async function POST(request: NextRequest) {
         email: email || null,
         phone: phone || null,
         photoUrl: photoUrl || null,
-        sortOrder: finalSortOrder,
-        published,
-        createdBy: user.id
+        orderIndex: finalOrderIndex,
+        published
       }
     })
 
@@ -150,7 +148,7 @@ export async function POST(request: NextRequest) {
         name: teamMember.name,
         title: teamMember.title,
         published: teamMember.published,
-        sortOrder: teamMember.sortOrder
+        orderIndex: teamMember.orderIndex
       },
       ipAddress: request.headers.get('x-forwarded-for') || 
                  request.headers.get('x-real-ip') || 

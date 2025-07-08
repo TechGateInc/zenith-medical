@@ -1,4 +1,4 @@
-import { AdminRole } from '../generated/prisma'
+import { AdminRole } from '@prisma/client'
 import { DefaultSession, DefaultUser } from 'next-auth'
 import { JWT, DefaultJWT } from 'next-auth/jwt'
 

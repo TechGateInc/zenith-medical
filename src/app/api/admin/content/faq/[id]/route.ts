@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../../lib/auth/config'
 import { prisma } from '../../../../../../lib/prisma'
 import { auditLog } from '../../../../../../lib/audit/audit-logger'
-import { AdminRole } from '../../../../../../generated/prisma'
+import { AdminRole } from '@prisma/client'
 
 export async function GET(
   request: NextRequest,
@@ -17,7 +17,7 @@ export async function GET(
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -29,13 +29,8 @@ export async function GET(
     const { id: faqId } = await params
 
     // Get FAQ
-    const faq = await prisma.fAQItem.findUnique({
-      where: { id: faqId },
-      include: {
-        createdByUser: {
-          select: { email: true, name: true }
-        }
-      }
+    const faq = await prisma.fAQ.findUnique({
+      where: { id: faqId }
     })
 
     if (!faq) {
@@ -81,7 +76,7 @@ export async function PATCH(
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -93,9 +88,9 @@ export async function PATCH(
     const { id: faqId } = await params
 
     // Check if FAQ exists
-    const existingFAQ = await prisma.fAQItem.findUnique({
+    const existingFAQ = await prisma.fAQ.findUnique({
       where: { id: faqId },
-      select: { id: true, question: true, createdBy: true }
+      select: { id: true, question: true }
     })
 
     if (!existingFAQ) {
@@ -111,7 +106,7 @@ export async function PATCH(
     if (body.answer !== undefined) updateData.answer = body.answer
     if (body.category !== undefined) updateData.category = body.category || null
     if (body.published !== undefined) updateData.published = body.published
-    if (body.sortOrder !== undefined) updateData.sortOrder = body.sortOrder
+    if (body.orderIndex !== undefined) updateData.orderIndex = body.orderIndex
 
     // Validate required fields if being updated
     if (updateData.question !== undefined && !updateData.question.trim()) {
@@ -129,7 +124,7 @@ export async function PATCH(
     }
 
     // Update the FAQ
-    const updatedFAQ = await prisma.fAQItem.update({
+    const updatedFAQ = await prisma.fAQ.update({
       where: { id: faqId },
       data: updateData
     })
@@ -145,7 +140,7 @@ export async function PATCH(
         category: updatedFAQ.category,
         changedFields: Object.keys(updateData),
         published: updatedFAQ.published,
-        sortOrder: updatedFAQ.sortOrder
+        orderIndex: updatedFAQ.orderIndex
       },
       ipAddress: request.headers.get('x-forwarded-for') || 
                  request.headers.get('x-real-ip') || 
@@ -176,7 +171,7 @@ export async function DELETE(
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -189,7 +184,7 @@ export async function DELETE(
     const { id: faqId } = await params
 
     // Check if FAQ exists
-    const existingFAQ = await prisma.fAQItem.findUnique({
+    const existingFAQ = await prisma.fAQ.findUnique({
       where: { id: faqId },
       select: { id: true, question: true, category: true }
     })
@@ -199,7 +194,7 @@ export async function DELETE(
     }
 
     // Delete the FAQ
-    await prisma.fAQItem.delete({
+    await prisma.fAQ.delete({
       where: { id: faqId }
     })
 

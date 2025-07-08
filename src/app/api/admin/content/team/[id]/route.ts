@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../../lib/auth/config'
 import { prisma } from '../../../../../../lib/prisma'
 import { auditLog } from '../../../../../../lib/audit/audit-logger'
-import { AdminRole } from '../../../../../../generated/prisma'
+import { AdminRole } from '@prisma/client'
 
 export async function GET(
   request: NextRequest,
@@ -17,7 +17,7 @@ export async function GET(
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -30,12 +30,7 @@ export async function GET(
 
     // Get team member
     const teamMember = await prisma.teamMember.findUnique({
-      where: { id: memberId },
-      include: {
-        createdByUser: {
-          select: { email: true, name: true }
-        }
-      }
+      where: { id: memberId }
     })
 
     if (!teamMember) {
@@ -81,7 +76,7 @@ export async function PATCH(
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -95,7 +90,7 @@ export async function PATCH(
     // Check if team member exists
     const existingMember = await prisma.teamMember.findUnique({
       where: { id: memberId },
-      select: { id: true, name: true, createdBy: true }
+      select: { id: true, name: true }
     })
 
     if (!existingMember) {
@@ -115,7 +110,7 @@ export async function PATCH(
     if (body.phone !== undefined) updateData.phone = body.phone || null
     if (body.photoUrl !== undefined) updateData.photoUrl = body.photoUrl || null
     if (body.published !== undefined) updateData.published = body.published
-    if (body.sortOrder !== undefined) updateData.sortOrder = body.sortOrder
+    if (body.orderIndex !== undefined) updateData.orderIndex = body.orderIndex
 
     // Validate required fields if being updated
     if (updateData.name !== undefined && !updateData.name.trim()) {
@@ -157,7 +152,7 @@ export async function PATCH(
         title: updatedMember.title,
         changedFields: Object.keys(updateData),
         published: updatedMember.published,
-        sortOrder: updatedMember.sortOrder
+        orderIndex: updatedMember.orderIndex
       },
       ipAddress: request.headers.get('x-forwarded-for') || 
                  request.headers.get('x-real-ip') || 
@@ -188,7 +183,7 @@ export async function DELETE(
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })

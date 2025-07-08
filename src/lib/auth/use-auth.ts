@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { AdminRole } from '../../generated/prisma'
+import { AdminRole } from '@prisma/client'
 import { hasPermission } from './config'
 
 export function useAuth() {

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../../lib/auth/config'
 import { prisma } from '../../../../../lib/prisma'
 import { auditLog } from '../../../../../lib/audit/audit-logger'
-import { AdminRole } from '../../../../../generated/prisma'
+import { AdminRole } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user details
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, role: true }
     })
