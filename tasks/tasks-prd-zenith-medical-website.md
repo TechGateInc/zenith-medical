@@ -126,7 +126,7 @@ Based on PRD: `prd-zenith-medical-website.md`
     - [x] 5.7.2 Update backup upload functionality to use Cloudinary
     - [x] 5.7.3 Modify environment variables from AWS to Cloudinary configuration
     - [x] 5.7.4 Update deployment documentation to reference Cloudinary
-    - [ ] 5.7.5 Update Vercel environment variable configuration
+    - [x] 5.7.5 Update Vercel environment variable configuration
     - [ ] 5.7.6 Test backup and restore functionality with Cloudinary
   - [x] 5.8 Conduct full application testing and performance optimization
 - [ ] 6.0 Dynamic Team Member Management System

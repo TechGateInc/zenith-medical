@@ -99,16 +99,44 @@ npm i -g vercel
 # Login
 vercel login
 
-# Set environment variables
+# Set core environment variables
 vercel env add NEXTAUTH_SECRET production
 vercel env add DATABASE_URL production
-# ... continue for all variables
+vercel env add ENCRYPTION_KEY production
+
+# Set Cloudinary environment variables
+vercel env add CLOUDINARY_CLOUD_NAME production
+vercel env add CLOUDINARY_API_KEY production
+vercel env add CLOUDINARY_API_SECRET production
+
+# Set notification service variables
+vercel env add SENDGRID_API_KEY production
+vercel env add TWILIO_ACCOUNT_SID production
+vercel env add TWILIO_AUTH_TOKEN production
+
+# ... continue for all other variables
 ```
 
 #### Using Vercel Dashboard:
 1. Go to your project settings
 2. Navigate to "Environment Variables"
 3. Add each variable for "Production" environment
+
+#### Validating Cloudinary Configuration:
+```bash
+# Verify Cloudinary environment variables are set
+vercel env ls
+
+# Should show:
+# CLOUDINARY_CLOUD_NAME (production)
+# CLOUDINARY_API_KEY (production)  
+# CLOUDINARY_API_SECRET (production)
+
+# Test Cloudinary configuration locally
+vercel env pull .env.local
+npm run dev
+# Check backup functionality at /api/admin/backup/database
+```
 
 ## 4. GitHub Secrets Setup
 
@@ -290,6 +318,28 @@ npx prisma db pull
 
 # Check environment variables
 vercel env ls
+```
+
+#### Cloudinary Configuration Issues
+```bash
+# Check if Cloudinary variables are set in Vercel
+vercel env ls | grep CLOUDINARY
+
+# Test Cloudinary connection locally
+vercel env pull .env.local
+node -e "
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+console.log('Cloudinary config:', cloudinary.config());
+"
+
+# Verify backup uploads are working
+curl -X POST https://your-domain.com/api/admin/backup/database \
+  -H "Authorization: Bearer your-admin-token"
 ```
 
 #### Performance Issues
