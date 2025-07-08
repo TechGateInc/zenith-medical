@@ -14,7 +14,8 @@ export default function Contact() {
     appointmentType: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitMessage, setSubmitMessage] = useState('')
+  const [submitMessage, ] = useState('')
+  const [, setSubmitted] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -27,22 +28,13 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setSubmitMessage('')
 
     try {
-      // Simulate form submission - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setSubmitMessage('Thank you for contacting us! We will respond within 24 hours.')
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        appointmentType: ''
-      })
+      // TODO: Implement contact form submission
+      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+      setSubmitted(true)
     } catch (error) {
-      setSubmitMessage('There was an error sending your message. Please try again or call us directly.')
+      console.error('Contact form submission failed:', error)
     } finally {
       setIsSubmitting(false)
     }
@@ -104,7 +96,7 @@ export default function Contact() {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto opacity-90">
-            Get in touch with our medical team. We're here to help with your healthcare needs.
+            Get in touch with our medical team. We&apos;re here to help with your healthcare needs.
           </p>
         </div>
       </section>

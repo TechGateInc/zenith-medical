@@ -24,15 +24,14 @@ const TeamMemberUpdateSchema = z.object({
   published: z.boolean().optional()
 });
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 // GET - Fetch specific team member
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await context.params;
+    
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -41,8 +40,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         { status: 401 }
       );
     }
-
-    const { id } = params;
 
     if (!id) {
       return NextResponse.json(
@@ -91,8 +88,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT - Update specific team member
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  request: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await context.params;
+    
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -101,8 +103,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         { status: 401 }
       );
     }
-
-    const { id } = params;
 
     if (!id) {
       return NextResponse.json(
@@ -214,8 +214,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE - Delete specific team member
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  request: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await context.params;
+    
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -224,8 +229,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         { status: 401 }
       );
     }
-
-    const { id } = params;
 
     if (!id) {
       return NextResponse.json(

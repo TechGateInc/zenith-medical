@@ -287,7 +287,7 @@ export default function ExportPage() {
             <div className="ml-3">
               <p className="text-sm text-red-800">
                 <strong>Confidential Information:</strong> Exported files contain Protected Health Information (PHI). 
-                Ensure proper handling, secure storage, and disposal according to your organization's data protection policies. 
+                Ensure proper handling, secure storage, and disposal according to your organization&apos;s data protection policies. 
                 Do not share, email, or store exported files on unsecured systems.
               </p>
             </div>

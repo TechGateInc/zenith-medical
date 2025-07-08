@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useAuth } from '../../../lib/auth/use-auth'
@@ -38,7 +38,7 @@ export default function AdminLogin() {
       } else if (result?.ok) {
         router.push('/admin/dashboard')
       }
-    } catch (_error) {
+    } catch (error) {
       setError('An error occurred during login')
     } finally {
       setIsLoading(false)

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         select: { id: true, email: true, role: true }
       })
 
-      if (!user || !user.role || ![AdminRole.SUPER_ADMIN, AdminRole.ADMIN].includes(user.role as AdminRole)) {
+      if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
         return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
       }
 
@@ -94,27 +94,27 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Audit log cleanup error:', error)
+    console.error('Audit log cleanup failed:', error)
     
-    // Log the failed cleanup attempt
+    // Log the failure (if audit log is still working)
     try {
+      const session = await getServerSession(authOptions)
       await auditLog({
         action: 'AUDIT_LOG_CLEANUP_FAILED',
-        userId: userId,
-        userEmail: userEmail || 'system',
+        userId: session?.user?.id || 'system',
         details: {
-          error: error instanceof Error ? error.message : 'Unknown error',
-          automated: !!request.headers.get('x-vercel-cron-token')
-        },
-        ipAddress: request.headers.get('x-forwarded-for') || 'system',
-        userAgent: request.headers.get('user-agent') || 'vercel-cron'
+          error: error instanceof Error ? error.message : 'Unknown error'
+        }
       })
-    } catch (logError) {
-      console.error('Failed to log cleanup error:', logError)
+    } catch (auditError) {
+      console.error('Failed to log audit cleanup failure:', auditError)
     }
-
+    
     return NextResponse.json(
-      { error: 'Audit log cleanup failed' },
+      { 
+        error: 'Failed to cleanup audit logs',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
       select: { id: true, email: true, role: true }
     })
 
-    if (!user || !user.role || ![AdminRole.SUPER_ADMIN, AdminRole.ADMIN].includes(user.role as AdminRole)) {
+    if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 

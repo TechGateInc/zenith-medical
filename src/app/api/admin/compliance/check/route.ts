@@ -7,12 +7,13 @@ import { ComplianceChecker } from '../../../../../lib/compliance/hipaa-pipeda-co
 import { AdminRole } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
+  // Declare variables outside try block for catch block access
+  let userId: string | undefined
+  let userEmail: string | undefined
+  
   try {
     // Verify this is a cron job or admin request
     const isVercelCron = request.headers.get('x-vercel-cron-token')
-    
-    let userId: string | undefined
-    let userEmail: string | undefined
 
     // Check if it's a Vercel cron job
     if (isVercelCron) {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
         select: { id: true, email: true, role: true }
       })
 
-      if (!user || !user.role || ![AdminRole.SUPER_ADMIN, AdminRole.ADMIN].includes(user.role as AdminRole)) {
+      if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
         return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
       }
 
@@ -97,8 +98,7 @@ export async function POST(request: NextRequest) {
     try {
       await auditLog({
         action: 'COMPLIANCE_CHECK_FAILED',
-        userId: userId,
-        userEmail: userEmail || 'system',
+        userId: userId || 'system',
         details: {
           error: error instanceof Error ? error.message : 'Unknown error',
           automated: !!request.headers.get('x-vercel-cron-token')
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
       select: { id: true, email: true, role: true }
     })
 
-    if (!user || !user.role || ![AdminRole.SUPER_ADMIN, AdminRole.ADMIN, AdminRole.EDITOR].includes(user.role as AdminRole)) {
+    if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN && user.role !== AdminRole.EDITOR)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -158,12 +158,15 @@ export async function GET(request: NextRequest) {
     })
 
     // Calculate trends
-    const checkHistory = recentChecks.map(check => ({
-      timestamp: check.timestamp,
-      success: check.action === 'COMPLIANCE_CHECK_COMPLETED',
-      score: check.details?.overallScore || 0,
-      criticalIssues: check.details?.criticalIssues || 0
-    }))
+    const checkHistory = recentChecks.map(check => {
+      const details = check.details as any
+      return {
+        timestamp: check.timestamp,
+        success: check.action === 'COMPLIANCE_CHECK_COMPLETED',
+        score: details?.overallScore || 0,
+        criticalIssues: details?.criticalIssues || 0
+      }
+    })
 
     return NextResponse.json({
       latestCheck: latestCheck ? {
@@ -173,9 +176,9 @@ export async function GET(request: NextRequest) {
       history: checkHistory,
       summary: {
         lastCheckDate: latestCheck?.timestamp || null,
-        isCompliant: latestCheck?.details?.isCompliant || false,
-        overallScore: latestCheck?.details?.overallScore || 0,
-        criticalIssues: latestCheck?.details?.criticalIssues || 0
+        isCompliant: (latestCheck?.details as any)?.isCompliant || false,
+        overallScore: (latestCheck?.details as any)?.overallScore || 0,
+        criticalIssues: (latestCheck?.details as any)?.criticalIssues || 0
       }
     })
 

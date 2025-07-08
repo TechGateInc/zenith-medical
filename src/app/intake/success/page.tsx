@@ -569,7 +569,7 @@ export default function IntakeSuccessPage() {
                       appointments@zenithmedical.com
                     </a>
                   </p>
-                  <p className="text-sm text-slate-500">We'll respond within 24 hours</p>
+                  <p className="text-sm text-slate-500">We&apos;ll respond within 24 hours</p>
                 </div>
               </div>
             </div>
@@ -583,7 +583,7 @@ export default function IntakeSuccessPage() {
             </div>
             <h1 className="text-2xl font-bold text-slate-800 mb-4">No Submission Found</h1>
             <p className="text-slate-600 mb-6">
-              We couldn't find your intake submission. You'll be redirected to the intake form in a moment.
+              We couldn&apos;t find your intake submission. You&apos;ll be redirected to the intake form in a moment.
             </p>
             <Button onClick={() => router.push('/intake')}>
               Return to Intake Form

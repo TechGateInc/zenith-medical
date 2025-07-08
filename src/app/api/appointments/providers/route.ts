@@ -22,7 +22,8 @@ const providerConfigSchema = z.object({
   })
 })
 
-export async function GET(request: NextRequest) {
+// GET /api/appointments/providers - Get available booking providers
+export async function GET(_request: Request) {
   try {
     // Get providers from the appointment booking service
     const serviceProviders = appointmentBookingService.getAllProviders()

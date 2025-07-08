@@ -113,49 +113,44 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent, publish: boolean = false) => {
+  const handleContentChange = (content: string) => {
+    setFormData(prev => ({ ...prev, content }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!validateForm()) {
+    if (!formData.title.trim() || !formData.content.trim()) {
+      setErrors({ title: 'Title and content are required' })
       return
     }
 
     setLoading(true)
 
     try {
-      const submissionData = {
-        ...formData,
-        published: publish || formData.published
-      }
-
-      const url = mode === 'create' 
-        ? '/api/admin/content/blog'
-        : `/api/admin/content/blog/${initialData?.id}`
-
-      const method = mode === 'create' ? 'POST' : 'PATCH'
-
-      const response = await fetch(url, {
-        method,
+      const response = await fetch('/api/blog-posts', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify(submissionData)
+        body: JSON.stringify({
+          ...formData,
+          publishedAt: formData.published ? new Date().toISOString() : null
+        })
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to save blog post')
+        throw new Error(errorData.message || 'Failed to save blog post')
       }
 
-      const data = await response.json()
+      await response.json() // Read response but don't store since not used
       
-      // Success - redirect to blog management
+      // Redirect to blog management page
       router.push('/admin/content/blog')
-      
-    } catch (error) {
-      console.error('Submit error:', error)
-      alert('Error saving blog post: ' + (error instanceof Error ? error.message : 'Unknown error'))
+    } catch (err) {
+      console.error('Submit error:', err)
+      setErrors({ message: err instanceof Error ? err.message : 'Failed to save blog post' })
     } finally {
       setLoading(false)
     }
@@ -196,7 +191,7 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
         </div>
 
         {/* Form */}
-        <form onSubmit={(e) => handleSubmit(e, false)}>
+        <form onSubmit={(e) => handleSubmit(e)}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
@@ -391,7 +386,7 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
                 {mode === 'create' && (
                   <button
                     type="button"
-                    onClick={(e) => handleSubmit(e, true)}
+                    onClick={(e) => handleSubmit(e)}
                     disabled={loading}
                     className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                   >

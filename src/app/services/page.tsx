@@ -227,7 +227,7 @@ export default function Services() {
                 <div>
                   <h4 className="font-semibold text-red-700 mb-2">Same-Day Appointments</h4>
                   <p className="text-red-700 mb-4">
-                    We reserve time slots daily for urgent medical needs that can't wait for a regular appointment.
+                    We reserve time slots daily for urgent medical needs that can&apos;t wait for a regular appointment.
                   </p>
                   <ul className="space-y-1 text-red-700">
                     <li>• Acute illness and infections</li>
@@ -287,7 +287,7 @@ export default function Services() {
                   <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Workers' compensation claims
+                  Workers&apos; compensation claims
                 </li>
                 <li className="flex items-center">
                   <svg className="h-4 w-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

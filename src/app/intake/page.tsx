@@ -69,7 +69,7 @@ export default function IntakePage() {
                 <li>• This form typically takes 5-10 minutes to complete</li>
                 <li>• All fields marked with * are required</li>
                 <li>• Your information is encrypted and securely stored</li>
-                <li>• You'll be redirected to book your appointment after submission</li>
+                <li>• You&apos;ll be redirected to book your appointment after submission</li>
               </ul>
             </div>
           </div>
