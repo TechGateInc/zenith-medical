@@ -83,7 +83,7 @@ export default function AnalyticsConsent() {
                       </ul>
                     </div>
                     <div className="bg-red-50 p-3 rounded-md">
-                      <p className="text-red-800 font-medium">What we DON'T track:</p>
+                      <p className="text-red-800 font-medium">What we DON&apos;T track:</p>
                       <ul className="text-red-700 text-xs mt-1 space-y-1">
                         <li>• Personal names, addresses, or contact information</li>
                         <li>• Medical information or health data</li>

@@ -56,7 +56,7 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
 
       analytics.trackPageView({
         page_path: pathname,
-        page_location: window.location.href,
+        page_location: url,
         page_title: document.title,
         content_group1: contentGroup1,
         content_group2: contentGroup2

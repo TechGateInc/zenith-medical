@@ -226,7 +226,6 @@ export async function PATCH(
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
     // Validate the update request
-    const allowedUpdates = ['status', 'appointmentBooked']
     const updates: any = {}
     
     if (body.status && ['SUBMITTED', 'REVIEWED', 'APPOINTMENT_SCHEDULED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED'].includes(body.status)) {

@@ -130,7 +130,7 @@ export default function FAQForm({ mode, initialData }: FAQFormProps) {
         throw new Error(errorData.error || 'Failed to save FAQ')
       }
 
-      const data = await response.json()
+      await response.json() // Process response but don't store since not used
       
       // Success - redirect to FAQ management
       router.push('/admin/content/faq')

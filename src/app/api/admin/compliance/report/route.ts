@@ -19,8 +19,6 @@ export async function GET(request: NextRequest) {
 
     if (action === 'latest') {
       // Return the latest compliance report from cache or generate new one
-      const cacheKey = 'compliance_report_latest'
-      
       // In a real implementation, you'd check cache first
       // For now, we'll generate a new report each time
       const report = await complianceChecker.performComplianceCheck()
@@ -110,7 +108,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { action, rules } = body
+    const { action } = body
 
     if (action === 'run_check') {
       // Trigger a new compliance check

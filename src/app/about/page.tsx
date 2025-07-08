@@ -14,7 +14,7 @@ export default function About() {
       role: "Chief Medical Officer & Family Physician",
       credentials: "MD, CCFP",
       experience: "15+ years",
-      specialties: ["Family Medicine", "Preventive Care", "Women's Health"],
+      specialties: ["Family Medicine", "Preventive Care", "Women&apos;s Health"],
       bio: "Board-certified family physician dedicated to comprehensive patient care with expertise in preventive medicine and chronic disease management.",
       image: "/team/dr-mitchell.jpg" // Placeholder for actual image
     },

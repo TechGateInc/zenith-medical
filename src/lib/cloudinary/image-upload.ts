@@ -5,8 +5,7 @@
 
 import cloudinary, { 
   UPLOAD_OPTIONS, 
-  VALIDATION, 
-  SECURITY_SETTINGS,
+  VALIDATION,
   IMAGE_TRANSFORMATIONS
 } from './config';
 

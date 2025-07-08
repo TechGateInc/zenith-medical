@@ -31,6 +31,7 @@ export default function EditBlogPostPage() {
   const [post, setPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   const postId = params.id as string
 
@@ -43,35 +44,36 @@ export default function EditBlogPostPage() {
 
   // Fetch blog post data
   useEffect(() => {
-    if (isAuthenticated && postId) {
-      fetchBlogPost()
-    }
-  }, [isAuthenticated, postId])
+    if (!isAuthenticated || !postId) return
 
-  const fetchBlogPost = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`/api/admin/content/blog/${postId}`, {
-        method: 'GET',
-        credentials: 'include'
-      })
+    const fetchBlogPost = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/admin/content/blog/${postId}`, {
+          method: 'GET',
+          credentials: 'include'
+        })
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Blog post not found')
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Blog post not found')
+          }
+          throw new Error('Failed to fetch blog post')
         }
-        throw new Error('Failed to fetch blog post')
-      }
 
-      const data = await response.json()
-      setPost(data.post)
-    } catch (err) {
-      console.error('Fetch error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load blog post')
-    } finally {
-      setLoading(false)
+        const data = await response.json()
+        setPost(data.post)
+        setError(null) // Clear any previous errors
+      } catch (err) {
+        console.error('Fetch error:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load blog post')
+      } finally {
+        setLoading(false)
+      }
     }
-  }
+
+    fetchBlogPost()
+  }, [isAuthenticated, postId, retryCount])
 
   if (isLoading || loading) {
     return (
@@ -100,7 +102,7 @@ export default function EditBlogPostPage() {
           <p className="text-red-800 font-medium">Error loading blog post</p>
           <p className="text-red-600">{error}</p>
           <button
-            onClick={fetchBlogPost}
+            onClick={() => setRetryCount(prev => prev + 1)}
             className="mt-4 bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2 rounded-lg transition-colors"
           >
             Try Again

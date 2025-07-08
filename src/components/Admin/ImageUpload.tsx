@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { X, Camera, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
 interface ImageUploadProps {
@@ -264,9 +265,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         {/* Preview Image */}
         {previewUrl && (
           <div className="relative">
-            <img
+            <Image
               src={previewUrl}
               alt="Preview"
+              width={400}
+              height={192}
               className="w-full h-48 object-cover rounded-lg"
             />
             

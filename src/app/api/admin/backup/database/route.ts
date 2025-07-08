@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
   
   try {
     // Verify this is a cron job or admin request
-    const authHeader = request.headers.get('authorization')
     const isVercelCron = request.headers.get('x-vercel-cron-token')
 
     // Check if it's a Vercel cron job
@@ -118,24 +117,11 @@ async function performDatabaseBackup(): Promise<BackupResult> {
     const backupId = `backup_${timestamp.toISOString().replace(/[:.]/g, '-')}`
     const filename = `${backupId}.sql`
 
-    // Get database connection details
+    // Get database connection details - removed as not currently used
     const databaseUrl = process.env.DATABASE_URL
     if (!databaseUrl) {
       throw new Error('DATABASE_URL not configured')
     }
-
-    // Parse database URL
-    const url = new URL(databaseUrl)
-    const dbConfig = {
-      host: url.hostname,
-      port: url.port || '5432',
-      database: url.pathname.slice(1),
-      username: url.username,
-      password: url.password
-    }
-
-    // Create pg_dump command
-    const dumpCommand = `pg_dump -h ${dbConfig.host} -p ${dbConfig.port} -U ${dbConfig.username} -d ${dbConfig.database} --no-password --clean --if-exists --create`
 
     // In a real implementation, you would execute pg_dump
     // For now, we'll simulate the backup process

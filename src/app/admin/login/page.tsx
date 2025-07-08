@@ -38,7 +38,7 @@ export default function AdminLogin() {
       } else if (result?.ok) {
         router.push('/admin/dashboard')
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred during login')
     } finally {
       setIsLoading(false)

@@ -51,26 +51,26 @@ export default function NotificationManagementPage() {
 
   // Fetch data
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchData()
-    }
-  }, [isAuthenticated, activeTab])
+    if (!isAuthenticated) return
 
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      if (activeTab === 'templates') {
-        await fetchTemplates()
-      } else {
-        await fetchScheduledNotifications()
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        if (activeTab === 'templates') {
+          await fetchTemplates()
+        } else {
+          await fetchScheduledNotifications()
+        }
+      } catch (err) {
+        console.error('Fetch error:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load data')
+      } finally {
+        setLoading(false)
       }
-    } catch (err) {
-      console.error('Fetch error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load data')
-    } finally {
-      setLoading(false)
     }
-  }
+
+    fetchData()
+  }, [isAuthenticated, activeTab])
 
   const fetchTemplates = async () => {
     const response = await fetch('/api/admin/notifications/templates', {
@@ -312,7 +312,25 @@ export default function NotificationManagementPage() {
                 <p className="text-red-800 font-medium">Error loading data</p>
                 <p className="text-red-600">{error}</p>
                 <button
-                  onClick={fetchData}
+                  onClick={() => {
+                    // Re-fetch data when trying again
+                    const fetchData = async () => {
+                      try {
+                        setLoading(true)
+                        if (activeTab === 'templates') {
+                          await fetchTemplates()
+                        } else {
+                          await fetchScheduledNotifications()
+                        }
+                      } catch (err) {
+                        console.error('Fetch error:', err)
+                        setError(err instanceof Error ? err.message : 'Failed to load data')
+                      } finally {
+                        setLoading(false)
+                      }
+                    }
+                    fetchData()
+                  }}
                   className="mt-4 bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2 rounded-lg transition-colors"
                 >
                   Try Again

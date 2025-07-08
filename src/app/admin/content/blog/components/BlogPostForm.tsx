@@ -80,43 +80,6 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
     }
   }
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required'
-    }
-
-    if (!formData.slug.trim()) {
-      newErrors.slug = 'Slug is required'
-    } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(formData.slug)) {
-      newErrors.slug = 'Slug must contain only lowercase letters, numbers, and hyphens'
-    }
-
-    if (!formData.content.trim()) {
-      newErrors.content = 'Content is required'
-    }
-
-    if (formData.metaTitle && formData.metaTitle.length > 60) {
-      newErrors.metaTitle = 'Meta title should be 60 characters or less'
-    }
-
-    if (formData.metaDescription && formData.metaDescription.length > 160) {
-      newErrors.metaDescription = 'Meta description should be 160 characters or less'
-    }
-
-    if (formData.excerpt && formData.excerpt.length > 300) {
-      newErrors.excerpt = 'Excerpt should be 300 characters or less'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleContentChange = (content: string) => {
-    setFormData(prev => ({ ...prev, content }))
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.title.trim() || !formData.content.trim()) {

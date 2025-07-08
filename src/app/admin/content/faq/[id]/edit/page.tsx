@@ -27,6 +27,7 @@ export default function EditFAQPage() {
   const [faq, setFaq] = useState<FAQItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   const faqId = params.id as string
 
@@ -39,35 +40,36 @@ export default function EditFAQPage() {
 
   // Fetch FAQ data
   useEffect(() => {
-    if (isAuthenticated && faqId) {
-      fetchFAQ()
-    }
-  }, [isAuthenticated, faqId])
+    if (!isAuthenticated || !faqId) return
 
-  const fetchFAQ = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`/api/admin/content/faq/${faqId}`, {
-        method: 'GET',
-        credentials: 'include'
-      })
+    const fetchFAQ = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/admin/content/faq/${faqId}`, {
+          method: 'GET',
+          credentials: 'include'
+        })
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('FAQ not found')
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('FAQ not found')
+          }
+          throw new Error('Failed to fetch FAQ')
         }
-        throw new Error('Failed to fetch FAQ')
-      }
 
-      const data = await response.json()
-      setFaq(data.faq)
-    } catch (err) {
-      console.error('Fetch error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load FAQ')
-    } finally {
-      setLoading(false)
+        const data = await response.json()
+        setFaq(data.faq)
+        setError(null) // Clear any previous errors
+      } catch (err) {
+        console.error('Fetch error:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load FAQ')
+      } finally {
+        setLoading(false)
+      }
     }
-  }
+
+    fetchFAQ()
+  }, [isAuthenticated, faqId, retryCount])
 
   if (isLoading || loading) {
     return (
@@ -96,7 +98,7 @@ export default function EditFAQPage() {
           <p className="text-red-800 font-medium">Error loading FAQ</p>
           <p className="text-red-600">{error}</p>
           <button
-            onClick={fetchFAQ}
+            onClick={() => setRetryCount(prev => prev + 1)}
             className="mt-4 bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2 rounded-lg transition-colors"
           >
             Try Again

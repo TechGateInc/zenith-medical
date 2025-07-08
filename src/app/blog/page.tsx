@@ -77,7 +77,7 @@ export default function Blog() {
     },
     {
       slug: 'womens-health-essential-screenings',
-      title: "Women's Health: Essential Screenings by Age",
+      title: "Women&apos;s Health: Essential Screenings by Age",
       excerpt: 'Stay on top of your health with age-appropriate screenings. From mammograms to pap smears, learn what tests women need at different life stages.',
       content: '',
       author: 'Dr. Emily Rodriguez',
@@ -134,7 +134,7 @@ export default function Blog() {
     { id: 'preventive-care', name: 'Preventive Care' },
     { id: 'chronic-care', name: 'Chronic Care' },
     { id: 'mental-health', name: 'Mental Health' },
-    { id: 'womens-health', name: "Women's Health" },
+    { id: 'womens-health', name: "Women&apos;s Health" },
     { id: 'pediatrics', name: 'Pediatrics' },
     { id: 'senior-care', name: 'Senior Care' },
     { id: 'nutrition', name: 'Nutrition' }

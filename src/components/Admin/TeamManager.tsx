@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { 
   Plus, 
   Search, 
@@ -484,9 +485,11 @@ const TeamManager: React.FC = () => {
                   {/* Photo & Name */}
                   <div className="col-span-2 flex items-center gap-3">
                     {member.photoUrl ? (
-                      <img
+                      <Image
                         src={member.photoUrl}
                         alt={member.name}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (

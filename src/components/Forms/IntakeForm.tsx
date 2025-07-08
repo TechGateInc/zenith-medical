@@ -371,18 +371,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     return null
   }
 
-  // Generate field attributes with accessibility features
-  const getFieldAttributes = (fieldName: keyof PatientIntakeData, required: boolean = true) => {
-    const hasError = touched[fieldName] && errors[fieldName as keyof FormErrors]
-    return {
-      ...formAccessibility.generateFieldAttributes(fieldName, {
-        required,
-        invalid: !!hasError,
-        describedBy: hasError ? [`${fieldName}-error`] : undefined
-      }),
-      id: formAccessibility.generateFieldId(fieldName)
-    }
-  }
+  // Generate field attributes with accessibility features - REMOVED (unused)
 
   const hasFormErrors = Object.keys(errors).some(key => errors[key as keyof FormErrors])
 

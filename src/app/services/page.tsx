@@ -64,8 +64,8 @@ export default function Services() {
 
   const specialtyServices = [
     {
-      title: "Women's Health",
-      description: "Comprehensive healthcare services specifically designed for women's health needs.",
+      title: "Women&apos;s Health",
+      description: "Comprehensive healthcare services specifically designed for women&apos;s health needs.",
       services: [
         "Annual gynecological exams",
         "Pap smears and cervical cancer screening",

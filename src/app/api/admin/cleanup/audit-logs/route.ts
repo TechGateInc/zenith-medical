@@ -48,14 +48,6 @@ export async function POST(request: NextRequest) {
     const totalLogsBefore = await prisma.auditLog.count()
     const cutoffDate = new Date()
     cutoffDate.setDate(cutoffDate.getDate() - retentionDays)
-    
-    const logsToDelete = await prisma.auditLog.count({
-      where: {
-        timestamp: {
-          lt: cutoffDate
-        }
-      }
-    })
 
     // Perform cleanup using the utility function
     await cleanupOldAuditLogs(retentionDays)
@@ -121,7 +113,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Get cleanup status and statistics
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !session.user?.email) {

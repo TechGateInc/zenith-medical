@@ -58,36 +58,36 @@ export default function IntakeDetailPage() {
 
   // Fetch submission details
   useEffect(() => {
-    if (isAuthenticated && id) {
-      fetchSubmissionDetails()
-    }
-  }, [isAuthenticated, id])
+    if (!isAuthenticated || !id) return
 
-  const fetchSubmissionDetails = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`/api/admin/intake/${id}`, {
-        method: 'GET',
-        credentials: 'include'
-      })
+    const fetchSubmissionDetails = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/admin/intake/${id}`, {
+          method: 'GET',
+          credentials: 'include'
+        })
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Intake submission not found')
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Intake submission not found')
+          }
+          throw new Error('Failed to fetch submission details')
         }
-        throw new Error('Failed to fetch submission details')
-      }
 
-      const data = await response.json()
-      setSubmission(data.submission)
-      setNewStatus(data.submission.status)
-    } catch (err) {
-      console.error('Fetch error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load submission')
-    } finally {
-      setLoading(false)
+        const data = await response.json()
+        setSubmission(data.submission)
+        setNewStatus(data.submission.status)
+      } catch (err) {
+        console.error('Fetch error:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load submission')
+      } finally {
+        setLoading(false)
+      }
     }
-  }
+
+    fetchSubmissionDetails()
+  }, [isAuthenticated, id])
 
   const updateStatus = async (status: string) => {
     if (!submission || !isAdmin) return
