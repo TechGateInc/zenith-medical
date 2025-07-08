@@ -89,7 +89,7 @@
   
   /* Display Typography (Hero sections, landing pages) */
   .text-display-xl {
-    font-family: var(--font-family-serif);
+    font-family: var(--font-family-sans);
     font-size: var(--font-size-6xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-none);
@@ -98,7 +98,7 @@
   }
 
   .text-display-lg {
-    font-family: var(--font-family-serif);
+    font-family: var(--font-family-sans);
     font-size: var(--font-size-5xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
@@ -108,7 +108,7 @@
 
   /* Heading Typography (H1-H6) */
   .text-h1 {
-    font-family: var(--font-family-serif);
+    font-family: var(--font-family-sans);
     font-size: var(--font-size-5xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
@@ -117,7 +117,7 @@
   }
 
   .text-h2 {
-    font-family: var(--font-family-serif);
+    font-family: var(--font-family-sans);
     font-size: var(--font-size-4xl);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-tight);
@@ -126,7 +126,7 @@
   }
 
   .text-h3 {
-    font-family: var(--font-family-serif);
+    font-family: var(--font-family-sans);
     font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-snug);
