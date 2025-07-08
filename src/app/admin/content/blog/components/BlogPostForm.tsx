@@ -90,8 +90,14 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/blog-posts', {
-        method: 'POST',
+      const url = mode === 'create' 
+        ? '/api/admin/content/blog'
+        : `/api/admin/content/blog/${initialData?.id}`;
+      
+      const method = mode === 'create' ? 'POST' : 'PATCH';
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -104,10 +110,13 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to save blog post')
+        throw new Error(errorData.error || 'Failed to save blog post')
       }
 
-      await response.json() // Read response but don't store since not used
+      const data = await response.json()
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to save blog post')
+      }
       
       // Redirect to blog management page
       router.push('/admin/content/blog')

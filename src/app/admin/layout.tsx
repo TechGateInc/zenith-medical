@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import AdminNavigation from '@/components/Admin/AdminNavigation'
+import AdminSidebar from '@/components/Admin/AdminSidebar'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard - Zenith Medical Centre',
@@ -16,11 +16,15 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNavigation />
-      <main>
-        {children}
-      </main>
+    <div className="min-h-screen bg-slate-50">
+      <AdminSidebar />
+      
+      {/* Main content area */}
+      <div className="lg:pl-72">
+        <main className="min-h-screen">
+          {children}
+        </main>
+      </div>
     </div>
   )
 } 

@@ -164,35 +164,40 @@ export default function BlogManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="p-6 lg:p-8">
       {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/admin/dashboard"
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Blog Posts</h1>
-                <p className="text-gray-600">Manage health articles and clinic updates</p>
-              </div>
-            </div>
-            <Link
-              href="/admin/content/blog/new"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+      <div className="mb-8">
+        <Link
+          href="/admin/dashboard"
+          className="text-blue-600 hover:text-blue-800 font-medium text-sm inline-flex items-center mb-4"
+        >
+          <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Dashboard
+        </Link>
+        
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              New Post
-            </Link>
+              Content Management
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Blog Posts</h1>
+            <p className="text-gray-600">Manage health articles and clinic updates</p>
           </div>
+          
+          <Link
+            href="/admin/content/blog/new"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors flex items-center"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            New Post
+          </Link>
         </div>
       </div>
 

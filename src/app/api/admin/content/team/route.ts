@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
+    const statsOnly = searchParams.get('stats') === 'true';
 
     // Build where clause - using any for Prisma's dynamic where conditions
     const where: any = {};
@@ -74,6 +75,23 @@ export async function GET(request: NextRequest) {
 
     if (offset) {
       queryOptions.skip = parseInt(offset);
+    }
+
+    // If stats only, return just counts
+    if (statsOnly) {
+      const totalCount = await prisma.teamMember.count({ where });
+      const publishedCount = await prisma.teamMember.count({ 
+        where: { ...where, published: true } 
+      });
+      
+      return NextResponse.json({
+        success: true,
+        stats: {
+          total: totalCount,
+          published: publishedCount,
+          draft: totalCount - publishedCount
+        }
+      });
     }
 
     // Fetch team members

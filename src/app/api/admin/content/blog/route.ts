@@ -23,6 +23,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
+    // Check if stats only requested
+    const { searchParams } = new URL(request.url);
+    const statsOnly = searchParams.get('stats') === 'true';
+
+    if (statsOnly) {
+      const [totalCount, publishedCount, featuredCount] = await Promise.all([
+        prisma.blogPost.count(),
+        prisma.blogPost.count({ where: { published: true } }),
+        prisma.blogPost.count({ where: { featured: true } })
+      ]);
+
+      return NextResponse.json({
+        success: true,
+        stats: {
+          total: totalCount,
+          published: publishedCount,
+          draft: totalCount - publishedCount,
+          featured: featuredCount
+        }
+      });
+    }
+
     // Get blog posts
     const posts = await prisma.blogPost.findMany({
       orderBy: { createdAt: 'desc' },

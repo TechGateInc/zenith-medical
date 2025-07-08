@@ -227,16 +227,16 @@ export default function Blog() {
                 <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">Stay Informed</h2>
                 <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
                   Subscribe to receive the latest health tips and medical insights directly in your inbox from our healthcare professionals.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-                  <input
-                    type="email"
-                    placeholder="Enter your email address"
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email address"
                     className="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  />
+              />
                   <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all hover:shadow-lg">
-                    Subscribe
-                  </button>
+                Subscribe
+              </button>
                 </div>
               </div>
             </div>
@@ -276,45 +276,45 @@ export default function Blog() {
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-xl transition-all duration-300">
-                <div className="md:flex">
-                  <div className="md:w-1/3">
-                    <div className="h-64 md:h-full bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
-                      <svg className="h-16 w-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
+              <div className="md:flex">
+                <div className="md:w-1/3">
+                  <div className="h-64 md:h-full bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
+                    <svg className="h-16 w-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                   </div>
-                  <div className="md:w-2/3 p-8">
+                </div>
+                <div className="md:w-2/3 p-8">
                     <div className="flex items-center mb-4">
-                      <span className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full mr-3">
+                    <span className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full mr-3">
                         Featured
-                      </span>
+                    </span>
                       <span className={`text-xs font-medium px-3 py-1 rounded-full ${getCategoryColor(filteredPosts[0].category)}`}>
-                        {categories.find(cat => cat.id === filteredPosts[0].category)?.name}
-                      </span>
-                    </div>
+                      {categories.find(cat => cat.id === filteredPosts[0].category)?.name}
+                    </span>
+                  </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-4 leading-tight">
-                      <Link href={`/blog/${filteredPosts[0].slug}`} className="hover:text-blue-600 transition-colors">
-                        {filteredPosts[0].title}
-                      </Link>
-                    </h2>
+                    <Link href={`/blog/${filteredPosts[0].slug}`} className="hover:text-blue-600 transition-colors">
+                      {filteredPosts[0].title}
+                    </Link>
+                  </h2>
                     <p className="text-slate-600 mb-6 leading-relaxed text-lg">
-                      {filteredPosts[0].excerpt}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-sm text-slate-500">
-                        <span className="font-medium text-slate-700">{filteredPosts[0].author}</span>
-                        <span className="mx-2">•</span>
-                        <span>{formatDate(filteredPosts[0].publishDate)}</span>
-                        <span className="mx-2">•</span>
-                        <span>{filteredPosts[0].readTime}</span>
-                      </div>
-                      <Link
-                        href={`/blog/${filteredPosts[0].slug}`}
+                    {filteredPosts[0].excerpt}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-slate-500">
+                      <span className="font-medium text-slate-700">{filteredPosts[0].author}</span>
+                      <span className="mx-2">•</span>
+                      <span>{formatDate(filteredPosts[0].publishDate)}</span>
+                      <span className="mx-2">•</span>
+                      <span>{filteredPosts[0].readTime}</span>
+                    </div>
+                    <Link
+                      href={`/blog/${filteredPosts[0].slug}`}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg"
-                      >
-                        Read Article
-                      </Link>
+                    >
+                      Read Article
+                    </Link>
                     </div>
                   </div>
                 </div>
@@ -339,57 +339,57 @@ export default function Blog() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.slice(1).map((post) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPosts.slice(1).map((post) => (
                 <article key={post.slug} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-slate-200">
-                  <div className="h-48 bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
-                    <svg className="h-12 w-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  
-                  <div className="p-6">
+                <div className="h-48 bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center">
+                  <svg className="h-12 w-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                
+                <div className="p-6">
                     <div className="flex items-center mb-4">
                       <span className={`text-xs font-medium px-3 py-1 rounded-full ${getCategoryColor(post.category)}`}>
-                        {categories.find(cat => cat.id === post.category)?.name}
-                      </span>
-                    </div>
-                    
+                      {categories.find(cat => cat.id === post.category)?.name}
+                    </span>
+                  </div>
+                  
                     <h3 className="text-xl font-bold text-slate-800 mb-3 leading-tight">
-                      <Link href={`/blog/${post.slug}`} className="hover:text-blue-600 transition-colors">
-                        {post.title}
-                      </Link>
-                    </h3>
-                    
+                    <Link href={`/blog/${post.slug}`} className="hover:text-blue-600 transition-colors">
+                      {post.title}
+                    </Link>
+                  </h3>
+                  
                     <p className="text-slate-600 mb-6 line-clamp-3 leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                    
+                    {post.excerpt}
+                  </p>
+                  
                     <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
-                      <div>
-                        <span className="font-medium text-slate-700">{post.author}</span>
-                        <p className="text-xs">{post.authorTitle}</p>
-                      </div>
-                      <div className="text-right">
-                        <p>{formatDate(post.publishDate)}</p>
-                        <p className="text-xs">{post.readTime}</p>
-                      </div>
-                    </div>
-                    
                     <div>
-                      <Link
-                        href={`/blog/${post.slug}`}
+                      <span className="font-medium text-slate-700">{post.author}</span>
+                      <p className="text-xs">{post.authorTitle}</p>
+                    </div>
+                    <div className="text-right">
+                      <p>{formatDate(post.publishDate)}</p>
+                      <p className="text-xs">{post.readTime}</p>
+                    </div>
+                  </div>
+                  
+                    <div>
+                    <Link
+                      href={`/blog/${post.slug}`}
                         className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors"
-                      >
+                    >
                         Read More
                         <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
-                      </Link>
-                    </div>
+                    </Link>
                   </div>
-                </article>
-              ))}
+                </div>
+              </article>
+            ))}
             </div>
           </div>
         </section>
@@ -460,24 +460,24 @@ export default function Blog() {
 
                   {/* CTA Buttons */}
                   <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <Link
-                      href="/contact"
+              <Link
+                href="/contact"
                       className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
-                    >
+              >
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
-                      Schedule Consultation
-                    </Link>
-                    <Link
-                      href="/intake"
+                Schedule Consultation
+              </Link>
+              <Link
+                href="/intake"
                       className="border-2 border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center"
-                    >
+              >
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
-                      Patient Intake Form
-                    </Link>
+                Patient Intake Form
+              </Link>
                   </div>
                 </div>
 
