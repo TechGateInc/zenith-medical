@@ -85,34 +85,112 @@
 
 @layer utilities {
   
-  /* Visual Hierarchy Utilities */
-  .text-hierarchy-1 {
-    font-size: var(--font-size-4xl);
+  /* Typography Scale - Medical Website Hierarchy */
+  
+  /* Display Typography (Hero sections, landing pages) */
+  .text-display-xl {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-6xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-none);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--color-text-primary);
+  }
+
+  .text-display-lg {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-5xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--color-text-primary);
   }
 
-  .text-hierarchy-2 {
-    font-size: var(--font-size-3xl);
+  /* Heading Typography (H1-H6) */
+  .text-h1 {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--color-text-primary);
+  }
+
+  .text-h2 {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-4xl);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-tight);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--color-text-primary);
   }
 
-  .text-hierarchy-3 {
-    font-size: var(--font-size-2xl);
+  .text-h3 {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-snug);
+    letter-spacing: var(--letter-spacing-normal);
     color: var(--color-text-primary);
   }
 
+  .text-h4 {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    letter-spacing: var(--letter-spacing-normal);
+    color: var(--color-text-primary);
+  }
+
+  .text-h5 {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+    color: var(--color-text-primary);
+  }
+
+  .text-h6 {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+    color: var(--color-text-primary);
+  }
+
+  /* Legacy hierarchy classes for compatibility */
+  .text-hierarchy-1 {
+    @apply text-h1;
+  }
+
+  .text-hierarchy-2 {
+    @apply text-h2;
+  }
+
+  .text-hierarchy-3 {
+    @apply text-h3;
+  }
+
+  /* Body Text Typography with Color Hierarchy */
   .text-body-large {
     font-size: var(--font-size-lg);
-    line-height: var(--line-height-relaxed);
+    line-height: var(--line-height-loose);
     color: var(--color-text-primary);
+  }
+
+  .text-body-large-secondary {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-loose);
+    color: var(--color-text-secondary);
+  }
+
+  .text-body-large-muted {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-loose);
+    color: var(--color-text-muted);
   }
 
   .text-body {
@@ -121,10 +199,28 @@
     color: var(--color-text-primary);
   }
 
+  .text-body-secondary {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .text-body-muted {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-muted);
+  }
+
   .text-body-small {
     font-size: var(--font-size-sm);
     line-height: var(--line-height-normal);
     color: var(--color-text-secondary);
+  }
+
+  .text-body-small-muted {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-muted);
   }
 
   .text-caption {
@@ -133,6 +229,138 @@
     color: var(--color-text-muted);
     letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
+  }
+
+  .text-caption-secondary {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+  }
+
+  /* Text Color Hierarchy Utilities */
+  .text-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-muted {
+    color: var(--color-text-muted);
+  }
+
+  .text-inverse {
+    color: var(--color-text-inverse);
+  }
+
+  /* Semantic Text Colors for Medical Content */
+  .text-success {
+    color: var(--color-success-600);
+  }
+
+  .text-success-muted {
+    color: var(--color-success-500);
+  }
+
+  .text-warning {
+    color: var(--color-warning-600);
+  }
+
+  .text-warning-muted {
+    color: var(--color-warning-500);
+  }
+
+  .text-error {
+    color: var(--color-error-600);
+  }
+
+  .text-error-muted {
+    color: var(--color-error-500);
+  }
+
+  .text-info {
+    color: var(--color-info-600);
+  }
+
+  .text-info-muted {
+    color: var(--color-info-500);
+  }
+
+  /* Brand Text Colors */
+  .text-brand-primary {
+    color: var(--color-primary-600);
+  }
+
+  .text-brand-primary-muted {
+    color: var(--color-primary-500);
+  }
+
+  .text-brand-secondary {
+    color: var(--color-secondary-600);
+  }
+
+  .text-brand-secondary-muted {
+    color: var(--color-secondary-500);
+  }
+
+  /* Medical Context Specific Text Colors */
+  .text-urgent {
+    color: var(--color-error-700);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .text-appointment {
+    color: var(--color-primary-700);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .text-available {
+    color: var(--color-success-700);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .text-unavailable {
+    color: var(--color-neutral-500);
+  }
+
+  /* Link Text Hierarchy */
+  .text-link {
+    color: var(--color-primary-600);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: var(--transition-colors);
+  }
+
+  .text-link:hover {
+    color: var(--color-primary-700);
+    text-decoration-color: var(--color-primary-700);
+  }
+
+  .text-link-muted {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: var(--transition-colors);
+  }
+
+  .text-link-muted:hover {
+    color: var(--color-primary-600);
+    text-decoration-color: var(--color-primary-600);
+  }
+
+  .text-link-subtle {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: var(--transition-colors);
+  }
+
+  .text-link-subtle:hover {
+    color: var(--color-primary-600);
+    text-decoration: underline;
+    text-decoration-color: var(--color-primary-600);
   }
 
   /* Medical Theme Specific Utilities */

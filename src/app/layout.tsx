@@ -1,12 +1,26 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display } from 'next/font/google'
 import { Suspense } from 'react'
 import './globals.css'
 import SessionProvider from '../lib/auth/session-provider'
 import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Analytics/AnalyticsProvider'
 import AnalyticsConsent from '../components/Analytics/AnalyticsConsent'
 
-const inter = Inter({ subsets: ['latin'] })
+// Primary font for body text and UI elements
+const inter = Inter({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+// Serif font for headings and elegant text
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-playfair',
+  display: 'swap',
+})
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
 
@@ -71,7 +85,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${playfairDisplay.variable} font-sans`}>
         <SessionProvider>
           <Suspense fallback={null}>
             <AnalyticsProvider>

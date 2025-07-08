@@ -1,5 +1,10 @@
 // Accessibility utilities for WCAG 2.1 AA compliance
 
+// Utility function for merging class names
+export const cn = (...classes: (string | undefined | null | false)[]): string => {
+  return classes.filter(Boolean).join(' ')
+}
+
 // Screen reader announcement utility
 const announceToScreenReader = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
   if (typeof window === 'undefined') return
