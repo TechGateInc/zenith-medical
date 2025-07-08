@@ -181,7 +181,7 @@ export default function FAQ() {
         <section className="mb-12">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
             <p className="text-lg text-slate-700 mb-4">
-              Can't find the answer you're looking for? We're here to help!
+              Can&apos;t find the answer you&apos;re looking for? We&apos;re here to help!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

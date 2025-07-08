@@ -22,26 +22,23 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    
     setIsLoading(true)
+    setError('')
 
     try {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        redirect: false
       })
 
       if (result?.error) {
         setError('Invalid email or password')
-      } else {
-        // Get session to check role
-        const session = await getSession()
-        if (session) {
-          router.push('/admin/dashboard')
-        }
+      } else if (result?.ok) {
+        router.push('/admin/dashboard')
       }
-    } catch (error) {
+    } catch (_error) {
       setError('An error occurred during login')
     } finally {
       setIsLoading(false)

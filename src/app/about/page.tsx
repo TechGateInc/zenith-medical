@@ -134,7 +134,7 @@ export default function About() {
               where patients feel heard, respected, and cared for.
             </p>
             <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-              Over the years, we've grown from a single-physician practice to a comprehensive medical team, but our core values remain unchanged. 
+              Over the years, we&apos;ve grown from a single-physician practice to a comprehensive medical team, but our core values remain unchanged. 
               We continue to prioritize building meaningful relationships with our patients, staying current with medical advances, 
               and maintaining the personalized care that sets us apart.
             </p>

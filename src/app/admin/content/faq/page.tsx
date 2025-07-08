@@ -18,7 +18,7 @@ interface FAQItem {
 }
 
 export default function FAQManagementPage() {
-  const { isLoading, isAuthenticated, isAdmin, user } = useAuth()
+  const { isLoading, isAuthenticated, isAdmin } = useAuth()
   const router = useRouter()
   const [faqs, setFaqs] = useState<FAQItem[]>([])
   const [loading, setLoading] = useState(true)

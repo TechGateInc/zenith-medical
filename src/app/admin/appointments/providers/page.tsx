@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import type { ProviderHealthCheck, ValidationResult, TestResult } from '../../../../lib/integrations/booking-provider-validator'
+import type { ProviderHealthCheck, ValidationResult } from '../../../../lib/integrations/booking-provider-validator'
 
 interface BookingProvider {
   name: string

@@ -34,7 +34,7 @@ interface ScheduledNotification {
 }
 
 export default function NotificationManagementPage() {
-  const { isLoading, isAuthenticated, isAdmin } = useAuth()
+  const { isLoading, isAuthenticated } = useAuth()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'templates' | 'scheduled' | 'history'>('templates')
   const [templates, setTemplates] = useState<NotificationTemplate[]>([])

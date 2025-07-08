@@ -19,7 +19,7 @@ interface BlogPost {
 }
 
 export default function BlogManagementPage() {
-  const { isLoading, isAuthenticated, isAdmin, user } = useAuth()
+  const { isLoading, isAuthenticated, isAdmin } = useAuth()
   const router = useRouter()
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)

@@ -17,7 +17,7 @@ export interface EmailProvider {
 
 export interface SMSProvider {
   name: string
-  type: 'twilio' | 'aws_sns' | 'generic_api'
+  type: 'twilio' | 'generic_api'
   config: {
     apiKey?: string
     apiSecret?: string
@@ -135,17 +135,6 @@ export class NotificationService {
           fromNumber: process.env.TWILIO_FROM_NUMBER || '+1234567890'
         },
         active: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN)
-      },
-      {
-        name: 'AWS SNS',
-        type: 'aws_sns',
-        config: {
-          apiKey: process.env.AWS_ACCESS_KEY_ID,
-          apiSecret: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION || 'us-east-1',
-          fromNumber: process.env.AWS_SNS_FROM_NUMBER || 'ZenithMedical'
-        },
-        active: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY)
       }
     ]
 
@@ -430,8 +419,6 @@ export class NotificationService {
       switch (provider.type) {
         case 'twilio':
           return await this.sendSMSWithTwilio(params, provider)
-        case 'aws_sns':
-          return await this.sendSMSWithAWSSNS(params, provider)
         default:
           return { success: false, error: 'Unsupported SMS provider' }
       }
@@ -460,43 +447,6 @@ export class NotificationService {
       return {
         success: true,
         messageId: message.sid
-      }
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message
-      }
-    }
-  }
-
-  private async sendSMSWithAWSSNS(
-    params: { to: string; content: string },
-    provider: SMSProvider
-  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
-    try {
-      const AWS = require('aws-sdk')
-      AWS.config.update({
-        accessKeyId: provider.config.apiKey,
-        secretAccessKey: provider.config.apiSecret,
-        region: provider.config.region
-      })
-
-      const sns = new AWS.SNS()
-      
-      const result = await sns.publish({
-        Message: params.content,
-        PhoneNumber: params.to,
-        MessageAttributes: {
-          'AWS.SNS.SMS.SMSType': {
-            DataType: 'String',
-            StringValue: 'Transactional'
-          }
-        }
-      }).promise()
-
-      return {
-        success: true,
-        messageId: result.MessageId
       }
     } catch (error: any) {
       return {
