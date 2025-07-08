@@ -1,20 +1,49 @@
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
 import { generateMetadata as generateSEOMetadata, generateDoctorStructuredData, PAGE_METADATA } from '../../lib/utils/seo'
+import { prisma } from '../../lib/prisma'
+import { TeamMemberCard } from '../../components/Team'
 
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.about,
   canonical: '/about',
 })
 
-export default function About() {
-  const teamMembers = [
+// Fetch published team members from database
+async function getTeamMembers() {
+  try {
+    const teamMembers = await prisma.teamMember.findMany({
+      where: {
+        published: true
+      },
+      orderBy: {
+        orderIndex: 'asc'
+      }
+    })
+    
+    return teamMembers.map(member => ({
+      ...member,
+      createdAt: member.createdAt.toISOString(),
+      updatedAt: member.updatedAt.toISOString()
+    }))
+  } catch (error) {
+    console.error('Failed to fetch team members:', error)
+    return []
+  }
+}
+
+export default async function About() {
+  // Fetch team members from database
+  const teamMembers = await getTeamMembers()
+
+  // Fallback hardcoded team members in case database is empty or fails
+  const fallbackTeamMembers = [
     {
       name: "Dr. Sarah Mitchell",
       role: "Chief Medical Officer & Family Physician",
       credentials: "MD, CCFP",
       experience: "15+ years",
-      specialties: ["Family Medicine", "Preventive Care", "Women&apos;s Health"],
+      specialties: ["Family Medicine", "Preventive Care", "Women's Health"],
       bio: "Board-certified family physician dedicated to comprehensive patient care with expertise in preventive medicine and chronic disease management.",
       image: "/team/dr-mitchell.jpg" // Placeholder for actual image
     },
@@ -47,13 +76,16 @@ export default function About() {
     }
   ]
 
-  // Generate structured data for all team members
-  const doctorStructuredData = teamMembers.map(member => 
+  // Use database team members if available, otherwise fallback to hardcoded data
+  const displayTeamMembers = teamMembers.length > 0 ? teamMembers : fallbackTeamMembers
+
+  // Generate structured data for team members
+  const doctorStructuredData = displayTeamMembers.map((member: any) => 
     generateDoctorStructuredData({
       name: member.name,
-      title: member.role,
-      specialties: member.specialties,
-      experience: member.bio
+      title: member.title || member.role,
+      specialties: member.specialties || [],
+      experience: member.bio || `Experienced healthcare professional`
     })
   )
 
@@ -154,40 +186,58 @@ export default function About() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {teamMembers.map((member, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="p-6">
-                  {/* Placeholder for team member photo */}
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-slate-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                    <svg className="h-16 w-16 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  
-                  <div className="text-center mb-4">
-                    <h3 className="text-xl font-bold text-slate-800">{member.name}</h3>
-                    <p className="text-blue-600 font-semibold">{member.role}</p>
-                    <p className="text-slate-500">{member.credentials}</p>
-                    <p className="text-slate-500 text-sm">{member.experience} experience</p>
-                  </div>
+          {teamMembers.length > 0 ? (
+            // Display database team members using TeamMemberCard component
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {teamMembers.map((member) => (
+                <TeamMemberCard
+                  key={member.id}
+                  member={member}
+                  variant="default"
+                  showEmail={false}
+                  showPhone={false}
+                  showSpecialties={true}
+                  showBio={true}
+                />
+              ))}
+            </div>
+          ) : (
+            // Fallback to original hardcoded display
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {fallbackTeamMembers.map((member, index) => (
+                <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                  <div className="p-6">
+                    {/* Placeholder for team member photo */}
+                    <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-slate-100 rounded-full mx-auto mb-6 flex items-center justify-center">
+                      <svg className="h-16 w-16 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    
+                    <div className="text-center mb-4">
+                      <h3 className="text-xl font-bold text-slate-800">{member.name}</h3>
+                      <p className="text-blue-600 font-semibold">{member.role}</p>
+                      <p className="text-slate-500">{member.credentials}</p>
+                      <p className="text-slate-500 text-sm">{member.experience} experience</p>
+                    </div>
 
-                  <p className="text-slate-600 mb-4 leading-relaxed">{member.bio}</p>
+                    <p className="text-slate-600 mb-4 leading-relaxed">{member.bio}</p>
 
-                  <div className="border-t pt-4">
-                    <h4 className="font-semibold text-slate-800 mb-2">Specialties:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {member.specialties.map((specialty, idx) => (
-                        <span key={idx} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
-                          {specialty}
-                        </span>
-                      ))}
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold text-slate-800 mb-2">Specialties:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {member.specialties.map((specialty, idx) => (
+                          <span key={idx} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
+                            {specialty}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Facilities & Technology */}

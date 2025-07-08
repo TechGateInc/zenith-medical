@@ -144,7 +144,7 @@ Based on PRD: `prd-zenith-medical-website.md`
   - [x] 6.3 Build admin interface for managing team members
   - [x] 6.4 Implement Cloudinary image upload for team member photos
   - [x] 6.5 Create reusable team member display components
-  - [ ] 6.6 Update About page to use database team members
+  - [x] 6.6 Update About page to use database team members
   - [ ] 6.7 Add team member search and filtering capabilities
   - [ ] 6.8 Implement team member role management and ordering
 - [ ] 7.0 Dynamic Blog Content Management System
