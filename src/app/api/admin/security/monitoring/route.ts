@@ -102,9 +102,6 @@ export async function GET(request: NextRequest) {
       where: {
         timestamp: {
           gte: startTime
-        },
-        userId: {
-          not: null
         }
       },
       _count: {
@@ -124,9 +121,6 @@ export async function GET(request: NextRequest) {
       where: {
         timestamp: {
           gte: startTime
-        },
-        resource: {
-          not: null
         }
       },
       _count: {

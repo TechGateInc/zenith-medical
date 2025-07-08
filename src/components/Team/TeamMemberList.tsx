@@ -14,7 +14,7 @@ import {
   Tag,
   ChevronRight
 } from 'lucide-react';
-import { TeamMember } from './TeamMemberCard';
+import type { TeamMember } from './TeamMemberCard';
 
 interface TeamMemberListProps {
   members: TeamMember[];

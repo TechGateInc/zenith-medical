@@ -62,7 +62,7 @@ export function validateImage(file: File): ValidationError[] {
 
   // Check file format
   const fileExtension = file.name.split('.').pop()?.toLowerCase();
-  if (!fileExtension || !VALIDATION.ALLOWED_FORMATS.includes(fileExtension)) {
+  if (!fileExtension || !VALIDATION.ALLOWED_FORMATS.includes(fileExtension as any)) {
     errors.push({
       field: 'fileFormat',
       message: `File format must be one of: ${VALIDATION.ALLOWED_FORMATS.join(', ')}`,

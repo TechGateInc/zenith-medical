@@ -7,7 +7,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, Users, Grid, List, ChevronDown } from 'lucide-react';
-import TeamMemberCard, { TeamMember } from './TeamMemberCard';
+import TeamMemberCard from './TeamMemberCard';
+import type { TeamMember } from './TeamMemberCard';
 
 interface TeamMemberGridProps {
   members: TeamMember[];

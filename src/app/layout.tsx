@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Suspense } from 'react'
 import './globals.css'
 import SessionProvider from '../lib/auth/session-provider'
 import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Analytics/AnalyticsProvider'
@@ -72,12 +73,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider>
-          <AnalyticsProvider>
-            {children}
-            <ScrollTracker />
-            <TimeTracker />
-            <AnalyticsConsent />
-          </AnalyticsProvider>
+          <Suspense fallback={null}>
+            <AnalyticsProvider>
+              {children}
+              <ScrollTracker />
+              <TimeTracker />
+              <AnalyticsConsent />
+            </AnalyticsProvider>
+          </Suspense>
         </SessionProvider>
       </body>
     </html>

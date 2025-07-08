@@ -128,7 +128,8 @@ const TeamManager: React.FC = () => {
       const result: ApiResponse = await response.json();
 
       if (result.success && result.data) {
-        setTeamMembers(result.data);
+        const teamMembersData = Array.isArray(result.data) ? result.data : [result.data];
+        setTeamMembers(teamMembersData);
         setTotalItems(result.pagination?.total || 0);
       } else {
         throw new Error(result.error || 'Failed to fetch team members');

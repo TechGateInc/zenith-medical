@@ -16,7 +16,7 @@ import {
   Award,
   X
 } from 'lucide-react';
-import { TeamMember } from './TeamMemberCard';
+import type { TeamMember } from './TeamMemberCard';
 
 interface TeamMemberProfileProps {
   member: TeamMember;

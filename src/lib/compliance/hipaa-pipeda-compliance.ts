@@ -552,10 +552,7 @@ export class ComplianceChecker {
       // Check if patient intake records have consent timestamps
       const intakesWithoutConsent = await prisma.patientIntake.count({
         where: {
-          OR: [
-            { consentTimestamp: null },
-            { privacyPolicyAccepted: false }
-          ]
+          privacyPolicyAccepted: false
         }
       })
 

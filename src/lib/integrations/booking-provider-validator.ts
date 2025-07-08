@@ -1,4 +1,4 @@
-import { BookingProvider } from './appointment-booking'
+import type { BookingProvider } from './appointment-booking'
 
 export interface ValidationResult {
   isValid: boolean
