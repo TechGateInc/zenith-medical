@@ -316,7 +316,7 @@ export class AppointmentBookingService {
       bookingUrl.searchParams.set('utm_source', 'zenith_medical')
       bookingUrl.searchParams.set('utm_medium', 'intake_form')
       bookingUrl.searchParams.set('utm_campaign', trackingId)
-
+      
       return {
         success: true,
         appointmentId: trackingId, // Use tracking ID as appointment identifier
@@ -329,8 +329,8 @@ export class AppointmentBookingService {
             name: appointmentData.patientName,
             email: appointmentData.patientEmail,
             phone: appointmentData.patientPhone
-          }
-        }
+      }
+    }
       }
     } catch (error) {
       return {
@@ -346,7 +346,7 @@ export class AppointmentBookingService {
     // NOTE: SimplePractice does NOT provide a public API for creating appointments
     // SimplePractice uses an appointment request widget that practitioners embed on their websites
     // The integration works through their online appointment request system
-    
+
     if (!embedUrl && !subdomain) {
       return {
         success: false,
@@ -402,8 +402,8 @@ export class AppointmentBookingService {
         }
       }
     } catch (error) {
-      return {
-        success: false,
+    return {
+      success: false,
         error: error instanceof Error ? error.message : 'Failed to create SimplePractice booking URL'
       }
     }
