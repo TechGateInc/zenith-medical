@@ -118,11 +118,12 @@ export async function POST(request: NextRequest) {
 }
 
 // Get latest compliance status
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN' || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.adminUser.findUnique({

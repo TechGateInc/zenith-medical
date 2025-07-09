@@ -310,7 +310,6 @@ export class ComplianceChecker {
   // Individual compliance check methods
   private async checkUniqueUserIdentification(): Promise<ComplianceCheckResult> {
     const issues: ComplianceIssue[] = []
-    const recommendations: string[] = []
 
     try {
       // Check for duplicate email addresses in admin users
@@ -486,17 +485,6 @@ export class ComplianceChecker {
     // For now, we'll check if proper audit logging is in place for data modifications
     
     try {
-      const dataModificationLogs = await prisma.auditLog.count({
-        where: {
-          action: {
-            in: ['PATIENT_INTAKE_UPDATED', 'APPOINTMENT_UPDATED', 'ADMIN_USER_UPDATED']
-          },
-          timestamp: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
-          }
-        }
-      })
-
       // If there are data modifications, we should have audit logs
       return {
         compliant: true, // Assume compliant if audit logging is working

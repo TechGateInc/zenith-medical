@@ -5,21 +5,9 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { 
-  Users, 
-  Search, 
-  Filter,
-  Eye,
-  Calendar,
-  Mail,
-  Phone,
-  Clock,
-  ArrowLeft,
-  Download,
-  RefreshCw
-} from 'lucide-react';
+import { ArrowLeft, Users, Search, Filter, Calendar, Download, RefreshCw, Eye, Clock, Mail, Phone } from 'lucide-react';
 
 interface IntakeSubmission {
   id: string;
@@ -42,14 +30,6 @@ export default function PatientIntakePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
-
-  useEffect(() => {
-    fetchIntakeSubmissions();
-  }, []);
-
-  useEffect(() => {
-    filterSubmissions();
-  }, [submissions, searchTerm, statusFilter, dateFilter]);
 
   const fetchIntakeSubmissions = async () => {
     try {
@@ -77,7 +57,7 @@ export default function PatientIntakePage() {
     }
   };
 
-  const filterSubmissions = () => {
+  const filterSubmissions = useCallback(() => {
     let filtered = submissions;
 
     // Search filter
@@ -125,7 +105,15 @@ export default function PatientIntakePage() {
     }
 
     setFilteredSubmissions(filtered);
-  };
+  }, [submissions, searchTerm, statusFilter, dateFilter]);
+
+  useEffect(() => {
+    fetchIntakeSubmissions();
+  }, []);
+
+  useEffect(() => {
+    filterSubmissions();
+  }, [filterSubmissions]);
 
   const getStatusBadge = (status: IntakeSubmission['status']) => {
     const statusConfig = {

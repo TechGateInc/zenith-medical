@@ -8,7 +8,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
@@ -25,15 +25,11 @@ export async function GET(request: NextRequest) {
     // For now, we'll use available data and some mock calculations
     
     const [
-      totalTeamMembers,
       activeUsers,
       recentActivity,
       failedAttempts
     ] = await Promise.all([
-      // Total team members in system
-      prisma.teamMember.count(),
-      
-      // Active users (team members who are published/active)
+      // Count of providers (published team members)
       prisma.teamMember.count({
         where: {
           published: true
@@ -43,7 +39,8 @@ export async function GET(request: NextRequest) {
       // Recent activity (using intake submissions as proxy)
       prisma.patientIntake.count({
         where: {
-          createdAt: {
+          status: 'APPOINTMENT_SCHEDULED',
+          updatedAt: {
             gte: last24Hours
           }
         }

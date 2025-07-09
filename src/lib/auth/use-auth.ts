@@ -13,7 +13,7 @@ export function useAuth() {
 
   const checkPermission = (requiredRole: AdminRole): boolean => {
     if (!user?.role) return false
-    return hasPermission(user.role, requiredRole)
+    return hasPermission(user.role as AdminRole, requiredRole)
   }
 
   const isEditor = user?.role === AdminRole.EDITOR

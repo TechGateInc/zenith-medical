@@ -84,6 +84,7 @@ export default async function About() {
   const displayTeamMembers = teamMembers.length > 0 ? teamMembers : fallbackTeamMembers
 
   // Generate structured data for team members
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const doctorStructuredData = displayTeamMembers.map((member: any) => 
     generateDoctorStructuredData({
       name: member.name,

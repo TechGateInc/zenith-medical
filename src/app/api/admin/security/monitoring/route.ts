@@ -211,21 +211,21 @@ export async function GET(request: NextRequest) {
       alerts,
       metrics: {
         totalSecurityEvents: totalEvents,
-        authenticationMetrics: authMetrics.reduce((acc: any, metric: any) => {
+        authenticationMetrics: authMetrics.reduce((acc: Record<string, number>, metric: { action: string; _count: { action: number } }) => {
           acc[metric.action.toLowerCase()] = metric._count.action
           return acc
         }, {} as Record<string, number>),
-        topFailedLoginIPs: failedLoginsByIP.map((item: any) => ({
-          ip: item.ipAddress,
+        topFailedLoginIPs: failedLoginsByIP.map((item: { ipAddress: string | null; _count: { ipAddress: number } }) => ({
+          ip: item.ipAddress || 'unknown',
           attempts: item._count.ipAddress
         })),
         activeUsers: userActivity.length,
-        topResourceAccess: resourceAccess.map((item: any) => ({
+        topResourceAccess: resourceAccess.map((item: { resource: string; _count: { resource: number } }) => ({
           resource: item.resource,
           accessCount: item._count.resource
         }))
       },
-      events: securityEvents.map((event: any) => ({
+      events: securityEvents.map((event: { id: string; timestamp: Date; action: string; ipAddress: string | null; userAgent: string | null; details: unknown; userId: string | null }) => ({
         id: event.id,
         timestamp: event.timestamp,
         action: event.action,
@@ -340,7 +340,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Real-time security status endpoint
-export async function HEAD(request: NextRequest) {
+export async function HEAD() {
   try {
     const session = await getServerSession(authOptions)
     

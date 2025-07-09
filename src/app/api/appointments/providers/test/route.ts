@@ -15,20 +15,26 @@ const testProviderSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    // Only allow admin users to test providers
-    if (!session?.user?.role || !['SUPER_ADMIN', 'ADMIN'].includes(session.user.role)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const body = await request.json()
-    const { providerType, testConnectivity, testConfiguration } = testProviderSchema.parse(body)
-    
+
+    const body = await request.json();
+    const { providerType, includeConnectivity = true, includeConfiguration = true } = body;
+
+    if (!providerType) {
+      return NextResponse.json(
+        { error: 'Provider type is required' },
+        { status: 400 }
+      );
+    }
+
     // Get all providers or specific provider
     const providers = appointmentBookingService.getAllProviders()
     const providersToTest = providerType 
-      ? providers.filter(p => p.type === providerType)
+      ? providers.filter((p: { type: string }) => p.type === providerType)
       : providers
     
     if (providersToTest.length === 0) {
@@ -38,7 +44,23 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
     
-    const results: ProviderHealthCheck[] = []
+    interface TestResult {
+      provider?: unknown;
+      configurationValid: {
+        isValid: boolean;
+        errors: string[];
+        warnings: string[];
+        suggestions: string[];
+      };
+      connectivityTest: {
+        success: boolean;
+        errorMessage?: string;
+      };
+      lastChecked: Date;
+      overallStatus: string;
+    }
+
+    const results: TestResult[] = []
     
     // Test each provider
     for (const provider of providersToTest) {

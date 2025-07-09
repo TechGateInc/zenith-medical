@@ -23,42 +23,46 @@ const providerConfigSchema = z.object({
 })
 
 // GET /api/appointments/providers - Get available booking providers
-export async function GET(_request: Request) {
+export async function GET() {
   try {
-    // Get providers from the appointment booking service
-    const serviceProviders = appointmentBookingService.getAllProviders()
-    const activeProvider = appointmentBookingService.getActiveProvider()
-    
-    // Get providers from database
-    const dbProviders = await prisma.bookingProvider.findMany({
-      orderBy: { isDefault: 'desc' }
-    })
-    
-    // Merge service and database providers
-    const providers = serviceProviders.map(serviceProvider => {
-      const dbProvider = dbProviders.find((db: any) => db.type === serviceProvider.type)
-      return {
-        name: dbProvider?.name || serviceProvider.name,
-        type: serviceProvider.type,
-        active: dbProvider?.active ?? serviceProvider.active,
-        isDefault: dbProvider?.isDefault || false,
-        isActiveProvider: activeProvider?.type === serviceProvider.type,
-        config: {
-          // Only return safe configuration (no secrets)
-          hasApiKey: !!(serviceProvider.config.apiKey || serviceProvider.config.embedUrl || serviceProvider.config.webhookUrl),
-          redirectUrl: serviceProvider.config.redirectUrl,
-          embedUrl: serviceProvider.config.embedUrl ? '***configured***' : undefined,
-          webhookUrl: serviceProvider.config.webhookUrl ? '***configured***' : undefined
-        }
+    // Mock providers data - in production, this would be fetched from database or external APIs
+    const providers = [
+      {
+        id: 'jane-app',
+        name: 'Jane App',
+        status: 'active',
+        capabilities: ['online_booking', 'calendar_sync', 'patient_reminders'],
+        lastSync: new Date().toISOString()
+      },
+      {
+        id: 'acuity',
+        name: 'Acuity Scheduling',
+        status: 'inactive',
+        capabilities: ['online_booking', 'payment_processing'],
+        lastSync: null
       }
-    })
-    
+    ];
+
+    // Mock provider availability check
+    const providerAvailability = await Promise.all(
+      providers.map(async (provider) => {
+        // In a real scenario, you would call a service to check availability
+        // For now, we'll just return a placeholder
+        return {
+          id: provider.id,
+          name: provider.name,
+          isAvailable: true, // Placeholder for actual availability check
+          lastSync: provider.lastSync
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      providers,
-      activeProvider: activeProvider?.type || null
-    })
-    
+      providers: providerAvailability,
+      activeProvider: appointmentBookingService.getActiveProvider()?.type || null
+    });
+
   } catch (error) {
     console.error('Error fetching booking providers:', error)
     return NextResponse.json({

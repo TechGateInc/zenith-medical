@@ -18,14 +18,14 @@ const systemSettings = {
   language: 'en'
 };
 
-let notificationSettings = {
+const notificationSettings = {
   emailNotifications: true,
   appointmentReminders: true,
   securityAlerts: true,
   maintenanceMode: false
 };
 
-let securitySettings = {
+const securitySettings = {
   sessionTimeout: 30,
   maxLoginAttempts: 5,
   passwordExpiry: 90,
@@ -33,7 +33,7 @@ let securitySettings = {
   ipWhitelist: ''
 };
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
