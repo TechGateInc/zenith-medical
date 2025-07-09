@@ -9,11 +9,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Shield, 
-  Lock,
   AlertTriangle,
   CheckCircle,
   Activity,
-  Eye,
   Download,
   RefreshCw,
   ArrowLeft,
@@ -22,7 +20,6 @@ import {
   Globe,
   Database,
   FileText,
-  Clock
 } from 'lucide-react';
 
 interface SecurityStats {

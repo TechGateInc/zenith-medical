@@ -1,5 +1,20 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '../../lib/prisma'
+
+interface BlogPostForSitemap {
+  slug: string
+  title: string
+  publishedAt: Date | null
+  updatedAt: Date
+  category: {
+    name: string
+  } | null
+  tags: {
+    blogTag: {
+      name: string
+    }
+  }[]
+}
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
@@ -7,7 +22,7 @@ export async function GET() {
   
   try {
     // Fetch published blog posts from database
-    const blogPosts = await prisma.blogPost.findMany({
+    const blogPosts: BlogPostForSitemap[] = await prisma.blogPost.findMany({
       where: { published: true },
       select: {
         slug: true,
@@ -93,6 +108,15 @@ export async function GET() {
     <mobile:mobile/>
   </url>
 
+  <!-- Appointments Page -->
+  <url>
+    <loc>${baseUrl}/appointments</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <mobile:mobile/>
+  </url>
+
   <!-- Blog Listing Page -->
   <url>
     <loc>${baseUrl}/blog</loc>
@@ -103,7 +127,7 @@ export async function GET() {
   </url>
 
   <!-- Individual Blog Posts -->
-  ${blogPosts.map(post => {
+  ${blogPosts.map((post: BlogPostForSitemap) => {
     const publishedDate = post.publishedAt ? post.publishedAt.toISOString().split('T')[0] : post.updatedAt.toISOString().split('T')[0];
     const lastModified = post.updatedAt.toISOString().split('T')[0];
     
@@ -187,6 +211,11 @@ export async function GET() {
   </url>
   <url>
     <loc>${baseUrl}/blog</loc>
+    <lastmod>${currentDate}</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/appointments</loc>
     <lastmod>${currentDate}</lastmod>
     <priority>0.7</priority>
   </url>

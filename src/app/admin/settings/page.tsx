@@ -9,11 +9,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Settings, 
-  User,
   Bell,
   Globe,
   Database,
-  Mail,
   Shield,
   Save,
   RefreshCw,

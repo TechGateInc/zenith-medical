@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
         slug: tag.slug,
         description: tag.description,
         color: tag.color,
-        postCount: tag._count.blogPosts,
+        postCount: (tag as any)._count?.blogPosts || 0,
         createdAt: tag.createdAt,
         updatedAt: tag.updatedAt
       }))

@@ -29,7 +29,7 @@ export default function Header() {
             <Link href="/" className="flex items-center">
               <div className="h-10 w-10 relative mr-3 flex-shrink-0">
                 <Image
-                  src="/images/zenith-medical-logo 1.png"
+                  src="/images/zenith-medical-logo single.png"
                   alt="Zenith Medical Centre Logo"
                   width={40}
                   height={40}

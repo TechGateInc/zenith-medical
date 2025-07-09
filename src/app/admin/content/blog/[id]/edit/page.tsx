@@ -5,6 +5,20 @@ import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '../../../../../../lib/auth/use-auth'
 import BlogPostForm from '../../components/BlogPostForm'
 
+interface BlogCategory {
+  id: string
+  name: string
+  slug: string
+  color?: string
+}
+
+interface BlogTag {
+  id: string
+  name: string
+  slug: string
+  color?: string
+}
+
 interface BlogPost {
   id: string
   title: string
@@ -16,6 +30,8 @@ interface BlogPost {
   publishedAt?: string
   metaTitle?: string
   metaDescription?: string
+  category?: BlogCategory
+  tags: BlogTag[]
   createdAt: string
   updatedAt: string
   createdByUser?: {

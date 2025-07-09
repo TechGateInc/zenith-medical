@@ -24,16 +24,17 @@ export async function GET(request: NextRequest) {
     const endOfToday = new Date(now);
     endOfToday.setHours(23, 59, 59, 999);
 
-    // Get all providers (team members who are providers)
+    // Get all active team members (treating them as potential providers)
     const providers = await prisma.teamMember.findMany({
       where: {
-        isProvider: true
+        published: true
       },
       select: {
         id: true,
         name: true,
-        specialization: true,
-        isActive: true,
+        title: true,
+        specialties: true,
+        published: true,
         email: true,
         phone: true
       },
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
         // Count today's appointments for this provider
         // Since we don't have a direct provider-appointment relationship yet,
         // we'll use a placeholder count based on intake submissions
-        const todayAppointments = await prisma.intakeSubmission.count({
+        const todayAppointments = await prisma.patientIntake.count({
           where: {
             status: 'APPOINTMENT_SCHEDULED',
             updatedAt: {
@@ -62,8 +63,9 @@ export async function GET(request: NextRequest) {
         return {
           id: provider.id,
           name: provider.name,
-          specialization: provider.specialization || 'General Practice',
-          status: provider.isActive ? 'active' : 'inactive',
+          title: provider.title,
+          specialties: provider.specialties || [],
+          status: provider.published ? 'active' : 'inactive',
           email: provider.email,
           phone: provider.phone,
           todayAppointments: Math.floor(todayAppointments / providers.length) // Distribute evenly for now
@@ -94,12 +96,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, specialization, email, phone, isActive = true } = body;
+    const { name, title, specialties = [], email, phone, published = true } = body;
 
     // Validate required fields
-    if (!name || !email) {
+    if (!name || !title) {
       return NextResponse.json(
-        { error: 'Name and email are required' },
+        { error: 'Name and title are required' },
         { status: 400 }
       );
     }
@@ -108,14 +110,14 @@ export async function POST(request: NextRequest) {
     const provider = await prisma.teamMember.create({
       data: {
         name,
-        specialization,
-        email,
-        phone,
-        isActive,
-        isProvider: true,
-        role: 'Healthcare Provider',
-        bio: `${specialization} specialist at Zenith Medical Centre`,
-        imageUrl: null // Will be set later if needed
+        title,
+        specialties: Array.isArray(specialties) ? specialties : [specialties].filter(Boolean),
+        email: email || null,
+        phone: phone || null,
+        published,
+        bio: `${title} at Zenith Medical Centre`,
+        photoUrl: null, // Will be set later if needed
+        orderIndex: 0
       }
     });
 
@@ -124,8 +126,9 @@ export async function POST(request: NextRequest) {
       provider: {
         id: provider.id,
         name: provider.name,
-        specialization: provider.specialization,
-        status: provider.isActive ? 'active' : 'inactive',
+        title: provider.title,
+        specialties: provider.specialties,
+        status: provider.published ? 'active' : 'inactive',
         email: provider.email,
         phone: provider.phone,
         todayAppointments: 0

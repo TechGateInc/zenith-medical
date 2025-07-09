@@ -159,7 +159,7 @@ export default function AppointmentSuccess() {
                   <div>
                     <h4 className="font-semibold text-gray-900">Appointment Reminder</h4>
                     <p className="text-gray-600 text-sm">
-                      We'll send you a reminder 24 hours before your appointment via email and SMS.
+                      We&apos;ll send you a reminder 24 hours before your appointment via email and SMS.
                     </p>
                   </div>
                 </div>

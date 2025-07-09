@@ -360,7 +360,7 @@ export default function Services() {
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Workers' compensation cases</span>
+                      <span className="text-slate-700">Workers&apos; compensation cases</span>
                     </div>
                   </div>
                 </div>

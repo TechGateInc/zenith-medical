@@ -222,7 +222,7 @@ export default function FAQ() {
 
             <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
               <div className="text-center">
-                <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">Can't Find What You're Looking For?</h2>
+                <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">Can&apos;t Find What You&apos;re Looking For?</h2>
                 <p className="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
                   Our healthcare team is here to help! Contact us directly for personalized assistance with any questions about our services.
                 </p>

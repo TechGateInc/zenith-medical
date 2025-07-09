@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useAuth } from '../../../lib/auth/use-auth'
 
 export default function AdminLogin() {
@@ -152,7 +153,7 @@ export default function AdminLogin() {
 
         {/* Back to website link */}
         <div className="text-center mt-6">
-          <a
+          <Link
             href="/"
             className="text-blue-600 hover:text-blue-800 font-medium text-sm inline-flex items-center"
           >
@@ -160,7 +161,7 @@ export default function AdminLogin() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to Website
-          </a>
+          </Link>
         </div>
       </div>
     </div>

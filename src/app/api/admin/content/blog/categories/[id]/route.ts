@@ -10,7 +10,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -19,7 +19,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const category = await prisma.blogCategory.findUnique({
       where: { id },
@@ -68,7 +68,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -77,7 +77,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { name, description, color, orderIndex, published } = body;
 
@@ -177,7 +177,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -186,7 +186,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if category exists
     const existingCategory = await prisma.blogCategory.findUnique({
@@ -209,8 +209,7 @@ export async function DELETE(
     if (existingCategory._count.blogPosts > 0) {
       return NextResponse.json(
         { 
-          error: 'Cannot delete category with associated blog posts. Please reassign or delete the posts first.',
-          postCount: existingCategory._count.blogPosts
+          error: 'Cannot delete category with associated blog posts. Please reassign or delete the posts first.' 
         },
         { status: 400 }
       );

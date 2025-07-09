@@ -29,10 +29,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         patientIntake: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true
+            legalFirstName: true,
+            legalLastName: true,
+            emailAddress: true,
+            phoneNumber: true
           }
         }
       }
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const isAuthorized = session?.user?.role && 
                         ['SUPER_ADMIN', 'ADMIN', 'EDITOR'].includes(session.user.role) ||
                         appointment.patientEmail === requestEmail ||
-                        appointment.patientIntake?.email === requestEmail
+                        appointment.patientIntake?.emailAddress === requestEmail
 
     if (!isAuthorized) {
       return NextResponse.json({

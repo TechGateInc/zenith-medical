@@ -1,14 +1,15 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
+import Layout from '../../components/Layout/Layout'
 
 export const metadata: Metadata = {
-  title: 'Schedule Appointment | Zenith Medical Centre',
-  description: 'Book your medical appointment online with our experienced healthcare team. Easy scheduling for consultations, check-ups, and specialized care.',
-  keywords: 'appointment booking, medical appointment, healthcare scheduling, doctor appointment, family medicine',
+  title: 'Book Appointment | Zenith Medical Centre',
+  description: 'Schedule your appointment at Zenith Medical Centre. Easy online booking for all medical services.',
+  keywords: 'appointment booking, medical appointment, healthcare, Zenith Medical Centre',
   openGraph: {
-    title: 'Schedule Your Medical Appointment',
-    description: 'Book your appointment online with Zenith Medical Centre. Professional healthcare services with convenient online scheduling.',
-    type: 'website'
-  }
+    title: 'Book Appointment | Zenith Medical Centre',
+    description: 'Schedule your appointment at Zenith Medical Centre. Easy online booking for all medical services.',
+    type: 'website',
+  },
 }
 
 export default function AppointmentsLayout({
@@ -16,5 +17,5 @@ export default function AppointmentsLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return <>{children}</>
 } 

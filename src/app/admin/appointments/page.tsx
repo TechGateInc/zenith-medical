@@ -202,7 +202,7 @@ export default function AppointmentsPage() {
               <Calendar className="w-6 h-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Today's Appointments</p>
+              <p className="text-sm font-medium text-gray-500">Today&apos;s Appointments</p>
               <p className="text-2xl font-bold text-gray-900">{stats.todayAppointments}</p>
             </div>
           </div>
@@ -364,7 +364,7 @@ export default function AppointmentsPage() {
                   </div>
                   
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Today's appointments:</span>
+                    <span className="text-gray-600">Today&apos;s appointments:</span>
                     <span className="font-semibold text-gray-900">{provider.todayAppointments}</span>
                   </div>
                 </div>

@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     endOfWeek.setHours(23, 59, 59, 999);
 
     // Note: Since we don't have an appointments table yet, we'll calculate stats
-    // based on intake submissions with appointment status
+    // based on patient intake submissions with appointment status
     const [
       totalProviders,
       todayAppointments,
@@ -42,16 +42,15 @@ export async function GET(request: NextRequest) {
       completedToday,
       cancelledToday
     ] = await Promise.all([
-      // Count of providers (team members who are active providers)
+      // Count of providers (published team members)
       prisma.teamMember.count({
         where: {
-          isProvider: true,
-          isActive: true
+          published: true
         }
       }),
       
-      // Today's appointments (scheduled intake submissions)
-      prisma.intakeSubmission.count({
+      // Today's appointments (scheduled patient intakes)
+      prisma.patientIntake.count({
         where: {
           status: 'APPOINTMENT_SCHEDULED',
           updatedAt: {
@@ -62,14 +61,14 @@ export async function GET(request: NextRequest) {
       }),
       
       // Pending confirmation (reviewed but not scheduled)
-      prisma.intakeSubmission.count({
+      prisma.patientIntake.count({
         where: {
           status: 'REVIEWED'
         }
       }),
       
       // Upcoming this week
-      prisma.intakeSubmission.count({
+      prisma.patientIntake.count({
         where: {
           status: 'APPOINTMENT_SCHEDULED',
           updatedAt: {
@@ -80,7 +79,7 @@ export async function GET(request: NextRequest) {
       }),
       
       // Completed today
-      prisma.intakeSubmission.count({
+      prisma.patientIntake.count({
         where: {
           status: 'COMPLETED',
           updatedAt: {
@@ -91,7 +90,7 @@ export async function GET(request: NextRequest) {
       }),
       
       // Cancelled today
-      prisma.intakeSubmission.count({
+      prisma.patientIntake.count({
         where: {
           status: 'CANCELLED',
           updatedAt: {

@@ -117,7 +117,7 @@ export default function IntakePage() {
                       </li>
                       <li className="flex items-center text-slate-700">
                         <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
-                        You'll receive confirmation after submission
+                        You&apos;ll receive confirmation after submission
                       </li>
                     </ul>
                   </div>

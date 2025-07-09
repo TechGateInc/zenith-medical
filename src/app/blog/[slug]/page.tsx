@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { prisma } from '../../../lib/prisma'
 import Layout from '../../../components/Layout/Layout'
 

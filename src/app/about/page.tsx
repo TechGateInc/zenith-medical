@@ -250,7 +250,7 @@ export default async function About() {
             <div className="max-w-4xl mx-auto">
               <div className="space-y-8 text-lg text-slate-600 leading-relaxed">
                 <p>
-                  At Zenith Medical Centre, we've created a healthcare experience that puts innovation and patient care at the forefront. 
+                  At Zenith Medical Centre, we&apos;ve created a healthcare experience that puts innovation and patient care at the forefront. 
                   Our team of experienced medical professionals combines years of clinical expertise with the latest in medical technology 
                   and evidence-based treatment approaches.
                 </p>

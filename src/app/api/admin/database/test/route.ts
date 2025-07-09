@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         intakeSubmissionCount
       ] = await Promise.all([
         prisma.teamMember.count(),
-        prisma.intakeSubmission.count()
+        prisma.patientIntake.count()
       ]);
 
       return NextResponse.json({
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         responseTime: `${responseTime}ms`,
         databaseInfo: {
           type: 'PostgreSQL', // This would be dynamic based on your database
-          tablesChecked: ['teamMember', 'intakeSubmission'],
+          tablesChecked: ['teamMember', 'patientIntake'],
           recordCounts: {
             teamMembers: teamMemberCount,
             intakeSubmissions: intakeSubmissionCount

@@ -9,7 +9,7 @@ import { authOptions } from '@/lib/auth/config';
 
 // In a real application, these would be stored in a database
 // For now, we'll use in-memory storage (resets on server restart)
-let systemSettings = {
+const systemSettings = {
   siteName: 'Zenith Medical Centre',
   siteDescription: 'Comprehensive healthcare services for the community',
   adminEmail: 'admin@zenithmedical.com',

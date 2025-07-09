@@ -25,25 +25,23 @@ export async function GET(request: NextRequest) {
     // For now, we'll use available data and some mock calculations
     
     const [
-      totalUsers,
+      totalTeamMembers,
       activeUsers,
-      recentLogins,
+      recentActivity,
       failedAttempts
     ] = await Promise.all([
-      // Total users in system (if we have a users table)
-      // For now, we'll count team members and admins
+      // Total team members in system
       prisma.teamMember.count(),
       
-      // Active users (team members who are active)
+      // Active users (team members who are published/active)
       prisma.teamMember.count({
         where: {
-          isActive: true
+          published: true
         }
       }),
       
-      // Recent successful logins (placeholder - would come from audit logs)
-      // Using intake submissions as proxy activity
-      prisma.intakeSubmission.count({
+      // Recent activity (using intake submissions as proxy)
+      prisma.patientIntake.count({
         where: {
           createdAt: {
             gte: last24Hours
@@ -76,7 +74,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       stats: {
-        totalLogins: recentLogins * 8, // Estimate multiple logins per submission
+        totalLogins: recentActivity * 8, // Estimate multiple logins per submission
         failedAttempts,
         activeUsers,
         lastSecurityScan: new Date().toISOString(),

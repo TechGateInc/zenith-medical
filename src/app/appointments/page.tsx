@@ -82,7 +82,6 @@ const APPOINTMENT_TYPES = [
 ];
 
 export default function AppointmentBooking() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const patientIntakeId = searchParams.get('intake');
 
@@ -99,13 +98,22 @@ export default function AppointmentBooking() {
     patientIntakeId: patientIntakeId || undefined
   });
 
-  const [providers, setProviders] = useState<BookingProvider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<BookingProvider | null>(null);
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingResult, setBookingResult] = useState<any>(null);
+  const [bookingResult, setBookingResult] = useState<{
+    success: boolean;
+    appointment?: {
+      id: string;
+      appointmentDate: string;
+      appointmentTime: string;
+      appointmentType: string;
+      patientName: string;
+      provider: string;
+      status: string;
+    };
+    error?: string;
+  } | null>(null);
 
   // Fetch available booking providers
   useEffect(() => {
@@ -115,9 +123,9 @@ export default function AppointmentBooking() {
         const data = await response.json();
         
         if (data.success) {
-          setProviders(data.providers.filter((p: BookingProvider) => p.active));
+          const activeProviders = data.providers.filter((p: BookingProvider) => p.active);
           // Auto-select default provider
-          const defaultProvider = data.providers.find((p: BookingProvider) => p.isDefault && p.active);
+          const defaultProvider = activeProviders.find((p: BookingProvider) => p.isDefault && p.active);
           if (defaultProvider) {
             setSelectedProvider(defaultProvider);
             setAppointmentData(prev => ({ ...prev, preferredProvider: defaultProvider.type }));
@@ -202,7 +210,6 @@ export default function AppointmentBooking() {
       const result = await response.json();
 
       if (result.success) {
-        setBookingSuccess(true);
         setBookingResult(result);
         setCurrentStep(4);
       } else {

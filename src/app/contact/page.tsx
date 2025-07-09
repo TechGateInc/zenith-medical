@@ -162,7 +162,7 @@ export default function Contact() {
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4 leading-tight">Get in Touch</h2>
                 <p className="text-lg text-slate-600 leading-relaxed">
-                  Send us a message and we'll get back to you as soon as possible
+                  Send us a message and we&apos;ll get back to you as soon as possible
                 </p>
               </div>
               

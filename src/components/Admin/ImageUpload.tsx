@@ -65,7 +65,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Validate file
-  const validateFile = (file: File): ValidationError[] => {
+  const validateFile = useCallback((file: File): ValidationError[] => {
     const errors: ValidationError[] = [];
 
     // Check file size
@@ -88,98 +88,93 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
 
     return errors;
-  };
+  }, [maxFileSize, allowedFormats]);
 
   // Handle file upload
-  const handleUpload = async (file: File) => {
-    // Reset states
-    setError(null);
-    setSuccess(false);
-    setUploadProgress(0);
-    setIsUploading(true);
-
-    // Validate file
+  const handleUpload = useCallback(async (file: File) => {
+    // Validate file first
     const validationErrors = validateFile(file);
     if (validationErrors.length > 0) {
-      const errorMessage = validationErrors.map(e => e.message).join(', ');
-      setError(errorMessage);
-      setIsUploading(false);
-      onUploadError?.(errorMessage);
+      setError(validationErrors[0].message);
       return;
     }
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setPreviewUrl(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    setIsUploading(true);
+    setError(null);
+    setUploadProgress(0);
 
     try {
-      // Prepare form data
       const formData = new FormData();
       formData.append('file', file);
       formData.append('uploadType', uploadType);
       
-      if (entityId) {
-        formData.append('entityId', entityId);
-      }
-      
-      if (imageType) {
-        formData.append('imageType', imageType);
-      }
-      
-      if (category) {
-        formData.append('category', category);
-      }
+      if (entityId) formData.append('entityId', entityId);
+      if (imageType) formData.append('imageType', imageType);
+      if (category) formData.append('category', category);
 
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          return prev + Math.random() * 10;
-        });
-      }, 200);
+      const xhr = new XMLHttpRequest();
 
-      // Upload to API
-      const response = await fetch('/api/uploads/images', {
-        method: 'POST',
-        body: formData
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(progress);
+        }
       });
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
+      // Handle completion
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          try {
+            const result = JSON.parse(xhr.responseText);
+            if (result.success) {
+              setPreviewUrl(result.data.secure_url);
+              setSuccess(true);
+              onUploadSuccess(result.data);
+            } else {
+              throw new Error(result.error || 'Upload failed');
+            }
+          } catch (parseError) {
+            console.error('Parse error:', parseError);
+            setError('Failed to process upload response');
+            onUploadError?.('Failed to process upload response');
+          }
+        } else {
+          const errorMessage = `Upload failed with status: ${xhr.status}`;
+          setError(errorMessage);
+          onUploadError?.(errorMessage);
+        }
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Upload failed');
-      }
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        const errorMessage = 'Network error during upload';
+        setError(errorMessage);
+        onUploadError?.(errorMessage);
+      });
 
-      const result = await response.json();
-      
-      if (result.success) {
-        setSuccess(true);
-        onUploadSuccess(result.data);
-        
-        // Reset success state after 3 seconds
-        setTimeout(() => setSuccess(false), 3000);
-      } else {
-        throw new Error(result.error || 'Upload failed');
-      }
+      // Handle timeout
+      xhr.addEventListener('timeout', () => {
+        const errorMessage = 'Upload timeout';
+        setError(errorMessage);
+        onUploadError?.(errorMessage);
+      });
 
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Upload failed';
+      // Configure and send request
+      xhr.timeout = 60000; // 60 second timeout
+      xhr.open('POST', '/api/uploads/images');
+      xhr.send(formData);
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
       setError(errorMessage);
       onUploadError?.(errorMessage);
-      setPreviewUrl(currentImageUrl || null);
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
     }
-  };
+  }, [uploadType, entityId, imageType, category, onUploadSuccess, onUploadError, validateFile]);
 
   // Handle file input change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -220,7 +215,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     } else {
       setError('Please drop an image file');
     }
-  }, []);
+  }, [handleUpload]);
 
   // Handle remove image
   const handleRemoveImage = () => {

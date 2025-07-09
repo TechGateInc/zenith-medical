@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     if (dateFilter && dateFilter !== 'all') {
       const now = new Date();
-      let startDate = new Date();
+      const startDate = new Date();
 
       switch (dateFilter) {
         case 'today':
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 
     // Get submissions with pagination
     const [submissions, totalCount] = await Promise.all([
-      prisma.intakeSubmission.findMany({
+      prisma.patientIntake.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
           updatedAt: true
         }
       }),
-      prisma.intakeSubmission.count({ where })
+      prisma.patientIntake.count({ where })
     ]);
 
     return NextResponse.json({

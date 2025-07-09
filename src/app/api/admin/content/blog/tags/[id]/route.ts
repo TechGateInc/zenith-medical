@@ -1,6 +1,5 @@
 /**
  * Admin Blog Tag API - Individual Tag Operations
- * Handles individual tag CRUD operations
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,7 +9,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -19,7 +18,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const tag = await prisma.blogTag.findUnique({
       where: { id },
@@ -70,7 +69,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -79,7 +78,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { name, description, color } = body;
 
@@ -173,7 +172,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -182,14 +181,16 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if tag exists
     const existingTag = await prisma.blogTag.findUnique({
       where: { id },
       include: {
         _count: {
-          select: { blogPosts: true }
+          select: { 
+            blogPosts: true 
+          }
         }
       }
     });
@@ -205,8 +206,7 @@ export async function DELETE(
     if (existingTag._count.blogPosts > 0) {
       return NextResponse.json(
         { 
-          error: 'Cannot delete tag with associated blog posts. Please remove the tag from posts first.',
-          postCount: existingTag._count.blogPosts
+          error: 'Cannot delete tag with associated blog posts. Please remove the tag from posts first.' 
         },
         { status: 400 }
       );

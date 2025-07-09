@@ -133,7 +133,7 @@ export default function AdminDashboard() {
           Admin Dashboard
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Welcome back, {user?.name}</h1>
-        <p className="text-gray-600">Here's what's happening at Zenith Medical Centre today</p>
+        <p className="text-gray-600">Here&apos;s what&apos;s happening at Zenith Medical Centre today</p>
       </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
