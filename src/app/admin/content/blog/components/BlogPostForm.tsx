@@ -4,6 +4,20 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+interface BlogCategory {
+  id: string
+  name: string
+  slug: string
+  color?: string
+}
+
+interface BlogTag {
+  id: string
+  name: string
+  slug: string
+  color?: string
+}
+
 interface BlogPost {
   id: string
   title: string
@@ -15,6 +29,8 @@ interface BlogPost {
   publishedAt?: string
   metaTitle?: string
   metaDescription?: string
+  category?: BlogCategory
+  tags: BlogTag[]
   createdAt: string
   updatedAt: string
 }
@@ -34,11 +50,46 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
     featured: false,
     published: false,
     metaTitle: '',
-    metaDescription: ''
+    metaDescription: '',
+    categoryId: '',
+    tagIds: [] as string[]
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [previewMode, setPreviewMode] = useState(false)
+  const [categories, setCategories] = useState<BlogCategory[]>([])
+  const [tags, setTags] = useState<BlogTag[]>([])
+  const [loadingCategories, setLoadingCategories] = useState(true)
+  const [loadingTags, setLoadingTags] = useState(true)
+
+  // Fetch categories and tags
+  useEffect(() => {
+    const fetchCategoriesAndTags = async () => {
+      try {
+        const [categoriesRes, tagsRes] = await Promise.all([
+          fetch('/api/admin/content/blog/categories?published=true', { credentials: 'include' }),
+          fetch('/api/admin/content/blog/tags', { credentials: 'include' })
+        ]);
+
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          setCategories(categoriesData.categories || []);
+        }
+
+        if (tagsRes.ok) {
+          const tagsData = await tagsRes.json();
+          setTags(tagsData.tags || []);
+        }
+      } catch (error) {
+        console.error('Error fetching categories and tags:', error);
+      } finally {
+        setLoadingCategories(false);
+        setLoadingTags(false);
+      }
+    };
+
+    fetchCategoriesAndTags();
+  }, []);
 
   // Initialize form data
   useEffect(() => {
@@ -51,7 +102,9 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
         featured: initialData.featured,
         published: initialData.published,
         metaTitle: initialData.metaTitle || '',
-        metaDescription: initialData.metaDescription || ''
+        metaDescription: initialData.metaDescription || '',
+        categoryId: initialData.category?.id || '',
+        tagIds: initialData.tags?.map(tag => tag.id) || []
       })
     }
   }, [mode, initialData])
@@ -104,6 +157,8 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
         credentials: 'include',
         body: JSON.stringify({
           ...formData,
+          categoryId: formData.categoryId || null,
+          tagIds: formData.tagIds,
           publishedAt: formData.published ? new Date().toISOString() : null
         })
       })
@@ -342,6 +397,119 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
                       {formData.metaDescription.length}/160 characters
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* Categories & Tags */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Categories & Tags</h3>
+                
+                <div className="space-y-4">
+                  {/* Category Selection */}
+                  <div>
+                    <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                      Category
+                    </label>
+                    {loadingCategories ? (
+                      <div className="text-sm text-gray-500">Loading categories...</div>
+                    ) : (
+                      <select
+                        id="category"
+                        value={formData.categoryId}
+                        onChange={(e) => handleInputChange('categoryId', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">No category</option>
+                        {categories.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+
+                  {/* Tag Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tags
+                    </label>
+                    {loadingTags ? (
+                      <div className="text-sm text-gray-500">Loading tags...</div>
+                    ) : (
+                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                        {tags.map((tag) => (
+                          <div key={tag.id} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`tag-${tag.id}`}
+                              checked={formData.tagIds.includes(tag.id)}
+                              onChange={(e) => {
+                                const newTagIds = e.target.checked
+                                  ? [...formData.tagIds, tag.id]
+                                  : formData.tagIds.filter(id => id !== tag.id);
+                                handleInputChange('tagIds', newTagIds);
+                              }}
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            />
+                            <label htmlFor={`tag-${tag.id}`} className="ml-2 text-sm text-gray-700 flex-1">
+                              {tag.name}
+                              {tag.color && (
+                                <span 
+                                  className="inline-block w-3 h-3 rounded-full ml-2"
+                                  style={{ backgroundColor: tag.color }}
+                                />
+                              )}
+                            </label>
+                          </div>
+                        ))}
+                        {tags.length === 0 && (
+                          <p className="text-sm text-gray-500">No tags available</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Selected Tags Display */}
+                  {formData.tagIds.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Selected Tags ({formData.tagIds.length})
+                      </label>
+                      <div className="flex flex-wrap gap-1">
+                        {formData.tagIds.map(tagId => {
+                          const tag = tags.find(t => t.id === tagId);
+                          if (!tag) return null;
+                          return (
+                            <span
+                              key={tagId}
+                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                              style={tag.color ? { 
+                                backgroundColor: tag.color + '20', 
+                                color: tag.color,
+                                borderColor: tag.color + '40'
+                              } : {}}
+                            >
+                              {tag.name}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newTagIds = formData.tagIds.filter(id => id !== tagId);
+                                  handleInputChange('tagIds', newTagIds);
+                                }}
+                                className="ml-1 h-3 w-3 rounded-full inline-flex items-center justify-center hover:bg-current hover:bg-opacity-20"
+                              >
+                                <span className="sr-only">Remove {tag.name}</span>
+                                <svg className="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                  <path strokeLinecap="round" strokeWidth="1.5" d="m1 1 6 6m0-6-6 6" />
+                                </svg>
+                              </button>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

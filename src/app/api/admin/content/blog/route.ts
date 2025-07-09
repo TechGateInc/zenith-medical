@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get blog posts
+    // Get blog posts with categories and tags
     const posts = await prisma.blogPost.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
@@ -56,6 +56,26 @@ export async function GET(request: NextRequest) {
         featured: true,
         published: true,
         publishedAt: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            color: true
+          }
+        },
+        tags: {
+          select: {
+            blogTag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true
+              }
+            }
+          }
+        },
         createdAt: true,
         updatedAt: true,
         createdBy: true
@@ -74,7 +94,13 @@ export async function GET(request: NextRequest) {
       userAgent: request.headers.get('user-agent') || 'unknown'
     })
 
-    return NextResponse.json({ posts })
+    // Transform posts to flatten tag structure
+    const transformedPosts = posts.map(post => ({
+      ...post,
+      tags: post.tags.map(tag => tag.blogTag)
+    }));
+
+    return NextResponse.json({ posts: transformedPosts })
 
   } catch (error) {
     console.error('Blog posts fetch error:', error)
@@ -113,7 +139,9 @@ export async function POST(request: NextRequest) {
       featured = false,
       published = false,
       metaTitle,
-      metaDescription
+      metaDescription,
+      categoryId,
+      tagIds = []
     } = body
 
     // Basic validation
@@ -146,7 +174,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create blog post
+    // Create blog post with category and tags
     const post = await prisma.blogPost.create({
       data: {
         title,
@@ -158,7 +186,35 @@ export async function POST(request: NextRequest) {
         publishedAt: published ? new Date() : null,
         metaTitle,
         metaDescription,
-        createdBy: user.id
+        categoryId: categoryId || null,
+        createdBy: user.id,
+        tags: tagIds && tagIds.length > 0 ? {
+          create: tagIds.map((tagId: string) => ({
+            blogTagId: tagId
+          }))
+        } : undefined
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            color: true
+          }
+        },
+        tags: {
+          select: {
+            blogTag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true
+              }
+            }
+          }
+        }
       }
     })
 
@@ -180,7 +236,13 @@ export async function POST(request: NextRequest) {
       userAgent: request.headers.get('user-agent') || 'unknown'
     })
 
-    return NextResponse.json({ post }, { status: 201 })
+    // Transform response to flatten tag structure
+    const transformedPost = {
+      ...post,
+      tags: post.tags.map(tag => tag.blogTag)
+    };
+
+    return NextResponse.json({ post: transformedPost }, { status: 201 })
 
   } catch (error) {
     console.error('Blog post creation error:', error)

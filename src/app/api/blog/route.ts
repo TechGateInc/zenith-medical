@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const featured = searchParams.get('featured') === 'true'
 
-    // Get published blog posts
+    // Get published blog posts with categories and tags
     const posts = await prisma.blogPost.findMany({
       where: {
         published: true,
@@ -24,6 +24,26 @@ export async function GET(request: NextRequest) {
         publishedAt: true,
         metaTitle: true,
         metaDescription: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            color: true
+          }
+        },
+        tags: {
+          select: {
+            blogTag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true
+              }
+            }
+          }
+        },
         createdBy: true
       }
     })
@@ -56,6 +76,8 @@ export async function GET(request: NextRequest) {
           publishedAt: post.publishedAt,
           metaTitle: post.metaTitle,
           metaDescription: post.metaDescription,
+          category: post.category,
+          tags: post.tags.map(tag => tag.blogTag),
           author: authorName
         }
       })

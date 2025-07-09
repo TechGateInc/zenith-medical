@@ -1,22 +1,38 @@
 import { NextResponse } from 'next/server'
+import { prisma } from '../../../lib/prisma'
 
-export function GET() {
+export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
   const currentDate = new Date().toISOString().split('T')[0]
   
-  // Sample blog posts - in a real app, this would come from a database
-  const blogPosts = [
-    'understanding-annual-physical-exams',
-    'managing-chronic-conditions-effectively',
-    'mental-health-awareness-breaking-stigma',
-    'flu-season-preparation-vaccination-tips',
-    'womens-health-essential-screenings',
-    'pediatric-care-developmental-milestones',
-    'healthy-aging-tips-for-seniors',
-    'nutrition-guidelines-heart-healthy-diet'
-  ]
+  try {
+    // Fetch published blog posts from database
+    const blogPosts = await prisma.blogPost.findMany({
+      where: { published: true },
+      select: {
+        slug: true,
+        title: true,
+        publishedAt: true,
+        updatedAt: true,
+        category: {
+          select: {
+            name: true
+          }
+        },
+        tags: {
+          select: {
+            blogTag: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: { publishedAt: 'desc' }
+    });
 
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -68,6 +84,15 @@ export function GET() {
     <mobile:mobile/>
   </url>
 
+  <!-- Patient Intake Page -->
+  <url>
+    <loc>${baseUrl}/intake</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <mobile:mobile/>
+  </url>
+
   <!-- Blog Listing Page -->
   <url>
     <loc>${baseUrl}/blog</loc>
@@ -78,33 +103,100 @@ export function GET() {
   </url>
 
   <!-- Individual Blog Posts -->
-  ${blogPosts.map(slug => `
+  ${blogPosts.map(post => {
+    const publishedDate = post.publishedAt ? post.publishedAt.toISOString().split('T')[0] : post.updatedAt.toISOString().split('T')[0];
+    const lastModified = post.updatedAt.toISOString().split('T')[0];
+    
+    // Create keywords from category and tags
+    const keywords = [
+      'health',
+      'medical',
+      'healthcare',
+      'family medicine',
+      'Zenith Medical Centre',
+      ...(post.category ? [post.category.name] : []),
+      ...post.tags.map(tag => tag.blogTag.name)
+    ].join(', ');
+
+    // Check if published within last 2 days for news consideration
+    const isRecentNews = post.publishedAt && 
+      (new Date().getTime() - new Date(post.publishedAt).getTime()) < (2 * 24 * 60 * 60 * 1000);
+
+    return `
   <url>
-    <loc>${baseUrl}/blog/${slug}</loc>
-    <lastmod>2024-01-15</lastmod>
+    <loc>${baseUrl}/blog/${post.slug}</loc>
+    <lastmod>${lastModified}</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <mobile:mobile/>
-    <news:news>
+    ${isRecentNews ? `<news:news>
       <news:publication>
         <news:name>Zenith Medical Centre Health Blog</news:name>
         <news:language>en</news:language>
       </news:publication>
-      <news:publication_date>2024-01-15</news:publication_date>
-      <news:title>${slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</news:title>
-      <news:keywords>health, medical, healthcare, family medicine</news:keywords>
-    </news:news>
-  </url>`).join('')}
+      <news:publication_date>${publishedDate}</news:publication_date>
+      <news:title>${post.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')}</news:title>
+      <news:keywords>${keywords}</news:keywords>
+    </news:news>` : ''}
+  </url>`;
+  }).join('')}
 
-  <!-- Additional important medical pages would go here -->
-  <!-- Patient intake would be excluded as it's private -->
+  <!-- Additional Medical Pages -->
+  <!-- Patient intake success page is excluded as it's a result page -->
+  <!-- Admin pages are excluded as they're private -->
 
-</urlset>`
+</urlset>`;
 
-  return new NextResponse(sitemap, {
-    headers: {
-      'Content-Type': 'application/xml',
-      'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
-    },
-  })
+    return new NextResponse(sitemap, {
+      headers: {
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=43200', // Cache for 24 hours, serve stale for 12 hours while revalidating
+      },
+    });
+
+  } catch (error) {
+    console.error('Error generating sitemap:', error);
+    
+    // Fallback sitemap with static pages only
+    const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${currentDate}</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/about</loc>
+    <lastmod>${currentDate}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/services</loc>
+    <lastmod>${currentDate}</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/contact</loc>
+    <lastmod>${currentDate}</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/faq</loc>
+    <lastmod>${currentDate}</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/blog</loc>
+    <lastmod>${currentDate}</lastmod>
+    <priority>0.7</priority>
+  </url>
+</urlset>`;
+
+    return new NextResponse(fallbackSitemap, {
+      headers: {
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=3600', // Shorter cache for fallback
+      },
+    });
+  }
 } 

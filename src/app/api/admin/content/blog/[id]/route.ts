@@ -28,9 +28,31 @@ export async function GET(
 
     const { id: postId } = await params
 
-    // Get blog post
+    // Get blog post with categories and tags
     const post = await prisma.blogPost.findUnique({
-      where: { id: postId }
+      where: { id: postId },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            color: true
+          }
+        },
+        tags: {
+          select: {
+            blogTag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true
+              }
+            }
+          }
+        }
+      }
     })
 
     if (!post) {
@@ -53,7 +75,13 @@ export async function GET(
       userAgent: request.headers.get('user-agent') || 'unknown'
     })
 
-    return NextResponse.json({ post })
+    // Transform response to flatten tag structure
+    const transformedPost = {
+      ...post,
+      tags: post.tags.map(tag => tag.blogTag)
+    };
+
+    return NextResponse.json({ post: transformedPost })
 
   } catch (error) {
     console.error('Blog post fetch error:', error)
@@ -134,6 +162,7 @@ export async function PATCH(
     if (body.featured !== undefined) updateData.featured = body.featured
     if (body.metaTitle !== undefined) updateData.metaTitle = body.metaTitle
     if (body.metaDescription !== undefined) updateData.metaDescription = body.metaDescription
+    if (body.categoryId !== undefined) updateData.categoryId = body.categoryId || null
 
     // Handle published status
     if (body.published !== undefined) {
@@ -152,10 +181,50 @@ export async function PATCH(
       updateData.publishedAt = body.publishedAt ? new Date(body.publishedAt) : null
     }
 
+    // Handle tag updates separately
+    if (body.tagIds !== undefined) {
+      // Remove existing tags
+      await prisma.blogPostTag.deleteMany({
+        where: { blogPostId: postId }
+      });
+
+      // Add new tags if provided
+      if (body.tagIds && body.tagIds.length > 0) {
+        await prisma.blogPostTag.createMany({
+          data: body.tagIds.map((tagId: string) => ({
+            blogPostId: postId,
+            blogTagId: tagId
+          }))
+        });
+      }
+    }
+
     // Update the post
     const updatedPost = await prisma.blogPost.update({
       where: { id: postId },
-      data: updateData
+      data: updateData,
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            color: true
+          }
+        },
+        tags: {
+          select: {
+            blogTag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true
+              }
+            }
+          }
+        }
+      }
     })
 
     // Log update
@@ -177,7 +246,13 @@ export async function PATCH(
       userAgent: request.headers.get('user-agent') || 'unknown'
     })
 
-    return NextResponse.json({ post: updatedPost })
+    // Transform response to flatten tag structure
+    const transformedPost = {
+      ...updatedPost,
+      tags: updatedPost.tags.map(tag => tag.blogTag)
+    };
+
+    return NextResponse.json({ post: transformedPost })
 
   } catch (error) {
     console.error('Blog post update error:', error)

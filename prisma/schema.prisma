@@ -92,12 +92,70 @@ model BlogPost {
   metaTitle       String?
   metaDescription String?
   
+  // Categories and Tags
+  categoryId      String?
+  category        BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags            BlogPostTag[]
+  
   // Audit
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   createdBy   String
   
   @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  description String?
+  color       String?     // Hex color for UI display
+  orderIndex  Int         @default(0)
+  published   Boolean     @default(true)
+  
+  // Relations
+  blogPosts   BlogPost[]
+  
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("blog_categories")
+}
+
+model BlogTag {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  description String?
+  color       String?     // Hex color for UI display
+  
+  // Relations
+  blogPosts   BlogPostTag[]
+  
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("blog_tags")
+}
+
+// Junction table for many-to-many relationship between BlogPost and BlogTag
+model BlogPostTag {
+  id         String   @id @default(cuid())
+  blogPostId String
+  blogTagId  String
+  
+  // Relations
+  blogPost   BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  blogTag    BlogTag  @relation(fields: [blogTagId], references: [id], onDelete: Cascade)
+  
+  // Audit
+  createdAt  DateTime @default(now())
+  
+  @@unique([blogPostId, blogTagId])
+  @@map("blog_post_tags")
 }
 
 model FAQ {
