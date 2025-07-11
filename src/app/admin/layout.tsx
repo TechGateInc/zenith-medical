@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import AdminSidebar from '@/components/Admin/AdminSidebar'
 import { SidebarProvider, useSidebar } from '@/lib/contexts/SidebarContext'
 import { usePathname } from 'next/navigation'
+import ToastProvider from '@/components/UI/ToastProvider'
 
 // Note: Since this is now a client component, metadata is handled at page level
 function AdminLayoutContent({
@@ -51,6 +52,7 @@ export default function AdminLayout({
       <AdminLayoutContent>
         {children}
       </AdminLayoutContent>
+      <ToastProvider />
     </SidebarProvider>
   )
 } 

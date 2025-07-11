@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import Modal from '../UI/Modal';
+import toast from 'react-hot-toast';
 
 // Types
 interface TeamMember {
@@ -73,8 +74,6 @@ const TeamManager: React.FC = () => {
   // State management
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   
   // Form state
   const [showForm, setShowForm] = useState(false);
@@ -115,7 +114,6 @@ const TeamManager: React.FC = () => {
   const fetchTeamMembers = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
 
       const params = new URLSearchParams({
         orderBy: sortBy,
@@ -143,7 +141,7 @@ const TeamManager: React.FC = () => {
         throw new Error(result.error || 'Failed to fetch team members');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch team members');
+      toast.error(err instanceof Error ? err.message : 'Failed to fetch team members');
     } finally {
       setLoading(false);
     }
@@ -158,7 +156,6 @@ const TeamManager: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormLoading(true);
-    setError(null);
 
     try {
       const url = editingMember 
@@ -178,7 +175,7 @@ const TeamManager: React.FC = () => {
       const result: ApiResponse = await response.json();
 
       if (result.success) {
-        setSuccess(editingMember ? 'Team member updated successfully' : 'Team member created successfully');
+        toast.success(editingMember ? 'Team member updated successfully' : 'Team member created successfully');
         setShowForm(false);
         setEditingMember(null);
         resetForm();
@@ -187,7 +184,7 @@ const TeamManager: React.FC = () => {
         throw new Error(result.error || 'Operation failed');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Operation failed');
+      toast.error(err instanceof Error ? err.message : 'Operation failed');
     } finally {
       setFormLoading(false);
     }
@@ -204,7 +201,6 @@ const TeamManager: React.FC = () => {
     if (!deleteTarget) return;
 
     setDeleteLoading(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/admin/content/team/${deleteTarget.id}`, {
@@ -214,7 +210,7 @@ const TeamManager: React.FC = () => {
       const result: ApiResponse = await response.json();
 
       if (result.success) {
-        setSuccess('Team member deleted successfully');
+        toast.success('Team member deleted successfully');
         setShowDeleteModal(false);
         setDeleteTarget(null);
         await fetchTeamMembers();
@@ -222,7 +218,7 @@ const TeamManager: React.FC = () => {
         throw new Error(result.error || 'Failed to delete team member');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete team member');
+      toast.error(err instanceof Error ? err.message : 'Failed to delete team member');
     } finally {
       setDeleteLoading(false);
     }
@@ -334,24 +330,20 @@ const TeamManager: React.FC = () => {
       const result: ApiResponse = await response.json();
 
       if (result.success) {
-        setSuccess('Team member order updated successfully');
+        toast.success('Team member order updated successfully');
         await fetchTeamMembers();
       } else {
         throw new Error(result.error || 'Failed to update order');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update order');
+      toast.error(err instanceof Error ? err.message : 'Failed to update order');
     } finally {
       setDraggedItem(null);
       setIsReordering(false);
     }
   };
 
-  // Clear messages
-  const clearMessages = () => {
-    setError(null);
-    setSuccess(null);
-  };
+
 
   // Calculate pagination
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -427,30 +419,7 @@ const TeamManager: React.FC = () => {
         </div>
       </div>
 
-      {/* Messages */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-red-700">
-            <AlertCircle size={16} />
-            {error}
-          </div>
-          <button onClick={clearMessages} className="text-red-500 hover:text-red-700">
-            <X size={16} />
-          </button>
-        </div>
-      )}
 
-      {success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-green-700">
-            <CheckCircle size={16} />
-            {success}
-          </div>
-          <button onClick={clearMessages} className="text-green-500 hover:text-green-700">
-            <X size={16} />
-          </button>
-        </div>
-      )}
 
       {/* Team Members List */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
