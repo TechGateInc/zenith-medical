@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useAuth } from '../../../lib/auth/use-auth'
+import { useAuth } from '@/lib/auth/use-auth'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -47,7 +47,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8">
           {/* Header */}
