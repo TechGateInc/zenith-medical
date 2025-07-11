@@ -44,13 +44,13 @@
   - [x] 3.6 Create utility function to mark submissions as viewed when accessed
   - [x] 3.7 Add database migration for new `viewedAt` field in PatientIntake model
 
-- [ ] 4.0 Fix Patient Intake API Error
-  - [ ] 4.1 Debug and fix the API fetch error in intake page by checking network requests and server logs
-  - [ ] 4.2 Add proper error handling and user feedback with error boundaries and retry buttons
-  - [ ] 4.3 Implement retry mechanism for failed requests with exponential backoff
-  - [ ] 4.4 Add loading states and error boundaries with proper fallback UI
-  - [ ] 4.5 Verify API route authentication and authorization is working correctly
-  - [ ] 4.6 Add proper CORS headers and request validation to API endpoint
+- [x] 4.0 Fix Patient Intake API Error
+  - [x] 4.1 Debug and fix the API fetch error in intake page by checking network requests and server logs
+  - [x] 4.2 Add proper error handling and user feedback with error boundaries and retry buttons
+  - [x] 4.3 Implement retry mechanism for failed requests with exponential backoff
+  - [x] 4.4 Add loading states and error boundaries with proper fallback UI
+  - [x] 4.5 Verify API route authentication and authorization is working correctly
+  - [x] 4.6 Add proper CORS headers and request validation to API endpoint
 
 - [ ] 5.0 Enhance User Experience
   - [ ] 5.1 Add toast notifications for successful operations using a toast library or custom component

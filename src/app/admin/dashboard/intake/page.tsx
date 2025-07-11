@@ -27,23 +27,45 @@ export default function PatientIntakePage() {
   const [filteredSubmissions, setFilteredSubmissions] = useState<IntakeSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
 
-  const fetchIntakeSubmissions = async () => {
+  const fetchIntakeSubmissions = async (isRetry: boolean = false) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!isRetry) {
+        setLoading(true);
+        setError(null);
+        setRetryCount(0);
+      }
       
       const response = await fetch('/api/admin/intake');
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch intake submissions');
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please log in again.');
+        } else if (response.status === 403) {
+          throw new Error('Access denied. You do not have permission to view intake submissions.');
+        } else if (response.status >= 500) {
+          // Retry with exponential backoff for server errors
+          if (retryCount < 3) {
+            const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+            setRetryCount(prev => prev + 1);
+            setTimeout(() => fetchIntakeSubmissions(true), delay);
+            return;
+          }
+          throw new Error('Server error. Please try again later.');
+        } else {
+          throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch intake submissions`);
+        }
       }
       
       const data = await response.json();
       if (data.success) {
         setSubmissions(data.submissions || []);
+        setRetryCount(0); // Reset retry count on success
       } else {
         throw new Error(data.error || 'Failed to load submissions');
       }
@@ -53,7 +75,9 @@ export default function PatientIntakePage() {
       // Clear submissions on error
       setSubmissions([]);
     } finally {
-      setLoading(false);
+      if (!isRetry) {
+        setLoading(false);
+      }
     }
   };
 
@@ -138,6 +162,10 @@ export default function PatientIntakePage() {
     console.log('Export submissions');
   };
 
+  const handleRetry = () => {
+    fetchIntakeSubmissions(false);
+  };
+
   return (
     <div className="p-6 lg:p-8">
       {/* Header */}
@@ -172,11 +200,12 @@ export default function PatientIntakePage() {
               Export
             </button>
             <button
-              onClick={fetchIntakeSubmissions}
-              className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors"
+              onClick={handleRetry}
+              disabled={loading}
+              className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              {loading ? 'Refreshing...' : 'Refresh'}
             </button>
           </div>
         </div>
@@ -253,12 +282,27 @@ export default function PatientIntakePage() {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Submissions</h3>
             <p className="text-gray-600 mb-4">{error}</p>
-            <button
-              onClick={fetchIntakeSubmissions}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-medium transition-colors"
-            >
-              Try Again
-            </button>
+            {retryCount > 0 && (
+              <p className="text-sm text-gray-500 mb-4">
+                Retry attempt {retryCount} of 3...
+              </p>
+            )}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={handleRetry}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-medium transition-colors"
+              >
+                Try Again
+              </button>
+              {error.includes('Authentication required') && (
+                <button
+                  onClick={() => window.location.href = '/api/auth/signin'}
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl font-medium transition-colors"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
         ) : filteredSubmissions.length === 0 ? (
           <div className="p-12 text-center">
