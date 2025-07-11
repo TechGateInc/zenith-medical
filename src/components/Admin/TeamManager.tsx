@@ -431,10 +431,83 @@ const TeamManager: React.FC = () => {
       {/* Team Members List */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         {loading ? (
-          <div className="p-8 text-center">
-            <Loader2 className="mx-auto mb-4 animate-spin" size={32} />
-            <p className="text-gray-600">Loading team members...</p>
-          </div>
+          <>
+            {/* Table Header */}
+            <div className="border-b border-gray-200 px-4 sm:px-6 py-4 bg-gray-50">
+              <div className="grid grid-cols-12 gap-3 sm:gap-4 text-sm font-medium text-gray-700">
+                <div className="col-span-1 hidden md:flex items-center justify-center"></div> {/* Drag handle */}
+                <div className="col-span-6 md:col-span-2 flex items-center">Photo & Name</div>
+                <div className="col-span-6 md:col-span-2 hidden lg:flex items-center">Title</div>
+                <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Contact</div>
+                <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Specialties</div>
+                <div className="col-span-6 md:col-span-1 hidden lg:flex items-center justify-center">Status</div>
+                <div className="col-span-6 md:col-span-2 flex items-center justify-end">Actions</div>
+              </div>
+            </div>
+
+            {/* Skeleton Rows */}
+            <div className="divide-y divide-gray-200">
+              {Array.from({ length: 5 }, (_, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-12 gap-3 sm:gap-4 px-4 sm:px-6 py-5 min-h-[100px] items-stretch animate-pulse"
+                >
+                  {/* Drag Handle Skeleton */}
+                  <div className="col-span-1 hidden md:flex items-center justify-center">
+                    <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                  </div>
+
+                  {/* Photo & Name Skeleton */}
+                  <div className="col-span-6 md:col-span-2 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0"></div>
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </div>
+
+                  {/* Title Skeleton */}
+                  <div className="col-span-6 md:col-span-2 hidden lg:flex items-start">
+                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                  </div>
+
+                  {/* Contact Skeleton */}
+                  <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
+                    <div className="space-y-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-gray-200 rounded"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-gray-200 rounded"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Specialties Skeleton */}
+                  <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
+                    <div className="flex flex-wrap gap-1.5 min-w-0 flex-1">
+                      <div className="h-6 bg-gray-200 rounded-full w-16"></div>
+                      <div className="h-6 bg-gray-200 rounded-full w-20"></div>
+                      <div className="h-6 bg-gray-200 rounded-full w-14"></div>
+                    </div>
+                  </div>
+
+                  {/* Status Skeleton */}
+                  <div className="col-span-6 md:col-span-1 hidden lg:flex items-start justify-center">
+                    <div className="h-6 bg-gray-200 rounded-full w-16"></div>
+                  </div>
+
+                  {/* Actions Skeleton */}
+                  <div className="col-span-6 md:col-span-2 flex items-start justify-end gap-1.5">
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : teamMembers.length === 0 ? (
           <div className="p-8 text-center">
             <User className="mx-auto mb-4 text-gray-400" size={48} />
@@ -452,15 +525,15 @@ const TeamManager: React.FC = () => {
         ) : (
           <>
             {/* Table Header */}
-            <div className="border-b border-gray-200 px-6 py-3 bg-gray-50">
-              <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
-                <div className="col-span-1"></div> {/* Drag handle */}
-                <div className="col-span-2">Photo & Name</div>
-                <div className="col-span-2">Title</div>
-                <div className="col-span-2">Contact</div>
-                <div className="col-span-2">Specialties</div>
-                <div className="col-span-1">Status</div>
-                <div className="col-span-2">Actions</div>
+            <div className="border-b border-gray-200 px-4 sm:px-6 py-4 bg-gray-50">
+              <div className="grid grid-cols-12 gap-3 sm:gap-4 text-sm font-medium text-gray-700">
+                <div className="col-span-1 hidden md:flex items-center justify-center"></div> {/* Drag handle */}
+                <div className="col-span-6 md:col-span-2 flex items-center">Photo & Name</div>
+                <div className="col-span-6 md:col-span-2 hidden lg:flex items-center">Title</div>
+                <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Contact</div>
+                <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Specialties</div>
+                <div className="col-span-6 md:col-span-1 hidden lg:flex items-center justify-center">Status</div>
+                <div className="col-span-6 md:col-span-2 flex items-center justify-end">Actions</div>
               </div>
             </div>
 
@@ -473,105 +546,110 @@ const TeamManager: React.FC = () => {
                   onDragStart={(e) => handleDragStart(e, member.id)}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, member.id)}
-                  className={`grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors ${
-                    draggedItem === member.id ? 'opacity-50' : ''
+                  className={`grid grid-cols-12 gap-3 sm:gap-4 px-4 sm:px-6 py-5 hover:bg-blue-50 hover:border-l-4 hover:border-l-blue-500 transition-all duration-200 min-h-[100px] items-stretch cursor-pointer group ${
+                    draggedItem === member.id ? 'opacity-50 scale-95' : ''
                   } ${isReordering ? 'pointer-events-none' : ''}`}
                 >
                   {/* Drag Handle */}
-                  <div className="col-span-1 flex items-center">
-                    <GripVertical className="text-gray-400 cursor-move" size={16} />
+                  <div className="col-span-1 hidden md:flex items-center justify-center">
+                    <GripVertical className="text-gray-400 cursor-move hover:text-blue-600 transition-colors group-hover:text-blue-500" size={16} />
                   </div>
 
                   {/* Photo & Name */}
-                  <div className="col-span-2 flex items-center gap-3">
+                  <div className="col-span-6 md:col-span-2 flex items-start gap-3">
                     {member.photoUrl ? (
                       <Image
                         src={member.photoUrl}
                         alt={member.name}
                         width={40}
                         height={40}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-10 h-10 rounded-full object-cover flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow duration-200"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="text-gray-500" size={20} />
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md group-hover:bg-gray-300 transition-all duration-200">
+                        <User className="text-gray-500 group-hover:text-gray-700 transition-colors" size={20} />
                       </div>
                     )}
-                    <div>
-                      <div className="font-medium text-gray-900">{member.name}</div>
-                      <div className="text-sm text-gray-500">#{member.orderIndex}</div>
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <div className="font-medium text-gray-900 truncate leading-tight group-hover:text-blue-900 transition-colors">{member.name}</div>
+                      <div className="text-sm text-gray-500 hidden md:block leading-tight group-hover:text-gray-700 transition-colors">#{member.orderIndex}</div>
+                      <div className="text-sm text-gray-500 md:hidden leading-tight">
+                        {member.title && <span className="text-gray-600 break-words group-hover:text-gray-800 transition-colors">{member.title}</span>}
+                      </div>
                     </div>
                   </div>
 
                   {/* Title */}
-                  <div className="col-span-2 flex items-center">
-                    <div className="text-sm text-gray-900">{member.title}</div>
+                  <div className="col-span-6 md:col-span-2 hidden lg:flex items-start">
+                    <div className="text-sm text-gray-900 break-words leading-relaxed max-w-full overflow-hidden group-hover:text-gray-800 transition-colors">
+                      {member.title}
+                    </div>
                   </div>
 
                   {/* Contact */}
-                  <div className="col-span-2 flex items-center">
-                    <div className="text-sm">
+                  <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
+                    <div className="text-sm space-y-2.5 min-w-0 flex-1">
                       {member.email && (
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Mail size={12} />
-                          {member.email}
+                        <div className="flex items-start gap-2 text-gray-600 group-hover:text-gray-800 transition-colors">
+                          <Mail size={12} className="flex-shrink-0 text-gray-400 mt-0.5 group-hover:text-blue-500 transition-colors" />
+                          <span className="truncate leading-tight break-all">{member.email}</span>
                         </div>
                       )}
                       {member.phone && (
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Phone size={12} />
-                          {member.phone}
+                        <div className="flex items-start gap-2 text-gray-600 group-hover:text-gray-800 transition-colors">
+                          <Phone size={12} className="flex-shrink-0 text-gray-400 mt-0.5 group-hover:text-blue-500 transition-colors" />
+                          <span className="truncate leading-tight break-all">{member.phone}</span>
                         </div>
                       )}
                     </div>
                   </div>
 
                   {/* Specialties */}
-                  <div className="col-span-2 flex items-center">
-                    <div className="flex flex-wrap gap-1">
-                      {member.specialties.slice(0, 2).map((specialty, index) => (
+                  <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
+                    <div className="flex flex-wrap gap-1.5 min-w-0 flex-1 max-h-20 overflow-y-auto">
+                      {member.specialties.slice(0, 3).map((specialty, index) => (
                         <span
                           key={index}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 text-blue-800 text-xs rounded-full flex-shrink-0 shadow-sm group-hover:bg-blue-200 group-hover:shadow-md transition-all duration-200"
                         >
                           <Tag size={10} />
-                          {specialty}
+                          <span className="truncate max-w-[70px] leading-tight">{specialty}</span>
                         </span>
                       ))}
-                      {member.specialties.length > 2 && (
-                        <span className="text-xs text-gray-500">
-                          +{member.specialties.length - 2} more
+                      {member.specialties.length > 3 && (
+                        <span className="text-xs text-gray-500 flex-shrink-0 leading-tight group-hover:text-gray-700 transition-colors">
+                          +{member.specialties.length - 3} more
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* Status */}
-                  <div className="col-span-1 flex items-center">
+                  <div className="col-span-6 md:col-span-1 hidden lg:flex items-start justify-center">
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full flex-shrink-0 shadow-sm whitespace-nowrap transition-all duration-200 ${
                         member.published
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-green-100 text-green-800 border border-green-200 group-hover:bg-green-200 group-hover:shadow-md'
+                          : 'bg-gray-100 text-gray-800 border border-gray-200 group-hover:bg-gray-200 group-hover:shadow-md'
                       }`}
                     >
                       {member.published ? <Eye size={10} /> : <EyeOff size={10} />}
-                      {member.published ? 'Published' : 'Draft'}
+                      <span className="hidden sm:inline leading-tight">{member.published ? 'Published' : 'Draft'}</span>
                     </span>
                   </div>
 
                   {/* Actions */}
-                  <div className="col-span-2 flex items-center gap-2">
+                  <div className="col-span-6 md:col-span-2 flex items-start justify-end gap-1.5">
                     <button
                       onClick={() => handleEdit(member)}
-                      className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                      className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all duration-200 flex-shrink-0 hover:scale-110 hover:shadow-md"
                       title="Edit"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(member.id, member.name)}
-                      className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-all duration-200 flex-shrink-0 hover:scale-110 hover:shadow-md"
                       title="Delete"
                     >
                       <Trash2 size={16} />
