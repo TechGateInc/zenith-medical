@@ -338,7 +338,7 @@ export const validatePatientIntakeField = (
       return validateName(stringValue, 'Next of kin name', true)
     
     case 'nextOfKinPhone':
-      return validatePhone(stringValue, 'Next of kin phone', true)
+      return validatePhone(stringValue, true)
     
     case 'relationshipToPatient':
       return validateRelationship(stringValue)
