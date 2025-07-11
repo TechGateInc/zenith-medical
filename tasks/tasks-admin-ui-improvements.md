@@ -18,7 +18,7 @@
 
 ## Tasks
 
-- [ ] 1.0 Fix Team Member Table Layout Issues
+- [x] 1.0 Fix Team Member Table Layout Issues
   - [x] 1.1 Fix overlapping table rows in TeamManager component by adjusting grid layout and ensuring proper row heights
   - [x] 1.2 Improve responsive design for table columns by adding responsive breakpoints and column hiding
   - [x] 1.3 Add proper spacing and alignment for table content with consistent padding and text alignment

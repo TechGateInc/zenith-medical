@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import { useSidebar } from '@/lib/contexts/SidebarContext';
 import { 
   LayoutDashboard, 
   Users, 
@@ -46,7 +47,7 @@ interface AdminSidebarProps {
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, setCollapsed } = useSidebar();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigation: NavigationItem[] = [

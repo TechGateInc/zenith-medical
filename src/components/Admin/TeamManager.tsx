@@ -434,14 +434,14 @@ const TeamManager: React.FC = () => {
           <>
             {/* Table Header */}
             <div className="border-b border-gray-200 px-4 sm:px-6 py-4 bg-gray-50">
-              <div className="grid grid-cols-12 gap-3 sm:gap-4 text-sm font-medium text-gray-700">
-                <div className="col-span-1 hidden md:flex items-center justify-center"></div> {/* Drag handle */}
-                <div className="col-span-6 md:col-span-2 flex items-center">Photo & Name</div>
+              <div className="grid grid-cols-12 gap-1 gap-x-3 sm:gap-x-4 text-sm font-medium text-gray-700">
+                <div className="col-span-1 hidden md:flex items-center justify-center w-8 min-w-[2rem] max-w-[2rem]"></div> {/* Drag handle */}
+                <div className="col-span-6 md:col-span-3 flex items-center">Photo & Name</div>
                 <div className="col-span-6 md:col-span-2 hidden lg:flex items-center">Title</div>
                 <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Contact</div>
                 <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Specialties</div>
                 <div className="col-span-6 md:col-span-1 hidden lg:flex items-center justify-center">Status</div>
-                <div className="col-span-6 md:col-span-2 flex items-center justify-end">Actions</div>
+                <div className="col-span-6 md:col-span-1 flex items-center justify-end w-20 min-w-[5rem] max-w-[5rem]">Actions</div>
               </div>
             </div>
 
@@ -450,7 +450,7 @@ const TeamManager: React.FC = () => {
               {Array.from({ length: 5 }, (_, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-12 gap-3 sm:gap-4 px-4 sm:px-6 py-5 min-h-[100px] items-stretch animate-pulse"
+                  className="grid grid-cols-12 gap-1 gap-x-3 sm:gap-x-4 px-4 sm:px-6 py-5 min-h-[100px] items-stretch animate-pulse"
                 >
                   {/* Drag Handle Skeleton */}
                   <div className="col-span-1 hidden md:flex items-center justify-center">
@@ -458,7 +458,7 @@ const TeamManager: React.FC = () => {
                   </div>
 
                   {/* Photo & Name Skeleton */}
-                  <div className="col-span-6 md:col-span-2 flex items-start gap-3">
+                  <div className="col-span-6 md:col-span-3 flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0"></div>
                     <div className="min-w-0 flex-1 space-y-2">
                       <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -500,7 +500,7 @@ const TeamManager: React.FC = () => {
                   </div>
 
                   {/* Actions Skeleton */}
-                  <div className="col-span-6 md:col-span-2 flex items-start justify-end gap-1.5">
+                  <div className="col-span-6 md:col-span-1 flex items-start justify-end gap-1.5 w-20 min-w-[5rem] max-w-[5rem]">
                     <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
                     <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
                   </div>
@@ -526,14 +526,14 @@ const TeamManager: React.FC = () => {
           <>
             {/* Table Header */}
             <div className="border-b border-gray-200 px-4 sm:px-6 py-4 bg-gray-50">
-              <div className="grid grid-cols-12 gap-3 sm:gap-4 text-sm font-medium text-gray-700">
-                <div className="col-span-1 hidden md:flex items-center justify-center"></div> {/* Drag handle */}
-                <div className="col-span-6 md:col-span-2 flex items-center">Photo & Name</div>
+              <div className="grid grid-cols-12 gap-1 gap-x-3 sm:gap-x-4 text-sm font-medium text-gray-700">
+                <div className="col-span-1 hidden md:flex items-center justify-center w-8 min-w-[2rem] max-w-[2rem]"></div> {/* Drag handle */}
+                <div className="col-span-6 md:col-span-3 flex items-center">Photo & Name</div>
                 <div className="col-span-6 md:col-span-2 hidden lg:flex items-center">Title</div>
                 <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Contact</div>
                 <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Specialties</div>
                 <div className="col-span-6 md:col-span-1 hidden lg:flex items-center justify-center">Status</div>
-                <div className="col-span-6 md:col-span-2 flex items-center justify-end">Actions</div>
+                <div className="col-span-6 md:col-span-1 flex items-center justify-end w-20 min-w-[5rem] max-w-[5rem]">Actions</div>
               </div>
             </div>
 
@@ -546,17 +546,17 @@ const TeamManager: React.FC = () => {
                   onDragStart={(e) => handleDragStart(e, member.id)}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, member.id)}
-                  className={`grid grid-cols-12 gap-3 sm:gap-4 px-4 sm:px-6 py-5 hover:bg-blue-50 hover:border-l-4 hover:border-l-blue-500 transition-all duration-200 min-h-[100px] items-stretch cursor-pointer group ${
+                  className={`grid grid-cols-12 gap-1 gap-x-3 sm:gap-x-4 px-4 sm:px-6 py-5 hover:bg-blue-50 hover:border-l-4 hover:border-l-blue-500 transition-all duration-200 min-h-[100px] items-stretch cursor-pointer group ${
                     draggedItem === member.id ? 'opacity-50 scale-95' : ''
                   } ${isReordering ? 'pointer-events-none' : ''}`}
                 >
                   {/* Drag Handle */}
-                  <div className="col-span-1 hidden md:flex items-center justify-center">
+                  <div className="col-span-1 hidden md:flex items-center justify-center w-8 min-w-[2rem] max-w-[2rem] pr-0">
                     <GripVertical className="text-gray-400 cursor-move hover:text-blue-600 transition-colors group-hover:text-blue-500" size={16} />
                   </div>
 
                   {/* Photo & Name */}
-                  <div className="col-span-6 md:col-span-2 flex items-start gap-3">
+                  <div className="col-span-6 md:col-span-3 flex items-start gap-3 pl-0">
                     {member.photoUrl ? (
                       <Image
                         src={member.photoUrl}
@@ -606,8 +606,8 @@ const TeamManager: React.FC = () => {
 
                   {/* Specialties */}
                   <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
-                    <div className="flex flex-wrap gap-1.5 min-w-0 flex-1 max-h-20 overflow-y-auto">
-                      {member.specialties.slice(0, 3).map((specialty, index) => (
+                    <div className="flex flex-wrap gap-1.5 min-w-0 flex-1">
+                      {member.specialties.slice(0, 2).map((specialty, index) => (
                         <span
                           key={index}
                           className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 text-blue-800 text-xs rounded-full flex-shrink-0 shadow-sm group-hover:bg-blue-200 group-hover:shadow-md transition-all duration-200"
@@ -616,9 +616,9 @@ const TeamManager: React.FC = () => {
                           <span className="truncate max-w-[70px] leading-tight">{specialty}</span>
                         </span>
                       ))}
-                      {member.specialties.length > 3 && (
-                        <span className="text-xs text-gray-500 flex-shrink-0 leading-tight group-hover:text-gray-700 transition-colors">
-                          +{member.specialties.length - 3} more
+                      {member.specialties.length > 2 && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-full flex-shrink-0 shadow-sm group-hover:bg-gray-200 group-hover:shadow-md transition-all duration-200">
+                          +{member.specialties.length - 2} more
                         </span>
                       )}
                     </div>
@@ -639,7 +639,7 @@ const TeamManager: React.FC = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="col-span-6 md:col-span-2 flex items-start justify-end gap-1.5">
+                  <div className="col-span-6 md:col-span-1 flex items-start justify-end gap-1.5 w-20 min-w-[5rem] max-w-[5rem]">
                     <button
                       onClick={() => handleEdit(member)}
                       className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all duration-200 flex-shrink-0 hover:scale-110 hover:shadow-md"

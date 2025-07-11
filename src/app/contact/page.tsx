@@ -309,7 +309,7 @@ export default function Contact() {
                     <div className="flex justify-between items-center py-3 border-b border-slate-200 last:border-b-0">
                       <span className="font-semibold text-slate-700">Monday - Saturday</span>
                       <span className="text-slate-600 font-medium">9:00 AM - 5:00 PM</span>
-                    </div>
+                      </div>
                   </div>
                   <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-2xl">
                     <div className="flex items-start">

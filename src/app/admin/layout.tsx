@@ -2,15 +2,17 @@
 
 import type { Metadata } from 'next'
 import AdminSidebar from '@/components/Admin/AdminSidebar'
+import { SidebarProvider, useSidebar } from '@/lib/contexts/SidebarContext'
 import { usePathname } from 'next/navigation'
 
 // Note: Since this is now a client component, metadata is handled at page level
-export default function AdminLayout({
+function AdminLayoutContent({
   children,
 }: {
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const { collapsed } = useSidebar()
   
   // Don't show sidebar on login page
   const isLoginPage = pathname === '/admin/login'
@@ -28,11 +30,27 @@ export default function AdminLayout({
       <AdminSidebar />
       
       {/* Main content area */}
-      <div className="lg:pl-72">
+      <div className={`transition-all duration-300 ${
+        collapsed ? 'lg:pl-20' : 'lg:pl-72'
+      }`}>
         <main className="min-h-screen">
           {children}
         </main>
       </div>
     </div>
+  )
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <SidebarProvider>
+      <AdminLayoutContent>
+        {children}
+      </AdminLayoutContent>
+    </SidebarProvider>
   )
 } 

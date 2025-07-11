@@ -695,8 +695,8 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
         </h2>
         <label htmlFor="nextOfKinName" className="block text-sm font-medium text-slate-700 mb-2">
           Next of Kin Full Name *
-        </label>
-        <input
+            </label>
+            <input
           id="nextOfKinName"
           name="nextOfKinName"
           value={formData.nextOfKinName}
@@ -704,13 +704,13 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           className={inputClassName('nextOfKinName')}
           placeholder="Enter full name of next of kin"
           aria-describedby="nextOfKinName-error"
-          required
-        />
+              required
+            />
         <ValidationMessage fieldName="nextOfKinName" />
         <label htmlFor="nextOfKinPhone" className="block text-sm font-medium text-slate-700 mb-2 mt-4">
           Next of Kin Phone *
-        </label>
-        <input
+            </label>
+            <input
           id="nextOfKinPhone"
           name="nextOfKinPhone"
           value={formData.nextOfKinPhone}
@@ -718,30 +718,30 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           className={inputClassName('nextOfKinPhone')}
           placeholder="Enter phone number of next of kin"
           aria-describedby="nextOfKinPhone-error"
-          required
+              required
         />
         <ValidationMessage fieldName="nextOfKinPhone" />
         <label htmlFor="relationshipToPatient" className="block text-sm font-medium text-slate-700 mb-2 mt-4">
-          Relationship to Patient *
-        </label>
-        <select
-          id="relationshipToPatient"
-          name="relationshipToPatient"
-          value={formData.relationshipToPatient}
-          onChange={handleInputChange}
-          className={inputClassName('relationshipToPatient')}
-          aria-describedby="relationshipToPatient-error"
+              Relationship to Patient *
+            </label>
+            <select
+              id="relationshipToPatient"
+              name="relationshipToPatient"
+              value={formData.relationshipToPatient}
+              onChange={handleInputChange}
+              className={inputClassName('relationshipToPatient')}
+              aria-describedby="relationshipToPatient-error"
           required
-        >
-          <option value="">Select relationship</option>
+            >
+              <option value="">Select relationship</option>
           <option value="Spouse">Spouse</option>
           <option value="Parent">Parent</option>
           <option value="Child">Child</option>
           <option value="Sibling">Sibling</option>
           <option value="Friend">Friend</option>
           <option value="Other">Other</option>
-        </select>
-        <ValidationMessage fieldName="relationshipToPatient" />
+            </select>
+            <ValidationMessage fieldName="relationshipToPatient" />
       </section>
 
       {/* Health Information Number Section */}
