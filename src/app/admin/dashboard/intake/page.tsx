@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Users, Search, Filter, Calendar, Download, RefreshCw, Eye, Clock, Mail, Phone } from 'lucide-react';
+import { useApiAuth } from '@/lib/auth/use-api-auth';
 
 interface IntakeSubmission {
   id: string;
@@ -23,6 +24,9 @@ interface IntakeSubmission {
 }
 
 export default function PatientIntakePage() {
+  // API authentication hook
+  const { handleApiError } = useApiAuth();
+  
   const [submissions, setSubmissions] = useState<IntakeSubmission[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<IntakeSubmission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,22 +48,22 @@ export default function PatientIntakePage() {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        if (response.status === 401) {
-          throw new Error('Authentication required. Please log in again.');
-        } else if (response.status === 403) {
-          throw new Error('Access denied. You do not have permission to view intake submissions.');
-        } else if (response.status >= 500) {
-          // Retry with exponential backoff for server errors
-          if (retryCount < 3) {
-            const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-            setRetryCount(prev => prev + 1);
-            setTimeout(() => fetchIntakeSubmissions(true), delay);
-            return;
-          }
-          throw new Error('Server error. Please try again later.');
-        } else {
-          throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch intake submissions`);
+        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch intake submissions`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
         }
+        
+        // Retry with exponential backoff for server errors
+        if (response.status >= 500 && retryCount < 3) {
+          const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+          setRetryCount(prev => prev + 1);
+          setTimeout(() => fetchIntakeSubmissions(true), delay);
+          return;
+        }
+        
+        throw error;
       }
       
       const data = await response.json();
@@ -71,9 +75,13 @@ export default function PatientIntakePage() {
       }
     } catch (err) {
       console.error('Intake submissions fetch error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load submissions');
-      // Clear submissions on error
-      setSubmissions([]);
+      
+      // Only set error if it wasn't handled by the API auth hook
+      if (!handleApiError(err)) {
+        setError(err instanceof Error ? err.message : 'Failed to load submissions');
+        // Clear submissions on error
+        setSubmissions([]);
+      }
     } finally {
       if (!isRetry) {
         setLoading(false);

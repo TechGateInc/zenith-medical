@@ -30,6 +30,7 @@ import {
 import ImageUpload from './ImageUpload';
 import Modal from '../UI/Modal';
 import toast from 'react-hot-toast';
+import { useApiAuth } from '@/lib/auth/use-api-auth';
 
 // Types
 interface TeamMember {
@@ -71,6 +72,9 @@ interface ApiResponse {
 }
 
 const TeamManager: React.FC = () => {
+  // API authentication hook
+  const { handleApiError } = useApiAuth();
+  
   // State management
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,6 +135,19 @@ const TeamManager: React.FC = () => {
       }
 
       const response = await fetch(`/api/admin/content/team?${params}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch team members`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
+        }
+        
+        throw error;
+      }
+      
       const result: ApiResponse = await response.json();
 
       if (result.success && result.data) {
@@ -141,7 +158,10 @@ const TeamManager: React.FC = () => {
         throw new Error(result.error || 'Failed to fetch team members');
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to fetch team members');
+      // Only show toast if the error wasn't handled by the API auth hook
+      if (!handleApiError(err)) {
+        toast.error(err instanceof Error ? err.message : 'Failed to fetch team members');
+      }
     } finally {
       setLoading(false);
     }
@@ -172,6 +192,18 @@ const TeamManager: React.FC = () => {
         body: JSON.stringify(formData)
       });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}: Operation failed`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
+        }
+        
+        throw error;
+      }
+
       const result: ApiResponse = await response.json();
 
       if (result.success) {
@@ -184,7 +216,10 @@ const TeamManager: React.FC = () => {
         throw new Error(result.error || 'Operation failed');
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Operation failed');
+      // Only show toast if the error wasn't handled by the API auth hook
+      if (!handleApiError(err)) {
+        toast.error(err instanceof Error ? err.message : 'Operation failed');
+      }
     } finally {
       setFormLoading(false);
     }
@@ -207,6 +242,18 @@ const TeamManager: React.FC = () => {
         method: 'DELETE'
       });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to delete team member`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
+        }
+        
+        throw error;
+      }
+
       const result: ApiResponse = await response.json();
 
       if (result.success) {
@@ -218,7 +265,10 @@ const TeamManager: React.FC = () => {
         throw new Error(result.error || 'Failed to delete team member');
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to delete team member');
+      // Only show toast if the error wasn't handled by the API auth hook
+      if (!handleApiError(err)) {
+        toast.error(err instanceof Error ? err.message : 'Failed to delete team member');
+      }
     } finally {
       setDeleteLoading(false);
     }
@@ -327,6 +377,18 @@ const TeamManager: React.FC = () => {
         body: JSON.stringify({ updates })
       });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to update order`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
+        }
+        
+        throw error;
+      }
+
       const result: ApiResponse = await response.json();
 
       if (result.success) {
@@ -336,7 +398,10 @@ const TeamManager: React.FC = () => {
         throw new Error(result.error || 'Failed to update order');
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to update order');
+      // Only show toast if the error wasn't handled by the API auth hook
+      if (!handleApiError(err)) {
+        toast.error(err instanceof Error ? err.message : 'Failed to update order');
+      }
     } finally {
       setDraggedItem(null);
       setIsReordering(false);

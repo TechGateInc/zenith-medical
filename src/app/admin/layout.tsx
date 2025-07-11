@@ -5,6 +5,7 @@ import AdminSidebar from '@/components/Admin/AdminSidebar'
 import { SidebarProvider, useSidebar } from '@/lib/contexts/SidebarContext'
 import { usePathname } from 'next/navigation'
 import ToastProvider from '@/components/UI/ToastProvider'
+import SessionHandler from '@/lib/auth/session-handler'
 
 // Note: Since this is now a client component, metadata is handled at page level
 function AdminLayoutContent({
@@ -49,9 +50,11 @@ export default function AdminLayout({
 }) {
   return (
     <SidebarProvider>
-      <AdminLayoutContent>
-        {children}
-      </AdminLayoutContent>
+      <SessionHandler>
+        <AdminLayoutContent>
+          {children}
+        </AdminLayoutContent>
+      </SessionHandler>
       <ToastProvider />
     </SidebarProvider>
   )

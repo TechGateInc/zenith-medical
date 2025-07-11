@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useSidebar } from '@/lib/contexts/SidebarContext';
+import { useApiAuth } from '@/lib/auth/use-api-auth';
 import { 
   LayoutDashboard, 
   Users, 
@@ -48,6 +49,7 @@ interface AdminSidebarProps {
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebar();
+  const { handleApiError } = useApiAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [intakeCount, setIntakeCount] = useState<number>(0);
   const [loadingCount, setLoadingCount] = useState(true);
@@ -131,14 +133,28 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const fetchIntakeCount = async () => {
     try {
       const response = await fetch('/api/admin/intake/count');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setIntakeCount(data.count);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch intake count`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
         }
+        
+        throw error;
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        setIntakeCount(data.count);
       }
     } catch (error) {
-      console.error('Error fetching intake count:', error);
+      // Only log error if it wasn't handled by the API auth hook
+      if (!handleApiError(error)) {
+        console.error('Error fetching intake count:', error);
+      }
     } finally {
       setLoadingCount(false);
     }
