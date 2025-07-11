@@ -135,7 +135,10 @@ const TeamManager: React.FC = () => {
         params.append('published', filterPublished.toString());
       }
 
-      const response = await fetch(`/api/admin/content/team?${params}`);
+      const response = await fetch(`/api/admin/content/team?${params}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -190,6 +193,7 @@ const TeamManager: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData)
       });
 
@@ -240,7 +244,8 @@ const TeamManager: React.FC = () => {
 
     try {
       const response = await fetch(`/api/admin/content/team/${deleteTarget.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
 
       if (!response.ok) {

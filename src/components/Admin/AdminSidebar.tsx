@@ -132,7 +132,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   // Fetch unviewed intake count
   const fetchIntakeCount = async () => {
     try {
-      const response = await fetch('/api/admin/intake/count');
+      const response = await fetch('/api/admin/intake/count', {
+        method: 'GET',
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
