@@ -69,14 +69,14 @@ export default function IntakeLayout({
       "@type": "MedicalOrganization",
       "name": "Zenith Medical Centre",
       "url": baseUrl,
-      "telephone": "(555) 123-CARE",
+              "telephone": "249 806 0128",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "123 Medical Plaza Drive",
-        "addressLocality": "Medical District",
-        "addressRegion": "MD",
-        "postalCode": "12345",
-        "addressCountry": "US"
+                  "streetAddress": "Unit 216, 1980 Ogilvie Road",
+        "addressLocality": "Gloucester",
+        "addressRegion": "Ottawa",
+        "postalCode": "K1J 9L3",
+        "addressCountry": "CA"
       }
     },
     "potentialAction": {

@@ -52,9 +52,9 @@ export default function ContentManagementPage() {
       
       // Fetch stats from the content APIs
       const [teamResponse, blogResponse, faqResponse] = await Promise.allSettled([
-        fetch('/api/admin/content/team?stats=true', { credentials: 'include' }),
-        fetch('/api/admin/content/blog?stats=true', { credentials: 'include' }),  
-        fetch('/api/admin/content/faq?stats=true', { credentials: 'include' })
+        fetch('/api/admin/content/team?stats=true'),
+        fetch('/api/admin/content/blog?stats=true'),  
+        fetch('/api/admin/content/faq?stats=true')
       ]);
 
       let teamStats = { total: 0 };

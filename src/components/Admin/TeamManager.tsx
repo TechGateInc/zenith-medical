@@ -135,10 +135,7 @@ const TeamManager: React.FC = () => {
         params.append('published', filterPublished.toString());
       }
 
-      const response = await fetch(`/api/admin/content/team?${params}`, {
-        method: 'GET',
-        credentials: 'include'
-      });
+      const response = await fetch(`/api/admin/content/team?${params}`);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -193,7 +190,6 @@ const TeamManager: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify(formData)
       });
 
@@ -244,8 +240,7 @@ const TeamManager: React.FC = () => {
 
     try {
       const response = await fetch(`/api/admin/content/team/${deleteTarget.id}`, {
-        method: 'DELETE',
-        credentials: 'include'
+        method: 'DELETE'
       });
 
       if (!response.ok) {
@@ -785,7 +780,7 @@ const TeamManager: React.FC = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="(555) 123-4567"
+                                            placeholder="249 806 0128"
                   />
                 </div>
               </div>

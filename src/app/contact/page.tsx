@@ -47,7 +47,7 @@ export default function Contact() {
   const contactMethods = [
     {
       title: 'Phone',
-      primary: '(555) 123-CARE',
+      primary: '249 806 0128',
       secondary: 'Main office line',
       icon: (
         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +57,7 @@ export default function Contact() {
     },
     {
       title: 'Fax',
-      primary: '(555) 123-4568',
+      primary: '613 680 5833',
       secondary: 'Medical records & referrals',
       icon: (
         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,7 +204,7 @@ export default function Contact() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="(555) 123-4567"
+                        placeholder="249 806 0128"
                       />
                     </div>
                     <div>
@@ -273,7 +273,7 @@ export default function Contact() {
                 <div className="mt-6 text-center">
                   <p className="text-sm text-slate-600">
                     For urgent medical needs, please call us directly at{' '}
-                    <span className="font-semibold text-blue-600">(555) 123-CARE</span>
+                    <span className="font-semibold text-blue-600">249 806 0128</span>
                   </p>
                 </div>
               </div>
@@ -345,8 +345,8 @@ export default function Contact() {
                       </svg>
                       <div>
                         <p className="font-semibold text-slate-800 text-lg">Zenith Medical Centre</p>
-                        <p className="text-slate-600">123 Healthcare Drive</p>
-                        <p className="text-slate-600">Medical District, MD 21201</p>
+                        <p className="text-slate-600">Unit 216, 1980 Ogilvie Road</p>
+                        <p className="text-slate-600">Gloucester, Ottawa, K1J 9L3</p>
                       </div>
                     </div>
                     
@@ -406,7 +406,7 @@ export default function Contact() {
                         Patient Intake Form
                       </Link>
                       <a
-                        href="tel:5551234567"
+                        href="tel:2498060128"
                         className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 hover:bg-slate-50 font-semibold rounded-lg transition-colors border-2 border-blue-200"
                       >
                         <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

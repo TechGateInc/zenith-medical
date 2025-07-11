@@ -322,8 +322,8 @@ export default function PrivacyPolicyAgreement({
             privacy@zenithmedical.com
           </a>{' '}
           or call{' '}
-          <a href="tel:5551234567" className="text-blue-600 hover:text-blue-700">
-            (555) 123-CARE
+                          <a href="tel:2498060128" className="text-blue-600 hover:text-blue-700">
+                  249 806 0128
           </a>
         </p>
         <p className="mt-1">

@@ -45,10 +45,7 @@ export default function PatientIntakePage() {
         setRetryCount(0);
       }
       
-      const response = await fetch('/api/admin/intake', {
-        method: 'GET',
-        credentials: 'include'
-      });
+      const response = await fetch('/api/admin/intake');
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

@@ -563,7 +563,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               onChange={handleInputChange}
               onBlur={handleBlur}
               className={inputClassName('phoneNumber')}
-              placeholder="(555) 123-4567"
+                                      placeholder="249 806 0128"
               aria-describedby="phoneNumber-error"
               autoComplete="tel"
             />

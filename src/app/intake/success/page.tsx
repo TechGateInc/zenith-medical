@@ -138,7 +138,7 @@ export default function IntakeSuccessPage() {
       setBookingResult({
         success: false,
         error: 'Failed to connect to booking system',
-        fallbackMessage: 'Please call (555) 123-4567 to schedule your appointment.'
+        fallbackMessage: 'Please call 249 806 0128 to schedule your appointment.'
       })
     } finally {
       setIsBooking(false)
@@ -450,7 +450,7 @@ export default function IntakeSuccessPage() {
                 {bookingProviders.length === 0 && (
                   <div className="mt-4 text-sm opacity-80">
                     <p>Booking system unavailable.</p>
-                    <p>Please call <strong>(555) 123-4567</strong> to schedule your appointment.</p>
+                    <p>Please call <strong>249 806 0128</strong> to schedule your appointment.</p>
                   </div>
                 )}
               </div>
@@ -559,7 +559,7 @@ export default function IntakeSuccessPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-medium text-slate-700 mb-2">Phone Support</h3>
-                  <p className="text-slate-600">Call us at <strong>(555) 123-4567</strong></p>
+                  <p className="text-slate-600">Call us at <strong>249 806 0128</strong></p>
                   <p className="text-sm text-slate-500">Monday - Friday, 8:00 AM - 6:00 PM</p>
                 </div>
                 <div>
