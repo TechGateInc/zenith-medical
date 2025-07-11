@@ -565,8 +565,8 @@ export default function IntakeSuccessPage() {
                 <div>
                   <h3 className="font-medium text-slate-700 mb-2">Email Support</h3>
                   <p className="text-slate-600">
-                    <a href="mailto:appointments@zenithmedical.com" className="text-blue-600 hover:text-blue-700">
-                      appointments@zenithmedical.com
+                                    <a href="mailto:appointments@zenithmediacl.ca" className="text-blue-600 hover:text-blue-700">
+                  appointments@zenithmediacl.ca
                     </a>
                   </p>
                   <p className="text-sm text-slate-500">We&apos;ll respond within 24 hours</p>

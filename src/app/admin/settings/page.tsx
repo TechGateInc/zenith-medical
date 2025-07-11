@@ -52,7 +52,7 @@ export default function SettingsPage() {
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
     siteName: 'Zenith Medical Centre',
     siteDescription: 'Comprehensive healthcare services for the community',
-    adminEmail: 'admin@zenithmedical.com',
+    adminEmail: 'admin@zenithmediacl.ca',
     timezone: 'America/Toronto',
     dateFormat: 'MM/DD/YYYY',
     language: 'en'

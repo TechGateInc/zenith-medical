@@ -318,8 +318,8 @@ export default function PrivacyPolicyAgreement({
         <h5 className="font-medium text-slate-700 mb-2">Questions about this policy?</h5>
         <p>
           Contact our Privacy Officer at{' '}
-          <a href="mailto:privacy@zenithmedical.com" className="text-blue-600 hover:text-blue-700">
-            privacy@zenithmedical.com
+                          <a href="mailto:privacy@zenithmediacl.ca" className="text-blue-600 hover:text-blue-700">
+                  privacy@zenithmediacl.ca
           </a>{' '}
           or call{' '}
                           <a href="tel:2498060128" className="text-blue-600 hover:text-blue-700">

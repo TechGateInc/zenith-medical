@@ -14,7 +14,7 @@ interface SEOData {
   tags?: string[]
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmediacl.ca'
 const siteName = 'Zenith Medical Centre'
 const defaultImage = `${baseUrl}/images/zenith-medical-og.jpg`
 
@@ -107,7 +107,7 @@ export function generateHomepageStructuredData() {
     logo: `${baseUrl}/images/zenith-medical-logo.png`,
     image: `${baseUrl}/images/zenith-medical-center.jpg`,
     telephone: '+1-555-123-2273',
-    email: 'info@zenithmedical.com',
+    email: 'info@zenithmediacl.ca',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '123 Healthcare Drive',

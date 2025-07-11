@@ -14,7 +14,7 @@ const inter = Inter({
   display: 'swap',
 })
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmediacl.ca'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

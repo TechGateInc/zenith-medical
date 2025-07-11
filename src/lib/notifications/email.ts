@@ -175,7 +175,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
           <h3>Contact Information:</h3>
           <p>
             <strong>Phone:</strong> (555) 123-CARE<br>
-            <strong>Email:</strong> intake@zenithmedical.com<br>
+            <strong>Email:</strong> intake@zenithmedical.ca<br>
             <strong>Address:</strong> 123 Medical Plaza Drive, Medical District, MD 12345
           </p>
         </div>
@@ -222,7 +222,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
     
     CONTACT INFORMATION:
     Phone: (555) 123-CARE
-    Email: intake@zenithmedical.com
+    Email: intake@zenithmedical.ca
     Address: 123 Medical Plaza Drive, Medical District, MD 12345
     
     This is an automated message. Please do not reply to this email.
@@ -392,7 +392,7 @@ export const sendPatientConfirmationEmail = async (
     const mailOptions = {
       from: {
         name: 'Zenith Medical Centre',
-        address: process.env.FROM_EMAIL || 'noreply@zenithmedical.com'
+        address: process.env.FROM_EMAIL || 'noreply@zenithmedical.ca'
       },
       to: patientEmail,
       subject: template.subject,
@@ -401,7 +401,7 @@ export const sendPatientConfirmationEmail = async (
       headers: {
         'X-Priority': '3',
         'X-MSMail-Priority': 'Normal',
-        'List-Unsubscribe': '<mailto:unsubscribe@zenithmedical.com>'
+        'List-Unsubscribe': '<mailto:unsubscribe@zenithmedical.ca>'
       }
     }
     
@@ -429,14 +429,14 @@ export const sendStaffNotificationEmail = async (
     
     // Get staff notification emails from environment variables
     const staffEmails = process.env.STAFF_NOTIFICATION_EMAILS?.split(',') || [
-      'admin@zenithmedical.com',
-      'intake@zenithmedical.com'
+      'admin@zenithmedical.ca',
+      'intake@zenithmedical.ca'
     ]
     
     const mailOptions = {
       from: {
         name: 'Zenith Medical Centre System',
-        address: process.env.FROM_EMAIL || 'noreply@zenithmedical.com'
+        address: process.env.FROM_EMAIL || 'noreply@zenithmedical.ca'
       },
       to: staffEmails,
       subject: template.subject,

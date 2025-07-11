@@ -209,7 +209,7 @@ export default function IntakePage() {
                     Not sure what information to provide? We can answer any questions about the intake process via email.
                   </p>
                   <a
-                    href="mailto:intake@zenithmedical.com"
+                                            href="mailto:intake@zenithmediacl.ca"
                     className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

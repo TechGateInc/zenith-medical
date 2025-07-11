@@ -88,7 +88,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmediacl.ca';
   const pageUrl = `${baseUrl}/blog/${slug}`;
   const defaultImage = `${baseUrl}/images/zenith-medical-og.jpg`;
   
@@ -210,7 +210,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
   };
 
   // Generate comprehensive structured data
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmediacl.ca';
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
