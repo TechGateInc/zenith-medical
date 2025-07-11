@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -16,8 +16,14 @@ export default function AdminLogin() {
   const router = useRouter()
 
   // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/admin/dashboard')
+    }
+  }, [isAuthenticated, router])
+
+  // Don't render the form if already authenticated
   if (isAuthenticated) {
-    router.push('/admin/dashboard')
     return null
   }
 
