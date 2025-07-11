@@ -103,26 +103,17 @@ export default async function Home() {
                 </div>
               </div>
 
-              {/* Right Content - Visual Element */}
+              {/* Right Content - Hero Image */}
               <div className="relative">
-                <div className="w-full h-96 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                  {/* Background Pattern */}
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-4 left-4 w-8 h-8 bg-blue-600 rounded-full"></div>
-                    <div className="absolute top-12 right-8 w-6 h-6 bg-blue-500 rounded-full"></div>
-                    <div className="absolute bottom-8 left-8 w-4 h-4 bg-blue-700 rounded-full"></div>
-                    <div className="absolute bottom-4 right-4 w-10 h-10 bg-blue-400 rounded-full"></div>
-                  </div>
-                  
-                  <div className="text-center relative z-10">
-                    <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-blue-800 mb-2">State-of-the-Art Facility</h3>
-                    <p className="text-blue-700">Brand new efficient medical centre</p>
-                  </div>
+                <div className="w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
+                  <img 
+                    src="/images/home.webp" 
+                    alt="Zenith Medical Centre - State-of-the-art medical facility" 
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                  />
+                  {/* Optional overlay for better text contrast if needed */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
               </div>
             </div>
