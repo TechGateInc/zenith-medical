@@ -27,6 +27,7 @@ import {
   Loader2
 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
+import Modal from '../UI/Modal';
 
 // Types
 interface TeamMember {
@@ -103,6 +104,11 @@ const TeamManager: React.FC = () => {
   // Drag and drop state
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [isReordering, setIsReordering] = useState(false);
+  
+  // Delete confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Fetch team members
   const fetchTeamMembers = useCallback(async () => {
@@ -186,15 +192,21 @@ const TeamManager: React.FC = () => {
     }
   };
 
-  // Handle delete
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
-      return;
-    }
+  // Show delete confirmation modal
+  const showDeleteConfirmation = (id: string, name: string) => {
+    setDeleteTarget({ id, name });
+    setShowDeleteModal(true);
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+
+    setDeleteLoading(true);
+    setError(null);
 
     try {
-      setError(null);
-      const response = await fetch(`/api/admin/content/team/${id}`, {
+      const response = await fetch(`/api/admin/content/team/${deleteTarget.id}`, {
         method: 'DELETE'
       });
 
@@ -202,13 +214,24 @@ const TeamManager: React.FC = () => {
 
       if (result.success) {
         setSuccess('Team member deleted successfully');
+        setShowDeleteModal(false);
+        setDeleteTarget(null);
         await fetchTeamMembers();
       } else {
         throw new Error(result.error || 'Failed to delete team member');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete team member');
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  // Close delete modal
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+    setDeleteLoading(false);
   };
 
   // Handle edit
@@ -648,7 +671,7 @@ const TeamManager: React.FC = () => {
                       <Edit2 size={16} />
                     </button>
                     <button
-                      onClick={() => handleDelete(member.id, member.name)}
+                      onClick={() => showDeleteConfirmation(member.id, member.name)}
                       className="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-all duration-200 flex-shrink-0 hover:scale-110 hover:shadow-md"
                       title="Delete"
                     >
@@ -882,6 +905,32 @@ const TeamManager: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Team Member"
+        variant="danger"
+        loading={deleteLoading}
+        confirmText="Delete Member"
+        cancelText="Cancel"
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={20} className="text-red-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-gray-900 font-medium">
+                Are you sure you want to delete <span className="font-semibold">{deleteTarget?.name}</span>?
+              </p>
+              <p className="text-gray-600 mt-2">
+                This action cannot be undone. The team member will be permanently removed from the system.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

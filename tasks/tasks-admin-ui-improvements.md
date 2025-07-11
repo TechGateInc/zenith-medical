@@ -26,14 +26,14 @@
   - [x] 1.5 Add hover states and visual feedback for better user interaction
   - [x] 1.6 Implement proper loading skeleton for table rows during data fetching
 
-- [ ] 2.0 Implement Custom Delete Confirmation Modal
-  - [ ] 2.1 Create reusable Modal component with proper styling using Tailwind CSS
-  - [ ] 2.2 Replace default browser confirm() with custom modal in TeamManager handleDelete function
-  - [ ] 2.3 Add proper modal animations and backdrop with fade-in/out effects
-  - [ ] 2.4 Implement keyboard navigation (Escape to close, Enter to confirm) and focus management
-  - [ ] 2.5 Add loading state during deletion process with spinner and disabled buttons
-  - [ ] 2.6 Add confirmation text with team member name and warning message
-  - [ ] 2.7 Implement proper error handling for failed deletions with user feedback
+- [x] 2.0 Implement Custom Delete Confirmation Modal
+  - [x] 2.1 Create reusable Modal component with proper styling using Tailwind CSS
+  - [x] 2.2 Replace default browser confirm() with custom modal in TeamManager handleDelete function
+  - [x] 2.3 Add proper modal animations and backdrop with fade-in/out effects
+  - [x] 2.4 Implement keyboard navigation (Escape to close, Enter to confirm) and focus management
+  - [x] 2.5 Add loading state during deletion process with spinner and disabled buttons
+  - [x] 2.6 Add confirmation text with team member name and warning message
+  - [x] 2.7 Implement proper error handling for failed deletions with user feedback
 
 - [ ] 3.0 Implement Dynamic Patient Intake Counter
   - [ ] 3.1 Create API endpoint `/api/admin/intake/count` for unviewed patient intake count
