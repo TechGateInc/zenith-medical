@@ -24,7 +24,8 @@ import {
   Tag,
   AlertCircle,
   CheckCircle,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import Modal from '../UI/Modal';

@@ -35,14 +35,14 @@
   - [x] 2.6 Add confirmation text with team member name and warning message
   - [x] 2.7 Implement proper error handling for failed deletions with user feedback
 
-- [ ] 3.0 Implement Dynamic Patient Intake Counter
-  - [ ] 3.1 Create API endpoint `/api/admin/intake/count` for unviewed patient intake count
-  - [ ] 3.2 Add logic to track viewed vs unviewed submissions by adding `viewedAt` field to database
-  - [ ] 3.3 Update sidebar to fetch real-time count from API instead of hardcoded value
-  - [ ] 3.4 Implement count refresh mechanism with polling or WebSocket updates
-  - [ ] 3.5 Add visual indicator for new submissions with pulsing animation
-  - [ ] 3.6 Create utility function to mark submissions as viewed when accessed
-  - [ ] 3.7 Add database migration for new `viewedAt` field in PatientIntake model
+- [x] 3.0 Implement Dynamic Patient Intake Counter
+  - [x] 3.1 Create API endpoint `/api/admin/intake/count` for unviewed patient intake count
+  - [x] 3.2 Add logic to track viewed vs unviewed submissions by adding `viewedAt` field to database
+  - [x] 3.3 Update sidebar to fetch real-time count from API instead of hardcoded value
+  - [x] 3.4 Implement count refresh mechanism with polling or WebSocket updates
+  - [x] 3.5 Add visual indicator for new submissions with pulsing animation
+  - [x] 3.6 Create utility function to mark submissions as viewed when accessed
+  - [x] 3.7 Add database migration for new `viewedAt` field in PatientIntake model
 
 - [ ] 4.0 Fix Patient Intake API Error
   - [ ] 4.1 Debug and fix the API fetch error in intake page by checking network requests and server logs

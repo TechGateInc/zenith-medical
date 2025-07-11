@@ -43,6 +43,9 @@ model PatientIntake {
   appointmentBooked     Boolean      @default(false)
   appointmentBookedAt   DateTime?
   
+  // View Tracking
+  viewedAt              DateTime?    // When admin viewed the submission
+  
   // Audit Trail
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

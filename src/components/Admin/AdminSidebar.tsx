@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -49,6 +49,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebar();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [intakeCount, setIntakeCount] = useState<number>(0);
+  const [loadingCount, setLoadingCount] = useState(true);
 
   const navigation: NavigationItem[] = [
     {
@@ -60,7 +62,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
       name: 'Patient Intake',
       href: '/admin/dashboard/intake',
       icon: Users,
-      badge: 5, // Example badge count
+      badge: intakeCount > 0 ? intakeCount : undefined,
     },
     {
       name: 'Content Management',
@@ -125,6 +127,33 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
     return children?.some(child => isCurrentPath(child.href));
   };
 
+  // Fetch unviewed intake count
+  const fetchIntakeCount = async () => {
+    try {
+      const response = await fetch('/api/admin/intake/count');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setIntakeCount(data.count);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching intake count:', error);
+    } finally {
+      setLoadingCount(false);
+    }
+  };
+
+  // Fetch count on mount and set up polling
+  useEffect(() => {
+    fetchIntakeCount();
+    
+    // Poll every 30 seconds for updates
+    const interval = setInterval(fetchIntakeCount, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const renderNavigationItem = (item: NavigationItem, isChild: boolean = false) => {
     const isActive = isCurrentPath(item.href);
     const hasChildren = item.children && item.children.length > 0;
@@ -150,8 +179,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
             <>
               <span className="flex-1">{item.name}</span>
               {item.badge && (
-                <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  {item.badge}
+                <span className={`ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ${
+                  item.name === 'Patient Intake' && item.badge > 0 ? 'animate-pulse' : ''
+                }`}>
+                  {loadingCount && item.name === 'Patient Intake' ? '...' : item.badge}
                 </span>
               )}
               {hasChildren && (

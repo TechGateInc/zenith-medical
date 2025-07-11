@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
 import { prisma } from '@/lib/prisma';
+import { markMultipleIntakesAsViewed } from '@/lib/utils/intake-counter';
 
 export async function GET(request: NextRequest) {
   try {
@@ -78,11 +79,21 @@ export async function GET(request: NextRequest) {
           status: true,
           appointmentBooked: true,
           createdAt: true,
-          updatedAt: true
+          updatedAt: true,
+          viewedAt: true
         }
       }),
       prisma.patientIntake.count({ where })
     ]);
+
+    // Mark unviewed submissions as viewed
+    const unviewedSubmissionIds = submissions
+      .filter(submission => !submission.viewedAt)
+      .map(submission => submission.id);
+    
+    if (unviewedSubmissionIds.length > 0) {
+      await markMultipleIntakesAsViewed(unviewedSubmissionIds);
+    }
 
     return NextResponse.json({
       success: true,
