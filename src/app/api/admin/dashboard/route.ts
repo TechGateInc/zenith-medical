@@ -51,7 +51,8 @@ export async function GET(request: NextRequest) {
         status: true,
         appointmentBooked: true,
         createdAt: true,
-        updatedAt: true
+        updatedAt: true,
+        healthInformationNumber: true
       }
     })
 
@@ -70,9 +71,10 @@ export async function GET(request: NextRequest) {
           city: '',
           provinceState: '',
           postalZipCode: '',
-          emergencyContactName: '',
-          emergencyContactPhone: '',
-          relationshipToPatient: ''
+          nextOfKinName: '',
+          nextOfKinPhone: '',
+          relationshipToPatient: '',
+          healthInformationNumber: submission.healthInformationNumber || ''
         })
 
           return {
@@ -85,7 +87,8 @@ export async function GET(request: NextRequest) {
             status: submission.status,
             appointmentBooked: submission.appointmentBooked,
             createdAt: submission.createdAt.toISOString(),
-            updatedAt: submission.updatedAt.toISOString()
+            updatedAt: submission.updatedAt.toISOString(),
+            healthInformationNumber: decryptedData.healthInformationNumber
           }
         } catch (decryptionError) {
           console.error('Decryption error for submission:', submission.id, decryptionError)
@@ -116,7 +119,8 @@ export async function GET(request: NextRequest) {
             status: submission.status,
             appointmentBooked: submission.appointmentBooked,
             createdAt: submission.createdAt.toISOString(),
-            updatedAt: submission.updatedAt.toISOString()
+            updatedAt: submission.updatedAt.toISOString(),
+            healthInformationNumber: 'Decryption Failed'
           }
         }
       })

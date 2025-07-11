@@ -43,8 +43,8 @@ export async function GET(
         city: true,
         provinceState: true,
         postalZipCode: true,
-        emergencyContactName: true,
-        emergencyContactPhone: true,
+        nextOfKinName: true,
+        nextOfKinPhone: true,
         relationshipToPatient: true,
         status: true,
         appointmentBooked: true,
@@ -53,7 +53,8 @@ export async function GET(
         createdAt: true,
         updatedAt: true,
         ipAddress: true,
-        userAgent: true
+        userAgent: true,
+        healthInformationNumber: true
       }
     })
 
@@ -77,9 +78,10 @@ export async function GET(
         city: intakeSubmission.city,
         provinceState: intakeSubmission.provinceState,
         postalZipCode: intakeSubmission.postalZipCode,
-        emergencyContactName: intakeSubmission.emergencyContactName,
-        emergencyContactPhone: intakeSubmission.emergencyContactPhone,
-        relationshipToPatient: intakeSubmission.relationshipToPatient
+        nextOfKinName: intakeSubmission.nextOfKinName,
+        nextOfKinPhone: intakeSubmission.nextOfKinPhone,
+        relationshipToPatient: intakeSubmission.relationshipToPatient,
+        healthInformationNumber: intakeSubmission.healthInformationNumber
       })
 
       const fullSubmission = {
@@ -94,8 +96,8 @@ export async function GET(
         city: decryptedData.city,
         provinceState: decryptedData.provinceState,
         postalZipCode: decryptedData.postalZipCode,
-        emergencyContactName: decryptedData.emergencyContactName,
-        emergencyContactPhone: decryptedData.emergencyContactPhone,
+        nextOfKinName: decryptedData.nextOfKinName,
+        nextOfKinPhone: decryptedData.nextOfKinPhone,
         relationshipToPatient: decryptedData.relationshipToPatient,
         status: intakeSubmission.status,
         appointmentBooked: intakeSubmission.appointmentBooked,
@@ -104,7 +106,8 @@ export async function GET(
         createdAt: intakeSubmission.createdAt.toISOString(),
         updatedAt: intakeSubmission.updatedAt.toISOString(),
         ipAddress: intakeSubmission.ipAddress,
-        userAgent: intakeSubmission.userAgent
+        userAgent: intakeSubmission.userAgent,
+        healthInformationNumber: decryptedData.healthInformationNumber
       }
 
       // Log successful access
@@ -266,8 +269,8 @@ export async function PATCH(
         city: true,
         provinceState: true,
         postalZipCode: true,
-        emergencyContactName: true,
-        emergencyContactPhone: true,
+        nextOfKinName: true,
+        nextOfKinPhone: true,
         relationshipToPatient: true,
         status: true,
         appointmentBooked: true,
@@ -276,7 +279,8 @@ export async function PATCH(
         createdAt: true,
         updatedAt: true,
         ipAddress: true,
-        userAgent: true
+        userAgent: true,
+        healthInformationNumber: true
       }
     })
 
@@ -292,9 +296,10 @@ export async function PATCH(
       city: updatedSubmission.city,
       provinceState: updatedSubmission.provinceState,
       postalZipCode: updatedSubmission.postalZipCode,
-      emergencyContactName: updatedSubmission.emergencyContactName,
-      emergencyContactPhone: updatedSubmission.emergencyContactPhone,
-      relationshipToPatient: updatedSubmission.relationshipToPatient
+      nextOfKinName: updatedSubmission.nextOfKinName,
+      nextOfKinPhone: updatedSubmission.nextOfKinPhone,
+      relationshipToPatient: updatedSubmission.relationshipToPatient,
+      healthInformationNumber: updatedSubmission.healthInformationNumber
     })
 
     const fullSubmission = {
@@ -309,8 +314,8 @@ export async function PATCH(
       city: decryptedData.city,
       provinceState: decryptedData.provinceState,
       postalZipCode: decryptedData.postalZipCode,
-      emergencyContactName: decryptedData.emergencyContactName,
-      emergencyContactPhone: decryptedData.emergencyContactPhone,
+      nextOfKinName: decryptedData.nextOfKinName,
+      nextOfKinPhone: decryptedData.nextOfKinPhone,
       relationshipToPatient: decryptedData.relationshipToPatient,
       status: updatedSubmission.status,
       appointmentBooked: updatedSubmission.appointmentBooked,
@@ -319,7 +324,8 @@ export async function PATCH(
       createdAt: updatedSubmission.createdAt.toISOString(),
       updatedAt: updatedSubmission.updatedAt.toISOString(),
       ipAddress: updatedSubmission.ipAddress,
-      userAgent: updatedSubmission.userAgent
+      userAgent: updatedSubmission.userAgent,
+      healthInformationNumber: decryptedData.healthInformationNumber
     }
 
     // Log the update

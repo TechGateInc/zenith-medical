@@ -117,7 +117,7 @@ export default async function About() {
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-8 leading-tight max-w-4xl mx-auto">
-              Modern Healthcare Innovation
+              Efficient Healthcare Innovation
             </h1>
             
             <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
@@ -127,7 +127,7 @@ export default async function About() {
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="text-center">
-                <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">Modern</div>
+                <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">Efficient</div>
                 <div className="text-slate-600 font-medium">State-of-the-Art Facility</div>
               </div>
               <div className="text-center">
@@ -220,7 +220,7 @@ export default async function About() {
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-800 mb-1">Innovation</h4>
-                      <p className="text-slate-600">Embracing modern medical technology and practices</p>
+                      <p className="text-slate-600">Embracing efficient medical technology and practices</p>
                     </div>
                   </div>
                 </div>
@@ -256,8 +256,8 @@ export default async function About() {
                   and evidence-based treatment approaches.
                 </p>
                 <p>
-                  Led by Dr. Sarah Mitchell and our dedicated medical team, we provide comprehensive healthcare in our purpose-built facility. 
-                  Our state-of-the-art medical centre features the latest diagnostic equipment, modern treatment rooms, and comfortable 
+                  Led by Dr. Gabriel Oyelayo and our dedicated medical team, we provide comprehensive healthcare in our purpose-built facility. 
+                  Our state-of-the-art medical centre features the latest diagnostic equipment, efficient treatment rooms, and comfortable 
                   spaces designed to enhance patient wellness and comfort.
                 </p>
                 <p>
@@ -269,7 +269,7 @@ export default async function About() {
               {/* Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 pt-8 border-t border-slate-200">
                 <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">Modern</div>
+                  <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">Efficient</div>
                   <div className="text-slate-600 font-medium">Healthcare Facility</div>
                 </div>
                 <div className="text-center">
@@ -295,7 +295,7 @@ export default async function About() {
               OUR TEAM
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
-              Meet Our Medical Team
+              Meet Our Team
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Our experienced healthcare professionals are dedicated to providing exceptional care for you and your family.
@@ -366,7 +366,7 @@ export default async function About() {
               FACILITIES
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
-              Modern Facilities & Technology
+              Efficient Facilities & Technology
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
               State-of-the-art equipment and comfortable spaces designed for optimal patient care.
@@ -380,7 +380,7 @@ export default async function About() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                 </svg>
               </div>
-              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-3">Modern Laboratory</h3>
+              <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-3">Efficient Laboratory</h3>
               <p className="text-slate-600 leading-relaxed">On-site lab facilities for quick diagnostic testing and results.</p>
             </div>
 
@@ -424,7 +424,7 @@ export default async function About() {
                 </h2>
                 <p className="text-lg text-slate-600 mb-8 leading-relaxed">
                   Join our growing community of patients who trust Zenith Medical Centre for their healthcare needs. 
-                  Experience personalized care in our modern, state-of-the-art facility.
+                  Experience personalized care in our efficient, state-of-the-art facility.
                 </p>
 
                 {/* Feature Grid */}
@@ -435,9 +435,9 @@ export default async function About() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Same-Day Appointments</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Walk-In Patients Welcome</h3>
                     <p className="text-sm text-slate-600">
-                      Get immediate care when you need it most with flexible scheduling.
+                      Walk-in anytime - care provided based on doctor availability.
                     </p>
                   </div>
 

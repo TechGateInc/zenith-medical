@@ -21,7 +21,7 @@ export default function FAQ() {
     {
       id: 'apt-1',
       question: 'How do I schedule an appointment?',
-      answer: 'You can schedule an appointment by calling our office at (555) 123-CARE, using our online contact form, or completing the patient intake form. We offer both routine appointments and same-day appointments for urgent care needs.',
+      answer: 'You can schedule an appointment by calling our office at (555) 123-CARE, using our online contact form, or completing the patient intake form. We offer both routine appointments and welcome walk-in patients for urgent care needs.',
       category: 'appointments'
     },
     {
@@ -33,13 +33,13 @@ export default function FAQ() {
     {
       id: 'apt-3',
       question: 'How far in advance should I book an appointment?',
-      answer: 'For routine check-ups, we recommend booking 2-4 weeks in advance. For urgent care needs, we reserve same-day appointments. Annual physicals and specialized consultations may require longer lead times during busy periods.',
+      answer: 'For routine check-ups, we recommend booking 2-4 weeks in advance. For urgent care needs, walk-in patients are welcome. Annual physicals and specialized consultations may require longer lead times during busy periods.',
       category: 'appointments'
     },
     {
       id: 'apt-4',
-      question: 'Do you offer same-day appointments?',
-      answer: 'Yes, we reserve time slots daily for urgent medical needs that cannot wait for a regular appointment. Call us early in the day for the best availability. Same-day appointments are available for acute illnesses, minor injuries, and urgent health concerns.',
+      question: 'Do you accept walk-in patients?',
+      answer: 'Yes, walk-in patients are always welcome. Being seen depends on doctor availability. We recommend calling ahead to check availability for urgent medical needs like acute illnesses, minor injuries, and urgent health concerns.',
       category: 'appointments'
     },
 
@@ -73,7 +73,7 @@ export default function FAQ() {
     {
       id: 'svc-2',
       question: 'Do you provide emergency care?',
-      answer: 'While we are not an emergency room, we offer same-day appointments for urgent care needs. For life-threatening emergencies, please call 911 or go to your nearest emergency room immediately. We can provide follow-up care after emergency treatment.',
+      answer: 'While we are not an emergency room, we welcome walk-in patients for urgent care needs. Being seen depends on doctor availability. For life-threatening emergencies, please call 911 or go to your nearest emergency room immediately. We can provide follow-up care after emergency treatment.',
       category: 'services'
     },
     {
@@ -368,7 +368,7 @@ export default function FAQ() {
                 </div>
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Schedule Appointment</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  Book your next appointment online or call our office. We offer both routine and same-day appointments.
+                  Book your next appointment online or call our office. We offer both routine appointments and welcome walk-in patients.
                 </p>
                 <Link
                   href="/contact"

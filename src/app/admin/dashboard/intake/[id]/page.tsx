@@ -17,8 +17,8 @@ interface FullIntakeSubmission {
   city: string
   provinceState: string
   postalZipCode: string
-  emergencyContactName: string
-  emergencyContactPhone: string
+  nextOfKinName: string
+  nextOfKinPhone: string
   relationshipToPatient: string
   status: 'SUBMITTED' | 'REVIEWED' | 'APPOINTMENT_SCHEDULED' | 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED'
   appointmentBooked: boolean
@@ -339,15 +339,15 @@ export default function IntakeDetailPage() {
 
             {/* Emergency Contact */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Emergency Contact</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Next of Kin</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Contact Name</label>
-                  <p className="text-gray-900">{submission.emergencyContactName}</p>
+                  <p className="text-gray-900">{submission.nextOfKinName}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Contact Phone</label>
-                  <p className="text-gray-900">{submission.emergencyContactPhone}</p>
+                  <p className="text-gray-900">{submission.nextOfKinPhone}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Relationship to Patient</label>

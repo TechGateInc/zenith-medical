@@ -21,6 +21,7 @@ model PatientIntake {
   dateOfBirth           String   // Encrypted (DD-MM-YYYY)
   phoneNumber           String   // Encrypted
   emailAddress          String   // Encrypted
+  healthInformationNumber String   // Encrypted
   
   // Address Information (Encrypted)
   streetAddress         String   // Encrypted
@@ -28,9 +29,9 @@ model PatientIntake {
   provinceState         String   // Encrypted
   postalZipCode         String   // Encrypted
   
-  // Emergency Contact (Encrypted)
-  emergencyContactName  String   // Encrypted
-  emergencyContactPhone String   // Encrypted
+  // Next of Kin (Encrypted)
+  nextOfKinName  String   // Encrypted
+  nextOfKinPhone String   // Encrypted
   relationshipToPatient String   // Encrypted
   
   // Consent and Compliance

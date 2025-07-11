@@ -110,9 +110,10 @@ export interface EncryptedPatientData {
   city: string
   provinceState: string
   postalZipCode: string
-  emergencyContactName: string
-  emergencyContactPhone: string
+  nextOfKinName: string
+  nextOfKinPhone: string
   relationshipToPatient: string
+  healthInformationNumber: string
 }
 
 export interface PlainPatientData {
@@ -126,9 +127,10 @@ export interface PlainPatientData {
   city: string
   provinceState: string
   postalZipCode: string
-  emergencyContactName: string
-  emergencyContactPhone: string
+  nextOfKinName: string
+  nextOfKinPhone: string
   relationshipToPatient: string
+  healthInformationNumber: string
 }
 
 export function encryptPatientData(data: PlainPatientData): EncryptedPatientData {
@@ -143,9 +145,10 @@ export function encryptPatientData(data: PlainPatientData): EncryptedPatientData
     city: encryptPHI(data.city),
     provinceState: encryptPHI(data.provinceState),
     postalZipCode: encryptPHI(data.postalZipCode),
-    emergencyContactName: encryptPHI(data.emergencyContactName),
-    emergencyContactPhone: encryptPHI(data.emergencyContactPhone),
+    nextOfKinName: encryptPHI(data.nextOfKinName),
+    nextOfKinPhone: encryptPHI(data.nextOfKinPhone),
     relationshipToPatient: encryptPHI(data.relationshipToPatient),
+    healthInformationNumber: encryptPHI(data.healthInformationNumber),
   }
 }
 
@@ -161,8 +164,9 @@ export function decryptPatientData(data: EncryptedPatientData): PlainPatientData
     city: decryptPHI(data.city),
     provinceState: decryptPHI(data.provinceState),
     postalZipCode: decryptPHI(data.postalZipCode),
-    emergencyContactName: decryptPHI(data.emergencyContactName),
-    emergencyContactPhone: decryptPHI(data.emergencyContactPhone),
+    nextOfKinName: decryptPHI(data.nextOfKinName),
+    nextOfKinPhone: decryptPHI(data.nextOfKinPhone),
     relationshipToPatient: decryptPHI(data.relationshipToPatient),
+    healthInformationNumber: decryptPHI(data.healthInformationNumber),
   }
 } 

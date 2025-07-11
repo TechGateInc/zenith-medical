@@ -41,9 +41,7 @@ export default function Contact() {
   }
 
   const officeHours = [
-    { day: 'Monday - Friday', hours: '8:00 AM - 6:00 PM' },
-    { day: 'Saturday', hours: '9:00 AM - 2:00 PM' },
-    { day: 'Sunday', hours: 'Emergency Only' }
+    { day: 'Monday - Saturday', hours: '9:00 AM - 5:00 PM' }
   ]
 
   const contactMethods = [
@@ -54,26 +52,6 @@ export default function Contact() {
       icon: (
         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-        </svg>
-      )
-    },
-    {
-      title: 'Email',
-      primary: 'info@zenithmedical.com',
-      secondary: 'General inquiries',
-      icon: (
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      )
-    },
-    {
-      title: 'Emergency',
-      primary: '911',
-      secondary: 'Life-threatening emergencies',
-      icon: (
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
       )
     },
@@ -129,11 +107,11 @@ export default function Contact() {
               </div>
               <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4 leading-tight">How to Reach Us</h2>
               <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Multiple ways to connect with our medical team for appointments, questions, and urgent care needs
+                You can reach us by phone or fax. For the fastest response, we encourage you to use the contact form below!
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {contactMethods.map((method, index) => (
                 <div key={index} className="bg-white rounded-2xl shadow-lg p-8 text-center border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
@@ -144,6 +122,9 @@ export default function Contact() {
                   <p className="text-sm text-slate-600">{method.secondary}</p>
                 </div>
               ))}
+            </div>
+            <div className="text-center mt-8">
+              <p className="text-base text-slate-700 font-medium">For the fastest response, please use the contact form below. Our team will get back to you as soon as possible!</p>
             </div>
           </div>
         </section>
@@ -325,12 +306,10 @@ export default function Contact() {
                     <h3 className="text-2xl font-bold text-slate-800">Office Hours</h3>
                   </div>
                   <div className="space-y-4">
-                    {officeHours.map((schedule, index) => (
-                      <div key={index} className="flex justify-between items-center py-3 border-b border-slate-200 last:border-b-0">
-                        <span className="font-semibold text-slate-700">{schedule.day}</span>
-                        <span className="text-slate-600 font-medium">{schedule.hours}</span>
-                      </div>
-                    ))}
+                    <div className="flex justify-between items-center py-3 border-b border-slate-200 last:border-b-0">
+                      <span className="font-semibold text-slate-700">Monday - Saturday</span>
+                      <span className="text-slate-600 font-medium">9:00 AM - 5:00 PM</span>
+                    </div>
                   </div>
                   <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-2xl">
                     <div className="flex items-start">
@@ -338,9 +317,9 @@ export default function Contact() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <div>
-                        <p className="font-semibold text-green-800 mb-1">Same-Day Appointments Available</p>
+                        <p className="font-semibold text-green-800 mb-1">Walk-In Patients Welcome</p>
                         <p className="text-sm text-green-700">
-                          We reserve time slots daily for urgent medical needs. Please call ahead to check availability.
+                          Walk-in patients are always welcome. Being seen depends on doctor availability.
                         </p>
                       </div>
                     </div>

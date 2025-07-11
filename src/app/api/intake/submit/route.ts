@@ -50,10 +50,11 @@ export async function POST(request: NextRequest) {
       city,
       provinceState,
       postalZipCode,
-      emergencyContactName,
-      emergencyContactPhone,
+      nextOfKinName,
+      nextOfKinPhone,
       relationshipToPatient,
-      privacyPolicyAgreed
+      privacyPolicyAgreed,
+      healthInformationNumber
     } = body
     
     // Ensure privacy policy is agreed to
@@ -79,9 +80,10 @@ export async function POST(request: NextRequest) {
       city,
       provinceState,
       postalZipCode,
-      emergencyContactName,
-      emergencyContactPhone,
-      relationshipToPatient
+      nextOfKinName,
+      nextOfKinPhone,
+      relationshipToPatient,
+      healthInformationNumber
     })
     
     // Create the patient intake record
@@ -97,13 +99,14 @@ export async function POST(request: NextRequest) {
         city: encryptedData.city,
         provinceState: encryptedData.provinceState,
         postalZipCode: encryptedData.postalZipCode,
-        emergencyContactName: encryptedData.emergencyContactName,
-        emergencyContactPhone: encryptedData.emergencyContactPhone,
+        nextOfKinName: encryptedData.nextOfKinName,
+        nextOfKinPhone: encryptedData.nextOfKinPhone,
         relationshipToPatient: encryptedData.relationshipToPatient,
         privacyPolicyAccepted: privacyPolicyAgreed,
         status: 'SUBMITTED',
         ipAddress: ipAddress,
-        userAgent: userAgent
+        userAgent: userAgent,
+        healthInformationNumber: encryptedData.healthInformationNumber
       }
     })
     

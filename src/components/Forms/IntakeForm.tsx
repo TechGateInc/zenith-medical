@@ -27,10 +27,11 @@ export interface PatientIntakeData {
   city: string
   provinceState: string
   postalZipCode: string
-  emergencyContactName: string
-  emergencyContactPhone: string
+  nextOfKinName: string
+  nextOfKinPhone: string
   relationshipToPatient: string
   privacyPolicyAgreed: boolean
+  healthInformationNumber: string
 }
 
 interface FormErrors {
@@ -44,10 +45,11 @@ interface FormErrors {
   city?: string
   provinceState?: string
   postalZipCode?: string
-  emergencyContactName?: string
-  emergencyContactPhone?: string
+  nextOfKinName?: string
+  nextOfKinPhone?: string
   relationshipToPatient?: string
   privacyPolicyAgreed?: string
+  healthInformationNumber?: string
 }
 
 interface IntakeFormProps {
@@ -70,10 +72,11 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     city: '',
     provinceState: '',
     postalZipCode: '',
-    emergencyContactName: '',
-    emergencyContactPhone: '',
+    nextOfKinName: '',
+    nextOfKinPhone: '',
     relationshipToPatient: '',
-    privacyPolicyAgreed: false
+    privacyPolicyAgreed: false,
+    healthInformationNumber: ''
   })
 
   const [errors, setErrors] = useState<FormErrors>({})
@@ -144,9 +147,11 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       } else if (fieldName === 'postalZipCode') {
         // Normalize postal code formatting
         sanitizedValue = normalizePostalCode(sanitizedValue)
-      } else if (fieldName === 'phoneNumber' || fieldName === 'emergencyContactPhone') {
+      } else if (fieldName === 'phoneNumber' || fieldName === 'nextOfKinPhone') {
         // Allow phone formatting characters while typing
         sanitizedValue = value // Don't auto-format while typing to avoid cursor jumping
+      } else if (fieldName === 'healthInformationNumber') {
+        sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '')
       }
       
       newValue = sanitizedValue
@@ -177,7 +182,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     
     // Format fields on blur for better UX
     if (typeof value === 'string') {
-      if (fieldName === 'phoneNumber' || fieldName === 'emergencyContactPhone') {
+      if (fieldName === 'phoneNumber' || fieldName === 'nextOfKinPhone') {
         const formatted = formatPhone(value)
         setFormData(prev => ({
           ...prev,
@@ -191,6 +196,8 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           [fieldName]: normalized
         }))
         value = normalized
+      } else if (fieldName === 'healthInformationNumber') {
+        // Optionally format or validate here
       }
     }
     
@@ -210,8 +217,8 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     const allFields: (keyof PatientIntakeData)[] = [
       'legalFirstName', 'legalLastName', 'preferredName', 'dateOfBirth', 'phoneNumber',
       'emailAddress', 'streetAddress', 'city', 'provinceState', 'postalZipCode',
-      'emergencyContactName', 'emergencyContactPhone', 'relationshipToPatient',
-      'privacyPolicyAgreed'
+      'nextOfKinName', 'nextOfKinPhone', 'relationshipToPatient',
+      'privacyPolicyAgreed', 'healthInformationNumber'
     ]
     
     setTouched(
@@ -681,75 +688,81 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
         </div>
       </section>
 
-      {/* Emergency Contact Section */}
-      <section aria-labelledby="emergency-contact-heading">
-        <h2 id="emergency-contact-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
-          Emergency Contact Information
+      {/* Next of Kin Section */}
+      <section aria-labelledby="next-of-kin-heading">
+        <h2 id="next-of-kin-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+          Next of Kin Information
         </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-2">
-            <label htmlFor="emergencyContactName" className="block text-sm font-medium text-slate-700 mb-2">
-              Emergency Contact Full Name *
-            </label>
-            <input
-              type="text"
-              id="emergencyContactName"
-              name="emergencyContactName"
-              required
-              value={formData.emergencyContactName}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('emergencyContactName')}
-              placeholder="Enter full name of emergency contact"
-              aria-describedby="emergencyContactName-error"
-            />
-            <ValidationMessage fieldName="emergencyContactName" />
-          </div>
+        <label htmlFor="nextOfKinName" className="block text-sm font-medium text-slate-700 mb-2">
+          Next of Kin Full Name *
+        </label>
+        <input
+          id="nextOfKinName"
+          name="nextOfKinName"
+          value={formData.nextOfKinName}
+          onChange={handleInputChange}
+          className={inputClassName('nextOfKinName')}
+          placeholder="Enter full name of next of kin"
+          aria-describedby="nextOfKinName-error"
+          required
+        />
+        <ValidationMessage fieldName="nextOfKinName" />
+        <label htmlFor="nextOfKinPhone" className="block text-sm font-medium text-slate-700 mb-2 mt-4">
+          Next of Kin Phone *
+        </label>
+        <input
+          id="nextOfKinPhone"
+          name="nextOfKinPhone"
+          value={formData.nextOfKinPhone}
+          onChange={handleInputChange}
+          className={inputClassName('nextOfKinPhone')}
+          placeholder="Enter phone number of next of kin"
+          aria-describedby="nextOfKinPhone-error"
+          required
+        />
+        <ValidationMessage fieldName="nextOfKinPhone" />
+        <label htmlFor="relationshipToPatient" className="block text-sm font-medium text-slate-700 mb-2 mt-4">
+          Relationship to Patient *
+        </label>
+        <select
+          id="relationshipToPatient"
+          name="relationshipToPatient"
+          value={formData.relationshipToPatient}
+          onChange={handleInputChange}
+          className={inputClassName('relationshipToPatient')}
+          aria-describedby="relationshipToPatient-error"
+          required
+        >
+          <option value="">Select relationship</option>
+          <option value="Spouse">Spouse</option>
+          <option value="Parent">Parent</option>
+          <option value="Child">Child</option>
+          <option value="Sibling">Sibling</option>
+          <option value="Friend">Friend</option>
+          <option value="Other">Other</option>
+        </select>
+        <ValidationMessage fieldName="relationshipToPatient" />
+      </section>
 
-          <div>
-            <label htmlFor="emergencyContactPhone" className="block text-sm font-medium text-slate-700 mb-2">
-              Emergency Contact Phone *
-            </label>
-            <input
-              type="tel"
-              id="emergencyContactPhone"
-              name="emergencyContactPhone"
-              required
-              value={formData.emergencyContactPhone}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('emergencyContactPhone')}
-              placeholder="(555) 123-4567"
-              aria-describedby="emergencyContactPhone-error"
-            />
-            <ValidationMessage fieldName="emergencyContactPhone" />
-          </div>
-
-          <div>
-            <label htmlFor="relationshipToPatient" className="block text-sm font-medium text-slate-700 mb-2">
-              Relationship to Patient *
-            </label>
-            <select
-              id="relationshipToPatient"
-              name="relationshipToPatient"
-              required
-              value={formData.relationshipToPatient}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('relationshipToPatient')}
-              aria-describedby="relationshipToPatient-error"
-            >
-              <option value="">Select relationship</option>
-              {relationshipOptions.map(relationship => (
-                <option key={relationship} value={relationship}>
-                  {relationship}
-                </option>
-              ))}
-            </select>
-            <ValidationMessage fieldName="relationshipToPatient" />
-          </div>
-        </div>
+      {/* Health Information Number Section */}
+      <section aria-labelledby="health-info-heading">
+        <h2 id="health-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+          Health Information Number
+        </h2>
+        <label htmlFor="healthInformationNumber" className="block text-sm font-medium text-slate-700 mb-2">
+          Health Information Number *
+        </label>
+        <input
+          id="healthInformationNumber"
+          name="healthInformationNumber"
+          value={formData.healthInformationNumber}
+          onChange={handleInputChange}
+          className={inputClassName('healthInformationNumber')}
+          placeholder="Enter your health information number"
+          aria-describedby="healthInformationNumber-error"
+          required
+        />
+        <ValidationMessage fieldName="healthInformationNumber" />
       </section>
 
       {/* Privacy Policy Section */}

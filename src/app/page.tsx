@@ -55,7 +55,7 @@ export default async function Home() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
                 <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
-                  Modern Medical Centre
+                  Efficient Medical Centre
                 </span>
               </div>
             </div>
@@ -67,7 +67,7 @@ export default async function Home() {
                   Your Health, Our Innovation
                 </h1>
                 <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                  Experience healthcare reimagined at our state-of-the-art medical centre. We combine cutting-edge medical technology with compassionate patient care to deliver exceptional healthcare for you and your family.
+                  Experience healthcare reimagined at our state-of-the-art medical centre. We combine efficient medical technology with compassionate patient care to deliver exceptional healthcare for you and your family.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
@@ -98,7 +98,7 @@ export default async function Home() {
                   <div className="text-slate-700">
                     <span className="text-sm">Now Open:</span>
                     <span className="font-semibold ml-1">Accepting New Patients</span>
-                    <span className="text-sm ml-2">• Same-Day Appointments Available</span>
+                    <span className="text-sm ml-2">• Walk-In Patients Welcome</span>
                   </div>
                 </div>
               </div>
@@ -121,7 +121,7 @@ export default async function Home() {
                       </svg>
                     </div>
                     <h3 className="text-2xl font-bold text-blue-800 mb-2">State-of-the-Art Facility</h3>
-                    <p className="text-blue-700">Brand new modern medical centre</p>
+                    <p className="text-blue-700">Brand new efficient medical centre</p>
                   </div>
                 </div>
               </div>
@@ -143,7 +143,7 @@ export default async function Home() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Our Medical Services</h2>
               <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Comprehensive healthcare services for you and your family with modern medical expertise and compassionate care
+                Comprehensive healthcare services for you and your family with efficient medical expertise and compassionate care
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -173,8 +173,48 @@ export default async function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-3">Chronic Care</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">Chronic Disease Management</h3>
                 <p className="text-slate-600">Ongoing management of chronic conditions with coordinated care plans.</p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">Mental Health Care</h3>
+                <p className="text-slate-600">Comprehensive mental health support and counseling services for emotional wellness.</p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">General Health Checks</h3>
+                <p className="text-slate-600">Comprehensive health assessments and routine medical examinations.</p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">Acute Illness Care</h3>
+                <p className="text-slate-600">Immediate treatment for sudden illnesses, infections, and urgent health concerns.</p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">Immunization</h3>
+                <p className="text-slate-600">Vaccinations for all ages including routine immunizations and travel vaccines.</p>
               </div>
             </div>
           </div>
@@ -192,7 +232,7 @@ export default async function Home() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Why Choose Zenith Medical Centre?</h2>
               <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Experience the difference that our modern medical facility, advanced technology, and patient-focused care make in your healthcare journey
+                Experience the difference that our efficient medical facility, advanced technology, and patient-focused care make in your healthcare journey
               </p>
             </div>
 
@@ -218,8 +258,8 @@ export default async function Home() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3">Same-Day Appointments</h3>
-                    <p className="text-slate-600 leading-relaxed">Flexible scheduling with same-day appointments available for urgent care needs and immediate medical attention.</p>
+                    <h3 className="text-xl font-semibold text-slate-800 mb-3">Walk-In Patients Welcome</h3>
+                    <p className="text-slate-600 leading-relaxed">Walk-in patients are always welcome. Being seen depends on doctor availability, ensuring you get care when our medical team is available.</p>
                   </div>
                 </div>
                 
@@ -230,7 +270,7 @@ export default async function Home() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3">Modern Facilities</h3>
+                    <h3 className="text-xl font-semibold text-slate-800 mb-3">Efficient Facilities</h3>
                     <p className="text-slate-600 leading-relaxed">State-of-the-art medical equipment and comfortable, clean facilities designed for optimal patient care.</p>
                   </div>
                 </div>
@@ -291,7 +331,7 @@ export default async function Home() {
                   Ready to Start Your Healthcare Journey?
                 </h2>
                 <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                  Experience comprehensive healthcare with modern medical expertise and compassionate patient care. 
+                  Experience comprehensive healthcare with efficient medical expertise and compassionate patient care. 
                   Join thousands of patients who trust Zenith Medical Centre for their healthcare needs.
                 </p>
 
@@ -303,9 +343,9 @@ export default async function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Same-Day Appointments</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Walk-In Patients Welcome</h3>
                     <p className="text-sm text-slate-600">
-                      Get immediate care when you need it most with flexible scheduling.
+                      Walk-in anytime - care provided based on doctor availability.
                     </p>
                   </div>
 

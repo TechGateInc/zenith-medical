@@ -59,69 +59,85 @@ export default function Services() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
       )
-    }
-  ]
-
-  const specialtyServices = [
-    {
-      title: "Women&apos;s Health",
-      description: "Comprehensive healthcare services specifically designed for women&apos;s health needs.",
-      services: [
-        "Annual gynecological exams",
-        "Pap smears and cervical cancer screening",
-        "Breast health and mammogram referrals",
-        "Contraceptive counseling",
-        "Menopause management",
-        "Pregnancy care coordination"
-      ]
     },
     {
-      title: "Pediatric Care",
-      description: "Specialized healthcare services for infants, children, and adolescents.",
-      services: [
-        "Well-child visits and developmental assessments",
-        "Childhood immunizations",
-        "Growth and development monitoring",
-        "School and sports physicals",
-        "Acute illness treatment",
-        "Behavioral and learning assessments"
-      ]
-    },
-    {
-      title: "Geriatric Care",
-      description: "Specialized healthcare focused on the unique needs of older adults.",
-      services: [
-        "Comprehensive geriatric assessments",
-        "Medication management and review",
-        "Fall prevention and mobility assessment",
-        "Cognitive health screening",
-        "End-of-life care planning",
-        "Coordination with specialists"
-      ]
-    },
-    {
-      title: "Mental Health Support",
-      description: "Integrated mental health services as part of comprehensive primary care.",
-      services: [
+      title: "Mental Health Care",
+      description: "Comprehensive mental health support and counseling services for emotional wellness.",
+      features: [
         "Depression and anxiety screening",
         "Stress management counseling",
         "Substance abuse screening",
         "Mental health referrals",
         "Crisis intervention support",
         "Medication management for mental health"
-      ]
+      ],
+      icon: (
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      )
+    },
+    {
+      title: "General Health Checks",
+      description: "Comprehensive health assessments and routine medical examinations.",
+      features: [
+        "Annual physical examinations",
+        "Comprehensive health assessments",
+        "Routine medical screenings",
+        "Health risk evaluations",
+        "Wellness consultations",
+        "Preventive health planning"
+      ],
+      icon: (
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    },
+    {
+      title: "Acute Illness Care",
+      description: "Immediate treatment for sudden illnesses, infections, and urgent health concerns.",
+      features: [
+        "Sudden illness diagnosis and treatment",
+        "Infection management",
+        "Urgent health concern care",
+        "Symptom relief and management",
+        "Follow-up care coordination",
+        "Emergency care referrals when needed"
+      ],
+      icon: (
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      )
+    },
+    {
+      title: "Immunization",
+      description: "Vaccinations for all ages including routine immunizations and travel vaccines.",
+      features: [
+        "Routine childhood immunizations",
+        "Adult vaccination schedules",
+        "Travel vaccines and consultations",
+        "Flu shots and seasonal vaccines",
+        "COVID-19 vaccinations",
+        "Vaccination record management"
+      ],
+      icon: (
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      )
     }
   ]
+
+
 
   const additionalServices = [
     "Minor procedures and wound care",
     "Laboratory testing and diagnostics",
     "ECG and cardiac monitoring",
     "Travel medicine and vaccinations",
-    "Occupational health services",
-    "Immigration medical exams",
-    "DOT physical examinations",
-    "Allergy testing and treatment"
+    "Occupational health services"
   ]
 
   return (
@@ -144,22 +160,22 @@ export default function Services() {
                 Our Medical Services
               </h1>
               <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-4xl mx-auto">
-                Comprehensive healthcare services in our modern medical facility, designed to keep you and your family healthy throughout every stage of life.
+                Comprehensive healthcare services in our efficient medical facility, designed to keep you and your family healthy throughout every stage of life.
               </p>
 
               {/* Stats or Key Features */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">3</div>
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">7</div>
                   <div className="text-slate-600 font-medium">Primary Care Areas</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">4+</div>
-                  <div className="text-slate-600 font-medium">Specialty Care Services</div>
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">5</div>
+                  <div className="text-slate-600 font-medium">Additional Services</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">24/7</div>
-                  <div className="text-slate-600 font-medium">Emergency Support</div>
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Walk-In</div>
+                  <div className="text-slate-600 font-medium">Patients Welcome</div>
                 </div>
               </div>
             </div>
@@ -184,7 +200,7 @@ export default function Services() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {primaryServices.map((service, index) => (
                 <div key={index} className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 text-blue-600">
@@ -206,40 +222,7 @@ export default function Services() {
           </div>
         </section>
 
-        {/* Specialty Services */}
-        <section className="mb-20">
-          <div className="max-w-6xl mx-auto">
-            {/* Section Badge */}
-          <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center px-4 py-2 bg-purple-50 border border-purple-200 rounded-full mb-6">
-                <span className="text-sm font-semibold text-purple-700 uppercase tracking-wider">
-                  Specialized Care
-                </span>
-              </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Specialty Care Areas</h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Specialized healthcare services tailored to specific patient populations and unique health needs across all life stages.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {specialtyServices.map((service, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-4">{service.title}</h3>
-                  <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-                  <ul className="space-y-3">
-                  {service.services.map((item, idx) => (
-                    <li key={idx} className="flex items-center text-slate-600">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 flex-shrink-0"></div>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-            </div>
-          </div>
-        </section>
 
         {/* Additional Services */}
         <section className="mb-20">
@@ -282,13 +265,12 @@ export default function Services() {
               <h3 className="text-2xl font-bold text-red-800 mb-4">Emergency & Urgent Care</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold text-red-700 mb-2">Same-Day Appointments</h4>
+                  <h4 className="font-semibold text-red-700 mb-2">Walk-In Patients Welcome</h4>
                   <p className="text-red-700 mb-4">
-                    We reserve time slots daily for urgent medical needs that can&apos;t wait for a regular appointment.
+                    Walk-in patients are always welcome. Being seen depends on doctor availability for urgent medical needs.
                   </p>
                   <ul className="space-y-1 text-red-700">
                     <li>• Acute illness and infections</li>
-                    <li>• Minor injuries and cuts</li>
                     <li>• Severe cold and flu symptoms</li>
                     <li>• Allergic reactions</li>
                   </ul>
@@ -311,7 +293,7 @@ export default function Services() {
                   href="/contact"
                   className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                 >
-                  Book Same-Day Appointment
+                  Walk-In Welcome
                 </Link>
               </div>
             </div>
@@ -347,20 +329,20 @@ export default function Services() {
                     <h3 className="text-2xl font-bold text-slate-800">Insurance Plans</h3>
                   </div>
                   <p className="text-slate-600 mb-6 leading-relaxed">
-                    We work with most major insurance providers to ensure you get the coverage you deserve.
+                    We accept OHIP and work with most major insurance providers to ensure you get the coverage you deserve.
                   </p>
                   <div className="space-y-3">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <span className="text-slate-700">OHIP accepted for covered services</span>
+                    </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                       <span className="text-slate-700">Most major health insurance plans</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Medicare and Medicaid accepted</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Workers&apos; compensation cases</span>
+                      <span className="text-slate-700">Out-of-pocket payment for non-OHIP services</span>
                     </div>
                   </div>
                 </div>
@@ -375,20 +357,20 @@ export default function Services() {
                     <h3 className="text-2xl font-bold text-slate-800">Payment Options</h3>
                   </div>
                   <p className="text-slate-600 mb-6 leading-relaxed">
-                    Flexible payment solutions to make healthcare accessible and affordable.
+                    Secure payment options to make healthcare accessible and convenient.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Cash, check, and all major credit cards</span>
+                      <span className="text-slate-700">Debit and credit cards</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Flexible payment plans available</span>
+                      <span className="text-slate-700">Interac e-transfer</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">HSA and FSA accounts accepted</span>
+                      <span className="text-slate-700">Bank transfers</span>
                     </div>
                   </div>
                 </div>
@@ -437,7 +419,7 @@ export default function Services() {
                   Ready to Experience Our Comprehensive Care?
                 </h2>
                 <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                  Schedule an appointment today and discover how our modern medical facility and experienced team can serve your healthcare needs.
+                  Schedule an appointment today and discover how our efficient medical facility and experienced team can serve your healthcare needs.
                 </p>
 
                 {/* Feature Grid */}
@@ -448,9 +430,9 @@ export default function Services() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Same-Day Appointments</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Walk-In Patients Welcome</h3>
                     <p className="text-sm text-slate-600">
-                      Get immediate care when you need it most with flexible scheduling.
+                      Walk-in anytime - care provided based on doctor availability.
                     </p>
                   </div>
 

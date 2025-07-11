@@ -334,17 +334,21 @@ export const validatePatientIntakeField = (
     case 'postalZipCode':
       return validatePostalCode(stringValue)
     
-    case 'emergencyContactName':
-      return validateName(stringValue, 'Emergency contact name', true)
+    case 'nextOfKinName':
+      return validateName(stringValue, 'Next of kin name', true)
     
-    case 'emergencyContactPhone':
-      return validatePhone(stringValue, true)
+    case 'nextOfKinPhone':
+      return validatePhone(stringValue, 'Next of kin phone', true)
     
     case 'relationshipToPatient':
       return validateRelationship(stringValue)
     
     case 'privacyPolicyAgreed':
       return validatePrivacyPolicy(booleanValue)
+    
+    case 'healthInformationNumber':
+      if (!stringValue || stringValue.length < 8) return { isValid: false, error: 'Health Information Number is required.' }
+      return { isValid: true }
     
     default:
       return { isValid: true }
@@ -360,7 +364,7 @@ export const validateIntakeForm = (formData: any): { isValid: boolean; errors: R
   const requiredFields = [
     'legalFirstName', 'legalLastName', 'dateOfBirth', 'phoneNumber',
     'emailAddress', 'streetAddress', 'city', 'provinceState', 'postalZipCode',
-    'emergencyContactName', 'emergencyContactPhone', 'relationshipToPatient',
+    'nextOfKinName', 'nextOfKinPhone', 'relationshipToPatient',
     'privacyPolicyAgreed'
   ]
   

@@ -85,15 +85,16 @@ export async function GET(request: NextRequest) {
         city: true,
         provinceState: true,
         postalZipCode: true,
-        emergencyContactName: true,
-        emergencyContactPhone: true,
+        nextOfKinName: true,
+        nextOfKinPhone: true,
         relationshipToPatient: true,
         status: true,
         appointmentBooked: true,
         appointmentBookedAt: true,
         privacyPolicyAccepted: true,
         createdAt: true,
-        updatedAt: true
+        updatedAt: true,
+        healthInformationNumber: true
       }
     })
 
@@ -111,9 +112,10 @@ export async function GET(request: NextRequest) {
           city: submission.city,
           provinceState: submission.provinceState,
           postalZipCode: submission.postalZipCode,
-          emergencyContactName: submission.emergencyContactName,
-          emergencyContactPhone: submission.emergencyContactPhone,
-          relationshipToPatient: submission.relationshipToPatient
+          nextOfKinName: submission.nextOfKinName,
+          nextOfKinPhone: submission.nextOfKinPhone,
+          relationshipToPatient: submission.relationshipToPatient,
+          healthInformationNumber: submission.healthInformationNumber
         })
 
         return {
@@ -128,15 +130,16 @@ export async function GET(request: NextRequest) {
           city: decryptedData.city,
           provinceState: decryptedData.provinceState,
           postalZipCode: decryptedData.postalZipCode,
-          emergencyContactName: decryptedData.emergencyContactName,
-          emergencyContactPhone: decryptedData.emergencyContactPhone,
+          nextOfKinName: decryptedData.nextOfKinName,
+          nextOfKinPhone: decryptedData.nextOfKinPhone,
           relationshipToPatient: decryptedData.relationshipToPatient,
           status: submission.status,
           appointmentBooked: submission.appointmentBooked ? 'Yes' : 'No',
           appointmentBookedAt: submission.appointmentBookedAt?.toISOString() || '',
           privacyPolicyAccepted: submission.privacyPolicyAccepted ? 'Yes' : 'No',
           createdAt: submission.createdAt.toISOString(),
-          updatedAt: submission.updatedAt.toISOString()
+          updatedAt: submission.updatedAt.toISOString(),
+          healthInformationNumber: decryptedData.healthInformationNumber
         }
       } catch (decryptionError) {
         console.error('Decryption error for submission:', submission.id, decryptionError)
@@ -154,15 +157,16 @@ export async function GET(request: NextRequest) {
           city: 'DECRYPTION_FAILED',
           provinceState: 'DECRYPTION_FAILED',
           postalZipCode: 'DECRYPTION_FAILED',
-          emergencyContactName: 'DECRYPTION_FAILED',
-          emergencyContactPhone: 'DECRYPTION_FAILED',
+          nextOfKinName: 'DECRYPTION_FAILED',
+          nextOfKinPhone: 'DECRYPTION_FAILED',
           relationshipToPatient: 'DECRYPTION_FAILED',
           status: submission.status,
           appointmentBooked: submission.appointmentBooked ? 'Yes' : 'No',
           appointmentBookedAt: submission.appointmentBookedAt?.toISOString() || '',
           privacyPolicyAccepted: submission.privacyPolicyAccepted ? 'Yes' : 'No',
           createdAt: submission.createdAt.toISOString(),
-          updatedAt: submission.updatedAt.toISOString()
+          updatedAt: submission.updatedAt.toISOString(),
+          healthInformationNumber: 'DECRYPTION_FAILED'
         }
       }
     })
@@ -202,15 +206,16 @@ export async function GET(request: NextRequest) {
         'City',
         'Province/State',
         'Postal/ZIP Code',
-        'Emergency Contact Name',
-        'Emergency Contact Phone',
+        'Next of Kin Name',
+        'Next of Kin Phone',
         'Relationship to Patient',
         'Status',
         'Appointment Booked',
         'Appointment Booked At',
         'Privacy Policy Accepted',
         'Submitted At',
-        'Last Updated'
+        'Last Updated',
+        'Health Information Number'
       ]
 
       const csvRows = decryptedSubmissions.map((submission: any) => [
@@ -225,15 +230,16 @@ export async function GET(request: NextRequest) {
         submission.city,
         submission.provinceState,
         submission.postalZipCode,
-        submission.emergencyContactName,
-        submission.emergencyContactPhone,
+        submission.nextOfKinName,
+        submission.nextOfKinPhone,
         submission.relationshipToPatient,
         submission.status,
         submission.appointmentBooked,
         submission.appointmentBookedAt,
         submission.privacyPolicyAccepted,
         submission.createdAt,
-        submission.updatedAt
+        submission.updatedAt,
+        submission.healthInformationNumber
       ])
 
       // Escape CSV values and handle commas/quotes
@@ -350,9 +356,10 @@ export async function GET(request: NextRequest) {
                 <th>Contact</th>
                 <th>Date of Birth</th>
                 <th>Address</th>
-                <th>Emergency Contact</th>
+                <th>Next of Kin</th>
                 <th>Status</th>
                 <th>Submitted</th>
+                <th>Health Information Number</th>
               </tr>
             </thead>
             <tbody>
@@ -373,8 +380,8 @@ export async function GET(request: NextRequest) {
                     ${submission.postalZipCode}
                   </td>
                   <td>
-                    ${submission.emergencyContactName}<br/>
-                    ${submission.emergencyContactPhone}<br/>
+                    ${submission.nextOfKinName}<br/>
+                    ${submission.nextOfKinPhone}<br/>
                     <small>${submission.relationshipToPatient}</small>
                   </td>
                   <td>
@@ -389,6 +396,7 @@ export async function GET(request: NextRequest) {
                       day: 'numeric'
                     })}
                   </td>
+                  <td>${submission.healthInformationNumber}</td>
                 </tr>
               `).join('')}
             </tbody>

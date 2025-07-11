@@ -37,7 +37,7 @@ export default function Footer() {
             </div>
             
             <p className="text-gray-300 mb-6 max-w-md">
-              Providing compassionate, patient-centered healthcare services with modern medical expertise. 
+                              Providing compassionate, patient-centered healthcare services with efficient medical expertise. 
               Your health and wellness are our top priority.
             </p>
 
@@ -112,11 +112,7 @@ export default function Footer() {
             {/* Office Hours */}
             <div className="mt-6">
               <h4 className="text-lg font-semibold mb-2">Office Hours</h4>
-              <div className="text-gray-300 text-sm space-y-1">
-                <div>Monday - Friday: 8:00 AM - 6:00 PM</div>
-                <div>Saturday: 9:00 AM - 2:00 PM</div>
-                <div>Sunday: Emergency Only</div>
-              </div>
+              <div>Monday - Saturday: 9:00 AM - 5:00 PM</div>
             </div>
           </div>
         </div>
