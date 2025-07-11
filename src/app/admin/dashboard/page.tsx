@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../lib/auth/use-auth'
+import { DashboardSkeleton } from '@/components/UI/SkeletonLoader'
 
 interface IntakeSubmission {
   id: string
@@ -108,18 +109,15 @@ export default function AdminDashboard() {
   })
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    )
+    return <DashboardSkeleton />
   }
 
   if (!isAuthenticated) {
     return null
+  }
+
+  if (loading) {
+    return <DashboardSkeleton />
   }
 
   return (

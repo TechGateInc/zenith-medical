@@ -31,6 +31,7 @@ import ImageUpload from './ImageUpload';
 import Modal from '../UI/Modal';
 import toast from 'react-hot-toast';
 import { useApiAuth } from '@/lib/auth/use-api-auth';
+import { TableSkeleton } from '@/components/UI/SkeletonLoader';
 
 // Types
 interface TeamMember {
@@ -489,83 +490,7 @@ const TeamManager: React.FC = () => {
       {/* Team Members List */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         {loading ? (
-          <>
-            {/* Table Header */}
-            <div className="border-b border-gray-200 px-4 sm:px-6 py-4 bg-gray-50">
-              <div className="grid grid-cols-12 gap-1 gap-x-3 sm:gap-x-4 text-sm font-medium text-gray-700">
-                <div className="col-span-1 hidden md:flex items-center justify-center w-8 min-w-[2rem] max-w-[2rem]"></div> {/* Drag handle */}
-                <div className="col-span-6 md:col-span-3 flex items-center">Photo & Name</div>
-                <div className="col-span-6 md:col-span-2 hidden lg:flex items-center">Title</div>
-                <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Contact</div>
-                <div className="col-span-6 md:col-span-2 hidden xl:flex items-center">Specialties</div>
-                <div className="col-span-6 md:col-span-1 hidden lg:flex items-center justify-center">Status</div>
-                <div className="col-span-6 md:col-span-1 flex items-center justify-end w-20 min-w-[5rem] max-w-[5rem]">Actions</div>
-              </div>
-            </div>
-
-            {/* Skeleton Rows */}
-            <div className="divide-y divide-gray-200">
-              {Array.from({ length: 5 }, (_, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-12 gap-1 gap-x-3 sm:gap-x-4 px-4 sm:px-6 py-5 min-h-[100px] items-stretch animate-pulse"
-                >
-                  {/* Drag Handle Skeleton */}
-                  <div className="col-span-1 hidden md:flex items-center justify-center">
-                    <div className="w-4 h-4 bg-gray-200 rounded"></div>
-                  </div>
-
-                  {/* Photo & Name Skeleton */}
-                  <div className="col-span-6 md:col-span-3 flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0"></div>
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                  </div>
-
-                  {/* Title Skeleton */}
-                  <div className="col-span-6 md:col-span-2 hidden lg:flex items-start">
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                  </div>
-
-                  {/* Contact Skeleton */}
-                  <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
-                    <div className="space-y-2 min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-gray-200 rounded"></div>
-                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-gray-200 rounded"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Specialties Skeleton */}
-                  <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
-                    <div className="flex flex-wrap gap-1.5 min-w-0 flex-1">
-                      <div className="h-6 bg-gray-200 rounded-full w-16"></div>
-                      <div className="h-6 bg-gray-200 rounded-full w-20"></div>
-                      <div className="h-6 bg-gray-200 rounded-full w-14"></div>
-                    </div>
-                  </div>
-
-                  {/* Status Skeleton */}
-                  <div className="col-span-6 md:col-span-1 hidden lg:flex items-start justify-center">
-                    <div className="h-6 bg-gray-200 rounded-full w-16"></div>
-                  </div>
-
-                  {/* Actions Skeleton */}
-                  <div className="col-span-6 md:col-span-1 flex items-start justify-end gap-1.5 w-20 min-w-[5rem] max-w-[5rem]">
-                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
-                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
+          <TableSkeleton rows={5} columns={6} />
         ) : teamMembers.length === 0 ? (
           <div className="p-8 text-center">
             <User className="mx-auto mb-4 text-gray-400" size={48} />

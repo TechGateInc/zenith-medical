@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../lib/auth/use-auth'
+import { NotificationsSkeleton } from '@/components/UI/SkeletonLoader'
 
 interface NotificationTemplate {
   id: string
@@ -209,14 +210,7 @@ export default function NotificationManagementPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+    return <NotificationsSkeleton />
   }
 
   if (!isAuthenticated) {
@@ -298,9 +292,21 @@ export default function NotificationManagementPage() {
 
           <div className="p-6">
             {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-gray-600">Loading...</p>
+              <div className="space-y-4">
+                {Array.from({ length: 3 }, (_, i) => (
+                  <div key={i} className="border border-gray-200 rounded-lg p-6 animate-pulse">
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-32 h-5 bg-gray-200 rounded"></div>
+                        <div className="w-16 h-5 bg-gray-200 rounded-full"></div>
+                        <div className="w-12 h-5 bg-gray-200 rounded-full"></div>
+                      </div>
+                      <div className="w-48 h-4 bg-gray-200 rounded"></div>
+                      <div className="w-full h-4 bg-gray-200 rounded"></div>
+                      <div className="w-24 h-3 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : error ? (
               <div className="text-center py-8">

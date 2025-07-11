@@ -21,6 +21,7 @@ import {
   Database,
   FileText,
 } from 'lucide-react';
+import { SecuritySkeleton } from '@/components/UI/SkeletonLoader';
 
 interface SecurityStats {
   totalLogins: number;
@@ -179,6 +180,10 @@ export default function SecurityPage() {
     { id: 'events', label: 'Security Events', icon: Activity },
     { id: 'compliance', label: 'Compliance', icon: FileText }
   ];
+
+  if (loading) {
+    return <SecuritySkeleton />
+  }
 
   return (
     <div className="p-6 lg:p-8">

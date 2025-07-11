@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../lib/auth/use-auth'
+import { ExportSkeleton } from '@/components/UI/SkeletonLoader'
 
 export default function ExportPage() {
   const { isLoading, isAuthenticated, isAdmin } = useAuth()
@@ -90,14 +91,7 @@ export default function ExportPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+    return <ExportSkeleton />
   }
 
   if (!isAuthenticated || !isAdmin) {

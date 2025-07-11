@@ -20,6 +20,7 @@ import {
   Eye,
   UserCheck
 } from 'lucide-react';
+import { AppointmentsSkeleton } from '@/components/UI/SkeletonLoader';
 
 interface AppointmentStats {
   totalProviders: number;
@@ -166,6 +167,10 @@ export default function AppointmentsPage() {
     };
     return colors[color as keyof typeof colors];
   };
+
+  if (loading) {
+    return <AppointmentsSkeleton />
+  }
 
   return (
     <div className="p-6 lg:p-8">

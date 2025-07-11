@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../lib/auth/use-auth'
+import { ListSkeleton } from '@/components/UI/SkeletonLoader'
 
 interface FAQItem {
   id: string
@@ -168,14 +169,7 @@ export default function FAQManagementPage() {
     .sort((a, b) => a.sortOrder - b.sortOrder)
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+    return <ListSkeleton items={8} />
   }
 
   if (!isAuthenticated) {

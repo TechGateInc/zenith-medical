@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Users, Search, Filter, Calendar, Download, RefreshCw, Eye, Clock, Mail, Phone } from 'lucide-react';
 import { useApiAuth } from '@/lib/auth/use-api-auth';
+import { TableSkeleton } from '@/components/UI/SkeletonLoader';
 
 interface IntakeSubmission {
   id: string;
@@ -279,10 +280,7 @@ export default function PatientIntakePage() {
       {/* Submissions List */}
       <div className="bg-white rounded-2xl border border-gray-200">
         {loading ? (
-          <div className="flex items-center justify-center p-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Loading submissions...</span>
-          </div>
+          <TableSkeleton rows={8} columns={5} />
         ) : error ? (
           <div className="p-12 text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">

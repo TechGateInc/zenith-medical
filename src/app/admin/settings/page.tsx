@@ -22,6 +22,7 @@ import {
   EyeOff,
   Key
 } from 'lucide-react';
+import { SettingsSkeleton } from '@/components/UI/SkeletonLoader';
 
 interface SystemSettings {
   siteName: string;
@@ -184,6 +185,10 @@ export default function SettingsPage() {
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'database', label: 'Database', icon: Database }
   ];
+
+  if (loading) {
+    return <SettingsSkeleton />
+  }
 
   return (
     <div className="p-6 lg:p-8">

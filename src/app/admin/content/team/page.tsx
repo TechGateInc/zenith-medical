@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { AdminRole } from '@prisma/client'
 import TeamManager from '@/components/Admin/TeamManager'
+import { TableSkeleton } from '@/components/UI/SkeletonLoader'
 
 export default function TeamManagementPage() {
   const { data: session, status } = useSession()
@@ -34,7 +35,7 @@ export default function TeamManagementPage() {
   }, [session, status, router])
 
   if (loading) {
-    return <div>Loading...</div>
+    return <TableSkeleton rows={5} columns={6} />
   }
 
   return <TeamManager />

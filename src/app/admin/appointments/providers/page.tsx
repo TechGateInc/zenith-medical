@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import type { ProviderHealthCheck, ValidationResult } from '../../../../lib/integrations/booking-provider-validator'
+import { CardGridSkeleton } from '@/components/UI/SkeletonLoader'
 
 interface BookingProvider {
   name: string
@@ -140,11 +141,7 @@ export default function BookingProvidersPage() {
   }
 
   if (status === 'loading' || loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    )
+    return <CardGridSkeleton cards={4} />
   }
 
   if (!session?.user?.role || !['SUPER_ADMIN', 'ADMIN'].includes(session.user.role)) {

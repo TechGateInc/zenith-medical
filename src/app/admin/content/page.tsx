@@ -19,6 +19,7 @@ import {
   Calendar,
   Eye
 } from 'lucide-react';
+import { CardGridSkeleton, ListSkeleton } from '@/components/UI/SkeletonLoader';
 
 interface ContentStats {
   totalTeamMembers: number;
@@ -199,6 +200,51 @@ export default function ContentManagementPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="p-6 lg:p-8 space-y-6">
+        {/* Header Skeleton */}
+        <div className="space-y-4">
+          <div className="flex items-center mb-4">
+            <div className="w-4 h-4 bg-gray-200 rounded mr-2 animate-pulse"></div>
+            <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="w-32 h-6 bg-gray-200 rounded animate-pulse"></div>
+          <div className="w-48 h-4 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gray-200 rounded-xl animate-pulse"></div>
+                <div className="ml-4 space-y-2">
+                  <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="w-16 h-6 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Content Sections Skeleton */}
+        <CardGridSkeleton cards={3} />
+
+        {/* Recent Activity Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-200">
+          <div className="p-6 border-b border-gray-200">
+            <div className="w-32 h-6 bg-gray-200 rounded animate-pulse mb-2"></div>
+            <div className="w-48 h-4 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="p-6">
+            <ListSkeleton items={5} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 lg:p-8">
       {/* Header */}
@@ -326,12 +372,7 @@ export default function ContentManagementPage() {
         </div>
         
         <div className="p-6">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Loading activity...</span>
-            </div>
-          ) : stats.recentActivity.length === 0 ? (
+          {stats.recentActivity.length === 0 ? (
             <div className="text-center py-8">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-8 h-8 text-gray-400" />
