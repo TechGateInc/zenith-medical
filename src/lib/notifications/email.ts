@@ -1,15 +1,7 @@
 import nodemailer from 'nodemailer'
 
-// Email configuration interface
-interface EmailConfig {
-  host: string
-  port: number
-  secure: boolean
-  auth: {
-    user: string
-    pass: string
-  }
-}
+// Email service types
+type EmailProvider = 'resend' | 'smtp'
 
 // Email template interfaces
 interface PatientConfirmationData {
@@ -32,26 +24,34 @@ interface EmailResult {
   success: boolean
   messageId?: string
   error?: string
+  provider?: EmailProvider
 }
 
 // Email service configuration
-const getEmailConfig = (): EmailConfig => {
-  // In production, these would come from environment variables
-  // For development, you might use a service like Mailtrap or Ethereal
+const getEmailProvider = (): EmailProvider => {
+  // Prioritize Resend if API key is available, otherwise use SMTP
+  if (process.env.RESEND_API_KEY) {
+    return 'resend'
+  }
+  return 'smtp'
+}
+
+// SMTP configuration
+const getSMTPConfig = () => {
   return {
-    host: process.env.SMTP_HOST || 'smtp.sendgrid.net',
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
     secure: process.env.SMTP_SECURE === 'true',
     auth: {
-      user: process.env.SMTP_USER || 'apikey',
-      pass: process.env.SMTP_PASS || process.env.SENDGRID_API_KEY || ''
+      user: process.env.SMTP_USER || '',
+      pass: process.env.SMTP_PASS || ''
     }
   }
 }
 
-// Create transporter
-const createTransporter = () => {
-  const config = getEmailConfig()
+// Create SMTP transporter
+const createSMTPTransporter = () => {
+  const config = getSMTPConfig()
   return nodemailer.createTransport(config)
 }
 
@@ -174,16 +174,16 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
         <div style="margin: 30px 0;">
           <h3>Contact Information:</h3>
           <p>
-            <strong>Phone:</strong> (555) 123-CARE<br>
-            <strong>Email:</strong> intake@zenithmedical.ca<br>
-            <strong>Address:</strong> 123 Medical Plaza Drive, Medical District, MD 12345
+            <strong>Phone:</strong> 249 806 0128<br>
+            <strong>Email:</strong> intake@zenithmediacl.ca<br>
+            <strong>Address:</strong> Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
           </p>
         </div>
       </div>
       
       <div class="footer">
         <p>This is an automated message from Zenith Medical Centre. Please do not reply to this email.</p>
-        <p>If you have questions about your submission, please call us at (555) 123-CARE.</p>
+        <p>If you have questions about your submission, please call us at 249 806 0128.</p>
         <p>&copy; ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.</p>
       </div>
     </body>
@@ -221,12 +221,12 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
     Your personal health information has been encrypted using AES-256 encryption and is stored securely in compliance with HIPAA and PIPEDA regulations.
     
     CONTACT INFORMATION:
-    Phone: (555) 123-CARE
-    Email: intake@zenithmedical.ca
-    Address: 123 Medical Plaza Drive, Medical District, MD 12345
+    Phone: 249 806 0128
+    Email: intake@zenithmediacl.ca
+    Address: Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
     
     This is an automated message. Please do not reply to this email.
-    For questions, please call us at (555) 123-CARE.
+    For questions, please call us at 249 806 0128.
     
     © ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.
   `
@@ -321,29 +321,26 @@ const generateStaffNotificationTemplate = (data: StaffNotificationData): { subje
         </div>
         
         <div style="text-align: center;">
-          <p><strong>Review this submission in the admin dashboard:</strong></p>
+          <h3>Required Actions:</h3>
+          <ol style="text-align: left; max-width: 400px; margin: 0 auto;">
+            <li>Review the submission details</li>
+            <li>Verify patient information</li>
+            <li>Contact patient to confirm details</li>
+            <li>Schedule their first appointment</li>
+            <li>Update status in dashboard</li>
+          </ol>
           <a href="${data.dashboardUrl}" class="cta-button">View in Dashboard</a>
         </div>
         
-        <div class="details-box">
-          <h3>Required Actions:</h3>
-          <ol>
-            <li><strong>Review Submission:</strong> Verify all patient information is complete and accurate</li>
-            <li><strong>Contact Patient:</strong> Call or email to confirm details and answer any questions</li>
-            <li><strong>Schedule Appointment:</strong> Coordinate with patient to book their first appointment</li>
-            <li><strong>Update Status:</strong> Mark as reviewed in the admin dashboard</li>
-          </ol>
-        </div>
-        
-        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 15px; margin: 20px 0;">
-          <h4 style="margin-top: 0;">🔒 Privacy Reminder</h4>
-          <p style="margin-bottom: 0;">This submission contains encrypted PHI. Ensure all communication and handling follows HIPAA/PIPEDA compliance protocols.</p>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 15px; margin: 20px 0;">
+          <h4 style="margin-top: 0; color: #dc2626;">🔒 Privacy Reminder</h4>
+          <p style="margin: 0; color: #dc2626;">This submission contains encrypted PHI. Follow HIPAA/PIPEDA compliance protocols when handling patient information.</p>
         </div>
       </div>
       
       <div class="footer">
-        <p>Zenith Medical Centre Administrative System</p>
         <p>Generated: ${new Date().toLocaleString()}</p>
+        <p>This is an automated notification from Zenith Medical Centre.</p>
       </div>
     </body>
     </html>
@@ -380,28 +377,64 @@ const generateStaffNotificationTemplate = (data: StaffNotificationData): { subje
   return { subject, html, text }
 }
 
-// Email sending functions
-export const sendPatientConfirmationEmail = async (
-  patientEmail: string,
-  data: PatientConfirmationData
+// Send email with Resend
+const sendEmailWithResend = async (
+  to: string,
+  subject: string,
+  html: string,
+  text: string,
+  fromName?: string,
+  fromEmail?: string
 ): Promise<EmailResult> => {
   try {
-    const transporter = createTransporter()
-    const template = generatePatientConfirmationTemplate(data)
+    const { Resend } = await import('resend')
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    
+    const result = await resend.emails.send({
+      from: `${fromName || 'Zenith Medical Centre'} <${fromEmail || 'noreply@zenithmediacl.ca'}>`,
+      to: [to],
+      subject: subject,
+      html: html,
+      text: text,
+    })
+    
+    return {
+      success: true,
+      messageId: result.data?.id,
+      provider: 'resend'
+    }
+  } catch (error) {
+    console.error('Resend email error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      provider: 'resend'
+    }
+  }
+}
+
+// Send email with SMTP
+const sendEmailWithSMTP = async (
+  to: string,
+  subject: string,
+  html: string,
+  text: string,
+  fromName?: string,
+  fromEmail?: string
+): Promise<EmailResult> => {
+  try {
+    const transporter = createSMTPTransporter()
     
     const mailOptions = {
-      from: {
-        name: 'Zenith Medical Centre',
-        address: process.env.FROM_EMAIL || 'noreply@zenithmedical.ca'
-      },
-      to: patientEmail,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
+      from: `${fromName || 'Zenith Medical Centre'} <${fromEmail || 'noreply@zenithmediacl.ca'}>`,
+      to: to,
+      subject: subject,
+      html: html,
+      text: text,
       headers: {
         'X-Priority': '3',
         'X-MSMail-Priority': 'Normal',
-        'List-Unsubscribe': '<mailto:unsubscribe@zenithmedical.ca>'
+        'List-Unsubscribe': '<mailto:unsubscribe@zenithmediacl.ca>'
       }
     }
     
@@ -409,8 +442,76 @@ export const sendPatientConfirmationEmail = async (
     
     return {
       success: true,
-      messageId: result.messageId
+      messageId: result.messageId,
+      provider: 'smtp'
     }
+  } catch (error) {
+    console.error('SMTP email error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      provider: 'smtp'
+    }
+  }
+}
+
+// Main email sending function with fallback
+const sendEmail = async (
+  to: string,
+  subject: string,
+  html: string,
+  text: string,
+  fromName?: string,
+  fromEmail?: string
+): Promise<EmailResult> => {
+  const provider = getEmailProvider()
+  
+  try {
+    if (provider === 'resend') {
+      const result = await sendEmailWithResend(to, subject, html, text, fromName, fromEmail)
+      if (result.success) {
+        return result
+      }
+      // Fallback to SMTP if Resend fails
+      console.log('Resend failed, falling back to SMTP...')
+      return await sendEmailWithSMTP(to, subject, html, text, fromName, fromEmail)
+    } else {
+      const result = await sendEmailWithSMTP(to, subject, html, text, fromName, fromEmail)
+      if (result.success) {
+        return result
+      }
+      // Fallback to Resend if SMTP fails and Resend is available
+      if (process.env.RESEND_API_KEY) {
+        console.log('SMTP failed, falling back to Resend...')
+        return await sendEmailWithResend(to, subject, html, text, fromName, fromEmail)
+      }
+      return result
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Email sending failed',
+      provider: provider
+    }
+  }
+}
+
+// Email sending functions
+export const sendPatientConfirmationEmail = async (
+  patientEmail: string,
+  data: PatientConfirmationData
+): Promise<EmailResult> => {
+  try {
+    const template = generatePatientConfirmationTemplate(data)
+    
+    return await sendEmail(
+      patientEmail,
+      template.subject,
+      template.html,
+      template.text,
+      'Zenith Medical Centre',
+      process.env.FROM_EMAIL || 'noreply@zenithmediacl.ca'
+    )
   } catch (error) {
     console.error('Patient confirmation email error:', error)
     return {
@@ -424,36 +525,25 @@ export const sendStaffNotificationEmail = async (
   data: StaffNotificationData
 ): Promise<EmailResult> => {
   try {
-    const transporter = createTransporter()
     const template = generateStaffNotificationTemplate(data)
     
     // Get staff notification emails from environment variables
     const staffEmails = process.env.STAFF_NOTIFICATION_EMAILS?.split(',') || [
-      'admin@zenithmedical.ca',
-      'intake@zenithmedical.ca'
+      'admin@zenithmediacl.ca',
+      'intake@zenithmediacl.ca'
     ]
     
-    const mailOptions = {
-      from: {
-        name: 'Zenith Medical Centre System',
-        address: process.env.FROM_EMAIL || 'noreply@zenithmedical.ca'
-      },
-      to: staffEmails,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
-      headers: {
-        'X-Priority': '2',
-        'X-MSMail-Priority': 'High'
-      }
-    }
+    // Send to first staff email (can be extended to send to multiple)
+    const staffEmail = staffEmails[0].trim()
     
-    const result = await transporter.sendMail(mailOptions)
-    
-    return {
-      success: true,
-      messageId: result.messageId
-    }
+    return await sendEmail(
+      staffEmail,
+      template.subject,
+      template.html,
+      template.text,
+      'Zenith Medical Centre System',
+      process.env.FROM_EMAIL || 'noreply@zenithmediacl.ca'
+    )
   } catch (error) {
     console.error('Staff notification email error:', error)
     return {
@@ -463,20 +553,36 @@ export const sendStaffNotificationEmail = async (
   }
 }
 
-// Test email configuration
 export const testEmailConfiguration = async (): Promise<EmailResult> => {
   try {
-    const transporter = createTransporter()
-    await transporter.verify()
-    
-    return {
-      success: true
+    const testData: PatientConfirmationData = {
+      patientName: 'Test Patient',
+      submissionId: 'TEST-123',
+      submissionDate: new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      appointmentBookingUrl: 'https://zenithmedical.com/contact?booking=true'
     }
+    
+    const template = generatePatientConfirmationTemplate(testData)
+    
+    return await sendEmail(
+      'test@example.com',
+      template.subject,
+      template.html,
+      template.text,
+      'Zenith Medical Centre',
+      process.env.FROM_EMAIL || 'noreply@zenithmediacl.ca'
+    )
   } catch (error) {
-    console.error('Email configuration test failed:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Test email failed'
     }
   }
 }

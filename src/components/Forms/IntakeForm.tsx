@@ -7,7 +7,8 @@ import {
   validateIntakeForm, 
   formatPhone, 
   normalizePostalCode,
-  sanitizeInput
+  sanitizeInput,
+  sanitizeNameInput
 } from '../../lib/utils/validation'
 import PrivacyPolicyAgreement from './PrivacyPolicyAgreement'
 import { 
@@ -105,12 +106,8 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     if (errorCount > 0) {
       formAccessibility.announceFormErrors(errors as Record<string, string>)
       
-      // Move focus to error summary if it exists
-      if (errorSummaryRef.current) {
-        setTimeout(() => {
-          errorSummaryRef.current?.focus()
-        }, 100)
-      }
+      // Don't automatically focus error summary to avoid scrolling
+      // Users can still access it via keyboard navigation
     }
   }, [errors])
 
@@ -129,13 +126,14 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     if (type === 'checkbox') {
       newValue = (e.target as HTMLInputElement).checked
     } else {
-      // Sanitize string inputs
-      let sanitizedValue = sanitizeInput(value)
+      // Don't sanitize during typing to avoid interfering with space input
+      // Only apply specific formatting for certain fields
+      let processedValue = value
       
       // Format specific fields
       if (fieldName === 'dateOfBirth' && type === 'text') {
         // Auto-format as user types DD-MM-YYYY
-        const cleaned = sanitizedValue.replace(/\D/g, '')
+        const cleaned = value.replace(/\D/g, '')
         let formatted = cleaned
         if (cleaned.length >= 2) {
           formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2)
@@ -143,18 +141,18 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
         if (cleaned.length >= 4) {
           formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2, 4) + '-' + cleaned.slice(4, 8)
         }
-        sanitizedValue = formatted
+        processedValue = formatted
       } else if (fieldName === 'postalZipCode') {
         // Normalize postal code formatting
-        sanitizedValue = normalizePostalCode(sanitizedValue)
+        processedValue = normalizePostalCode(value)
       } else if (fieldName === 'phoneNumber' || fieldName === 'nextOfKinPhone') {
         // Allow phone formatting characters while typing
-        sanitizedValue = value // Don't auto-format while typing to avoid cursor jumping
+        processedValue = value // Don't auto-format while typing to avoid cursor jumping
       } else if (fieldName === 'healthInformationNumber') {
-        sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '')
+        processedValue = value.replace(/[^a-zA-Z0-9]/g, '')
       }
       
-      newValue = sanitizedValue
+      newValue = processedValue
     }
     
     setFormData(prev => ({
@@ -180,8 +178,18 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       ? (e.target as HTMLInputElement).checked 
       : e.target.value
     
-    // Format fields on blur for better UX
+    // Apply sanitization and formatting on blur for better UX
     if (typeof value === 'string') {
+      // Apply appropriate sanitization based on field type
+      if (['legalFirstName', 'legalLastName', 'preferredName', 'nextOfKinName', 'relationshipToPatient'].includes(fieldName)) {
+        // Use less aggressive sanitization for name fields
+        value = sanitizeNameInput(value)
+      } else {
+        // Use standard sanitization for other fields
+        value = sanitizeInput(value)
+      }
+      
+      // Format specific fields
       if (fieldName === 'phoneNumber' || fieldName === 'nextOfKinPhone') {
         const formatted = formatPhone(value)
         setFormData(prev => ({
@@ -198,6 +206,12 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
         value = normalized
       } else if (fieldName === 'healthInformationNumber') {
         // Optionally format or validate here
+      } else {
+        // Update form data with sanitized value for other fields
+        setFormData(prev => ({
+          ...prev,
+          [fieldName]: value
+        }))
       }
     }
     
@@ -411,12 +425,14 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           role="alert"
           aria-labelledby="error-summary-title"
           tabIndex={-1}
+          style={{ scrollMarginTop: '20px' }}
         >
           <h2 id="error-summary-title" className="text-lg font-semibold text-red-800 mb-4 flex items-center">
             <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Please correct the following {Object.keys(errors).filter(key => errors[key as keyof FormErrors]).length} error{Object.keys(errors).filter(key => errors[key as keyof FormErrors]).length !== 1 ? 's' : ''}:
+            <span className="ml-2 text-sm font-normal text-red-600">(Click links to focus fields)</span>
           </h2>
           <ul className="list-disc list-inside space-y-2 text-red-700">
             {Object.entries(errors).map(([field, error]) => 
@@ -424,13 +440,15 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
                 <li key={field}>
                   <a 
                     href={`#${formAccessibility.generateFieldId(field)}`}
-                    className="underline hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"
+                    className="underline hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded transition-colors duration-200"
+                    title="Focus field (no scrolling)"
                     onClick={(e) => {
                       e.preventDefault()
                       const element = document.getElementById(formAccessibility.generateFieldId(field))
                       if (element) {
                         element.focus()
-                        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        // Don't scroll to avoid interrupting user typing
+                        // The field will be visible if it's in the viewport
                         announceToScreenReader(`Moved to ${field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} field`, 'assertive')
                       }
                     }}

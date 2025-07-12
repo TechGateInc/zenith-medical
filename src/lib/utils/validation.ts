@@ -64,7 +64,16 @@ export const isValidAge = (dateOfBirth: string, minAge = 0, maxAge = 150): boole
 export const sanitizeInput = (input: string): string => {
   // Basic XSS prevention - remove potentially dangerous characters
   return input
-    .replace(/[<>\"']/g, '')
+    .replace(/[<>]/g, '') // Remove only < and > for XSS prevention
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '')
+    .trim()
+}
+
+export const sanitizeNameInput = (input: string): string => {
+  // Less aggressive sanitization for names - allow quotes and apostrophes
+  return input
+    .replace(/[<>]/g, '') // Remove only < and > for XSS prevention
     .replace(/javascript:/gi, '')
     .replace(/on\w+=/gi, '')
     .trim()
@@ -72,7 +81,7 @@ export const sanitizeInput = (input: string): string => {
 
 // Enhanced validation functions
 export const validateName = (name: string, fieldName: string, required = true): ValidationResult => {
-  const sanitized = sanitizeInput(name)
+  const sanitized = sanitizeNameInput(name)
   
   if (required && (!sanitized || sanitized.length === 0)) {
     return { isValid: false, error: `${fieldName} is required` }
@@ -206,7 +215,7 @@ export const validateAddress = (address: string, fieldName: string): ValidationR
 }
 
 export const validateCity = (city: string): ValidationResult => {
-  const sanitized = sanitizeInput(city)
+  const sanitized = sanitizeNameInput(city)
   
   if (!sanitized || sanitized.length === 0) {
     return { isValid: false, error: 'City is required' }
@@ -263,7 +272,7 @@ export const validateProvinceState = (provinceState: string): ValidationResult =
 }
 
 export const validateRelationship = (relationship: string): ValidationResult => {
-  const sanitized = sanitizeInput(relationship)
+  const sanitized = sanitizeNameInput(relationship)
   
   if (!sanitized || sanitized.length === 0) {
     return { isValid: false, error: 'Relationship is required' }
