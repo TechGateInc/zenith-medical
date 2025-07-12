@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useEffect, useRef, ReactNode } from 'react';
+import React, { useEffect, useRef, type ReactNode } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 
 interface ModalProps {
