@@ -20,7 +20,7 @@ import {
   Eye,
   UserCheck
 } from 'lucide-react';
-import { AppointmentsSkeleton } from '@/components/UI/SkeletonLoader';
+import { AppointmentsSkeleton, CardGridSkeleton } from '@/components/UI/SkeletonLoader';
 
 interface AppointmentStats {
   totalProviders: number;
@@ -312,10 +312,7 @@ export default function AppointmentsPage() {
         
         <div className="p-6">
           {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Loading providers...</span>
-            </div>
+            <CardGridSkeleton cards={6} />
           ) : error ? (
             <div className="text-center py-8">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">

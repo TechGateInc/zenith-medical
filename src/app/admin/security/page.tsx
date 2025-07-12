@@ -255,10 +255,7 @@ export default function SecurityPage() {
 
         <div className="p-6">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-              <span className="ml-3 text-gray-600">Loading security data...</span>
-            </div>
+            <SecuritySkeleton />
           ) : error ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../../lib/auth/use-auth'
+import { FormSkeleton } from '@/components/UI/SkeletonLoader'
 
 interface FullIntakeSubmission {
   id: string
@@ -174,14 +175,7 @@ export default function IntakeDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+    return <FormSkeleton />
   }
 
   if (!isAuthenticated) {
@@ -211,11 +205,7 @@ export default function IntakeDetailPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    )
+    return <FormSkeleton />
   }
 
   if (!submission) {

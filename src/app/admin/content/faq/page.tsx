@@ -246,10 +246,7 @@ export default function FAQManagementPage() {
 
         {/* FAQs List */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading FAQs...</p>
-          </div>
+          <ListSkeleton items={8} />
         ) : error ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <div className="text-red-600 mb-4">

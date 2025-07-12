@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../lib/auth/use-auth'
-import { DashboardSkeleton } from '@/components/UI/SkeletonLoader'
+import { DashboardSkeleton, TableSkeleton } from '@/components/UI/SkeletonLoader'
 
 interface IntakeSubmission {
   id: string
@@ -235,9 +235,7 @@ export default function AdminDashboard() {
 
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
+            <TableSkeleton rows={8} columns={5} />
           ) : error ? (
             <div className="p-8 text-center">
               <svg className="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
