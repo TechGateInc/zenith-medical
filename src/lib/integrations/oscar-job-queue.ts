@@ -238,7 +238,7 @@ export class OscarJobQueue {
 
     try {
       // Execute the job
-      const result = await this.executeJob(job.jobType, job.payload)
+      const result = await this.executeJob(job.jobType, job.payload as JobPayload)
       
       // Job succeeded
       await this.completeJob(jobId, result, Date.now() - startTime)
@@ -294,7 +294,7 @@ export class OscarJobQueue {
         return await this.executeDataIntegrityCheck(payload)
       
       default:
-        throw new OscarError(`Unknown job type: ${jobType}`)
+        throw new OscarConfigurationError(`Unknown job type: ${jobType}`, 'missing_setup')
     }
   }
 
@@ -312,7 +312,7 @@ export class OscarJobQueue {
 
   private async executePatientUpdate(service: any, payload: JobPayload): Promise<JobResult> {
     // Implementation for patient update
-    throw new OscarError('Patient update not yet implemented')
+    throw new OscarConfigurationError('Patient update not yet implemented', 'missing_setup')
   }
 
   private async executePatientSearch(service: any, payload: JobPayload): Promise<JobResult> {
@@ -335,12 +335,12 @@ export class OscarJobQueue {
 
   private async executeAppointmentUpdate(service: any, payload: JobPayload): Promise<JobResult> {
     // Implementation for appointment update
-    throw new OscarError('Appointment update not yet implemented')
+    throw new OscarConfigurationError('Appointment update not yet implemented', 'missing_setup')
   }
 
   private async executeAppointmentCancel(service: any, payload: JobPayload): Promise<JobResult> {
     // Implementation for appointment cancellation
-    throw new OscarError('Appointment cancellation not yet implemented')
+    throw new OscarConfigurationError('Appointment cancellation not yet implemented', 'missing_setup')
   }
 
   private async executeAppointmentSync(service: any, payload: JobPayload): Promise<JobResult> {
@@ -472,9 +472,9 @@ export class OscarJobQueue {
     // Log error
     await this.logError(error, {
       operation: `job_${job.jobType.toLowerCase()}`,
-      resourceType: job.resourceType,
-      resourceId: job.resourceId,
-      correlationId: job.correlationId,
+      resourceType: job.resourceType || undefined,
+      resourceId: job.resourceId || undefined,
+      correlationId: job.correlationId || undefined,
       jobId,
       attemptNumber: job.attemptCount
     })
@@ -583,13 +583,13 @@ export class OscarJobQueue {
       return 'NETWORK_ERROR'
     }
     if (error instanceof OscarApiError) {
-      if (error.statusCode === 429) {
+      if (error.httpStatus === 429) {
         return 'RATE_LIMIT_ERROR'
       }
-      if (error.statusCode >= 500) {
+      if (error.httpStatus && error.httpStatus >= 500) {
         return 'SERVER_ERROR'
       }
-      if (error.statusCode >= 400) {
+      if (error.httpStatus && error.httpStatus >= 400) {
         return 'CLIENT_ERROR'
       }
       return 'SERVER_ERROR'
@@ -810,7 +810,7 @@ export class OscarJobQueue {
         data: {
           status: 'PENDING',
           nextRetryAt: new Date(),
-          error: null,
+          error: undefined,
           attemptCount: 0 // Reset attempt count for manual retry
         }
       })

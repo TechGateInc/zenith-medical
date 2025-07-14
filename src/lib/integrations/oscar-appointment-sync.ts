@@ -124,7 +124,10 @@ export class OscarAppointmentSyncService {
         )
 
         if (!oscarResponse.success) {
-          throw new OscarApiError(oscarResponse.error || 'Failed to update OSCAR appointment status')
+          throw new OscarApiError(
+            oscarResponse.error || 'Failed to update OSCAR appointment status',
+            'server_error'
+          )
         }
       } catch (oscarError) {
         await this.logSyncOperation('SYNC_TO_OSCAR_FAILED', {
@@ -354,7 +357,7 @@ export class OscarAppointmentSyncService {
         syncStatuses.push({
           id: appointment.id,
           localStatus: appointment.status,
-          lastSyncAt: appointment.oscarLastSyncAt,
+          lastSyncAt: appointment.oscarLastSyncAt || undefined,
           syncRequired,
           conflictDetected: false, // TODO: Implement conflict detection
           errorMessage: undefined
@@ -503,7 +506,8 @@ export class OscarAppointmentSyncService {
       }
     } catch (error) {
       throw new OscarApiError(
-        `Failed to get OSCAR appointment status: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to get OSCAR appointment status: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'server_error'
       )
     }
   }

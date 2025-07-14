@@ -1,5 +1,5 @@
-import { OscarApi } from './oscar-api';
-import { auditLogger } from '../audit/audit-logger';
+import { OscarApiClient } from './oscar-api';
+import { auditLog } from '../audit/audit-logger';
 
 export interface ConnectionTestResult {
   success: boolean;
@@ -24,10 +24,10 @@ export interface FullConnectionTest {
 }
 
 export class OscarConnectionTest {
-  private oscarApi: OscarApi;
+  private oscarApi: OscarApiClient;
 
   constructor() {
-    this.oscarApi = new OscarApi();
+    this.oscarApi = new OscarApiClient();
   }
 
   /**
@@ -60,9 +60,9 @@ export class OscarConnectionTest {
 
       if (response.ok || response.status === 401) {
         // 401 is expected without authentication, means server is reachable
-        await auditLogger.log({
-          action: 'oscar_connectivity_test',
-          result: 'success',
+        await auditLog({
+          action: 'OSCAR_CONNECTIVITY_TEST_SUCCESS',
+          resource: 'oscar_api',
           details: { responseTime, httpStatus: response.status }
         });
 
@@ -91,9 +91,9 @@ export class OscarConnectionTest {
       const responseTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      await auditLogger.log({
-        action: 'oscar_connectivity_test',
-        result: 'failure',
+      await auditLog({
+        action: 'OSCAR_CONNECTIVITY_TEST_FAILURE',
+        resource: 'oscar_api',
         details: { error: errorMessage, responseTime }
       });
 
@@ -143,9 +143,9 @@ export class OscarConnectionTest {
       const responseTime = Date.now() - startTime;
 
       if (Array.isArray(providers)) {
-        await auditLogger.log({
-          action: 'oscar_auth_test',
-          result: 'success',
+        await auditLog({
+          action: 'OSCAR_AUTH_TEST_SUCCESS',
+          resource: 'oscar_api',
           details: { responseTime, providerCount: providers.length }
         });
 
@@ -172,9 +172,9 @@ export class OscarConnectionTest {
       const responseTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      await auditLogger.log({
-        action: 'oscar_auth_test',
-        result: 'failure',
+      await auditLog({
+        action: 'OSCAR_AUTH_TEST_FAILURE',
+        resource: 'oscar_api',
         details: { error: errorMessage, responseTime }
       });
 
@@ -223,7 +223,7 @@ export class OscarConnectionTest {
       // Test multiple API endpoints to ensure comprehensive functionality
       const tests = await Promise.allSettled([
         this.oscarApi.getProviders(),
-        this.oscarApi.searchPatient('test-health-number-999999')
+        this.oscarApi.searchPatientByHealthNumber('test-health-number-999999')
       ]);
 
       const responseTime = Date.now() - startTime;
@@ -231,9 +231,9 @@ export class OscarConnectionTest {
       const totalTests = tests.length;
 
       if (successfulTests === totalTests) {
-        await auditLogger.log({
-          action: 'oscar_api_functionality_test',
-          result: 'success',
+        await auditLog({
+          action: 'OSCAR_API_FUNCTIONALITY_TEST_SUCCESS',
+          resource: 'oscar_api',
           details: { responseTime, testsExecuted: totalTests }
         });
 
@@ -273,9 +273,9 @@ export class OscarConnectionTest {
       const responseTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      await auditLogger.log({
-        action: 'oscar_api_functionality_test',
-        result: 'failure',
+      await auditLog({
+        action: 'OSCAR_API_FUNCTIONALITY_TEST_FAILURE',
+        resource: 'oscar_api',
         details: { error: errorMessage, responseTime }
       });
 
@@ -297,9 +297,9 @@ export class OscarConnectionTest {
   async runFullConnectionTest(): Promise<FullConnectionTest> {
     const timestamp = new Date().toISOString();
     
-    await auditLogger.log({
-      action: 'oscar_full_connection_test',
-      result: 'started',
+    await auditLog({
+      action: 'OSCAR_FULL_CONNECTION_TEST_STARTED',
+      resource: 'oscar_api',
       details: { timestamp }
     });
 
@@ -337,9 +337,9 @@ export class OscarConnectionTest {
         }
       };
 
-      await auditLogger.log({
-        action: 'oscar_full_connection_test',
-        result: allSuccessful ? 'success' : 'failure',
+      await auditLog({
+        action: allSuccessful ? 'OSCAR_FULL_CONNECTION_TEST_SUCCESS' : 'OSCAR_FULL_CONNECTION_TEST_FAILURE',
+        resource: 'oscar_api',
         details: { 
           timestamp,
           summary,
@@ -353,9 +353,9 @@ export class OscarConnectionTest {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      await auditLogger.log({
-        action: 'oscar_full_connection_test',
-        result: 'error',
+      await auditLog({
+        action: 'OSCAR_FULL_CONNECTION_TEST_ERROR',
+        resource: 'oscar_api',
         details: { timestamp, error: errorMessage }
       });
 

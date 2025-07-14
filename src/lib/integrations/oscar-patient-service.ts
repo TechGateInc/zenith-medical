@@ -234,8 +234,8 @@ export class OscarPatientService {
 
       const result: PatientCreationResult = {
         success: true,
-        demographicNo: oscarResponse.demographic_no?.toString(),
-        chartNo: oscarResponse.chart_no,
+        demographicNo: oscarResponse.demographicNo?.toString(),
+        chartNo: (oscarResponse as any).chartNo || undefined, // chartNo not in interface but may be in actual response
         oscarResponse,
         mappingSummary,
         timestamp
@@ -358,17 +358,17 @@ export class OscarPatientService {
     searchCriteria: PatientSearchResult['searchCriteria'],
     timestamp: string
   ): PatientSearchResult {
-    const patients = (searchResponse.results || []).map(patient => {
+    const patients = (searchResponse.patients || []).map(patient => {
       const confidence = this.calculateMatchConfidence(patient, searchCriteria);
       const matchReasons = this.generateMatchReasons(patient, searchCriteria);
 
       return {
-        demographicNo: patient.demographic_no?.toString() || '',
-        firstName: patient.first_name || '',
-        lastName: patient.last_name || '',
-        dateOfBirth: patient.date_of_birth || '',
-        healthNumber: patient.hin || '',
-        address: patient.address ? `${patient.address}, ${patient.city}` : undefined,
+        demographicNo: patient.demographicNo?.toString() || '',
+        firstName: patient.firstName || '',
+        lastName: patient.lastName || '',
+        dateOfBirth: patient.dateOfBirth || '',
+        healthNumber: patient.healthNumber || '',
+        address: undefined, // Address not available in OscarQuickSearchResult
         confidence,
         matchReasons
       };

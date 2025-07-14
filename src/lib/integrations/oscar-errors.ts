@@ -113,7 +113,8 @@ export class OscarOAuthError extends OscarAuthenticationError {
   ) {
     super(message, 'oauth', undefined, originalError);
     this.oauthStep = oauthStep;
-    this.code = `OSCAR_OAUTH_${oauthStep.toUpperCase()}_ERROR`;
+    // Set the code property via the parent's assignment, not direct assignment
+    (this as any).code = `OSCAR_OAUTH_${oauthStep.toUpperCase()}_ERROR`;
   }
 }
 

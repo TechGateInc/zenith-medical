@@ -123,8 +123,9 @@ export class OscarAppointmentService {
       if (!response.success || !response.data) {
         throw new OscarApiError(
           response.error || 'Failed to retrieve providers from OSCAR',
+          'server_error',
           500,
-          { endpoint: '/oscar/ws/services/providers' }
+          '/oscar/ws/services/providers'
         )
       }
 
@@ -236,17 +237,17 @@ export class OscarAppointmentService {
     try {
       // Validate request
       if (!request.providerNo || !request.date) {
-        throw new OscarDataError('Provider number and date are required for availability check')
+        throw new OscarDataError('Provider number and date are required for availability check', 'missing_required')
       }
 
       // Verify provider exists
       const provider = await this.getProvider(request.providerNo)
       if (!provider) {
-        throw new OscarDataError(`Provider ${request.providerNo} not found`)
+        throw new OscarDataError(`Provider ${request.providerNo} not found`, 'validation', 'providerNo')
       }
 
       if (!provider.isActive) {
-        throw new OscarDataError(`Provider ${request.providerNo} is not active`)
+        throw new OscarDataError(`Provider ${request.providerNo} is not active`, 'validation', 'providerNo')
       }
 
       // For now, we'll generate mock availability since OSCAR availability endpoint
@@ -299,11 +300,11 @@ export class OscarAppointmentService {
       // Verify provider exists and is active
       const provider = await this.getProvider(request.providerNo)
       if (!provider) {
-        throw new OscarDataError(`Provider ${request.providerNo} not found`)
+        throw new OscarDataError(`Provider ${request.providerNo} not found`, 'validation', 'providerNo')
       }
 
       if (!provider.isActive) {
-        throw new OscarDataError(`Provider ${request.providerNo} is not available for appointments`)
+        throw new OscarDataError(`Provider ${request.providerNo} is not available for appointments`, 'validation', 'providerNo')
       }
 
       // Calculate end time
@@ -331,8 +332,9 @@ export class OscarAppointmentService {
       if (!response.success) {
         throw new OscarApiError(
           response.error || 'Failed to create appointment in OSCAR',
+          'server_error',
           500,
-          { oscarResponse: response }
+          '/oscar/ws/services/appointments'
         )
       }
 
@@ -471,24 +473,25 @@ export class OscarAppointmentService {
     
     if (missingFields.length > 0) {
       throw new OscarDataError(
-        `Missing required appointment fields: ${missingFields.join(', ')}`
+        `Missing required appointment fields: ${missingFields.join(', ')}`,
+        'missing_required'
       )
     }
 
     // Validate date format
     if (!/^\d{4}-\d{2}-\d{2}$/.test(request.appointmentDate)) {
-      throw new OscarDataError('Invalid appointment date format. Expected YYYY-MM-DD')
+      throw new OscarDataError('Invalid appointment date format. Expected YYYY-MM-DD', 'format_invalid', 'appointmentDate')
     }
 
     // Validate time format
     if (!/^\d{2}:\d{2}$/.test(request.startTime)) {
-      throw new OscarDataError('Invalid start time format. Expected HH:MM')
+      throw new OscarDataError('Invalid start time format. Expected HH:MM', 'format_invalid', 'startTime')
     }
 
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(request.patientEmail)) {
-      throw new OscarDataError('Invalid email address format')
+      throw new OscarDataError('Invalid email address format', 'format_invalid', 'patientEmail')
     }
   }
 
