@@ -20,9 +20,14 @@ import {
 export interface PatientIntakeData {
   legalFirstName: string
   legalLastName: string
+  middleName: string
   preferredName: string
+  title: string
   dateOfBirth: string
+  gender: string
   phoneNumber: string
+  cellPhone: string
+  workPhone: string
   emailAddress: string
   streetAddress: string
   city: string
@@ -31,6 +36,9 @@ export interface PatientIntakeData {
   nextOfKinName: string
   nextOfKinPhone: string
   relationshipToPatient: string
+  primaryLanguage: string
+  preferredLanguage: string
+  newsletterOptIn: boolean
   privacyPolicyAgreed: boolean
   healthInformationNumber: string
 }
@@ -38,9 +46,14 @@ export interface PatientIntakeData {
 interface FormErrors {
   legalFirstName?: string
   legalLastName?: string
+  middleName?: string
   preferredName?: string
+  title?: string
   dateOfBirth?: string
+  gender?: string
   phoneNumber?: string
+  cellPhone?: string
+  workPhone?: string
   emailAddress?: string
   streetAddress?: string
   city?: string
@@ -49,6 +62,9 @@ interface FormErrors {
   nextOfKinName?: string
   nextOfKinPhone?: string
   relationshipToPatient?: string
+  primaryLanguage?: string
+  preferredLanguage?: string
+  newsletterOptIn?: string
   privacyPolicyAgreed?: string
   healthInformationNumber?: string
 }
@@ -65,9 +81,14 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
   const [formData, setFormData] = useState<PatientIntakeData>({
     legalFirstName: '',
     legalLastName: '',
+    middleName: '',
     preferredName: '',
+    title: '',
     dateOfBirth: '',
+    gender: '',
     phoneNumber: '',
+    cellPhone: '',
+    workPhone: '',
     emailAddress: '',
     streetAddress: '',
     city: '',
@@ -76,6 +97,9 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     nextOfKinName: '',
     nextOfKinPhone: '',
     relationshipToPatient: '',
+    primaryLanguage: '',
+    preferredLanguage: '',
+    newsletterOptIn: false,
     privacyPolicyAgreed: false,
     healthInformationNumber: ''
   })
@@ -145,7 +169,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       } else if (fieldName === 'postalZipCode') {
         // Normalize postal code formatting
         processedValue = normalizePostalCode(value)
-      } else if (fieldName === 'phoneNumber' || fieldName === 'nextOfKinPhone') {
+      } else if (fieldName === 'phoneNumber' || fieldName === 'cellPhone' || fieldName === 'workPhone' || fieldName === 'nextOfKinPhone') {
         // Allow phone formatting characters while typing
         processedValue = value // Don't auto-format while typing to avoid cursor jumping
       } else if (fieldName === 'healthInformationNumber') {
@@ -181,7 +205,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     // Apply sanitization and formatting on blur for better UX
     if (typeof value === 'string') {
       // Apply appropriate sanitization based on field type
-      if (['legalFirstName', 'legalLastName', 'preferredName', 'nextOfKinName', 'relationshipToPatient'].includes(fieldName)) {
+      if (['legalFirstName', 'legalLastName', 'middleName', 'preferredName', 'nextOfKinName', 'relationshipToPatient'].includes(fieldName)) {
         // Use less aggressive sanitization for name fields
         value = sanitizeNameInput(value)
       } else {
@@ -190,7 +214,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       }
       
       // Format specific fields
-      if (fieldName === 'phoneNumber' || fieldName === 'nextOfKinPhone') {
+      if (fieldName === 'phoneNumber' || fieldName === 'cellPhone' || fieldName === 'workPhone' || fieldName === 'nextOfKinPhone') {
         const formatted = formatPhone(value)
         setFormData(prev => ({
           ...prev,
@@ -229,9 +253,10 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     
     // Mark all fields as touched to show errors
     const allFields: (keyof PatientIntakeData)[] = [
-      'legalFirstName', 'legalLastName', 'preferredName', 'dateOfBirth', 'phoneNumber',
-      'emailAddress', 'streetAddress', 'city', 'provinceState', 'postalZipCode',
-      'nextOfKinName', 'nextOfKinPhone', 'relationshipToPatient',
+      'legalFirstName', 'legalLastName', 'middleName', 'preferredName', 'title', 'dateOfBirth', 
+      'gender', 'phoneNumber', 'cellPhone', 'workPhone', 'emailAddress', 'streetAddress', 
+      'city', 'provinceState', 'postalZipCode', 'nextOfKinName', 'nextOfKinPhone', 
+      'relationshipToPatient', 'primaryLanguage', 'preferredLanguage', 'newsletterOptIn',
       'privacyPolicyAgreed', 'healthInformationNumber'
     ]
     
@@ -519,6 +544,51 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           </div>
 
           <div>
+            <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-2">
+              Title <span className="text-slate-500">(Optional)</span>
+            </label>
+            <select
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className={inputClassName('title')}
+              aria-describedby="title-error"
+              autoComplete="honorific-prefix"
+            >
+              <option value="">Select title</option>
+              <option value="Mr.">Mr.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Dr.">Dr.</option>
+              <option value="Prof.">Prof.</option>
+              <option value="Rev.">Rev.</option>
+              <option value="Other">Other</option>
+            </select>
+            <ValidationMessage fieldName="title" />
+          </div>
+
+          <div>
+            <label htmlFor="middleName" className="block text-sm font-medium text-slate-700 mb-2">
+              Middle Name <span className="text-slate-500">(Optional)</span>
+            </label>
+            <input
+              type="text"
+              id="middleName"
+              name="middleName"
+              value={formData.middleName}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className={inputClassName('middleName')}
+              placeholder="Enter your middle name"
+              aria-describedby="middleName-error"
+              autoComplete="additional-name"
+            />
+            <ValidationMessage fieldName="middleName" />
+          </div>
+
+          <div>
             <label htmlFor="preferredName" className="block text-sm font-medium text-slate-700 mb-2">
               Preferred Name <span className="text-slate-500">(Optional)</span>
             </label>
@@ -557,6 +627,96 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
             />
             <p className="mt-1 text-xs text-slate-500">Please use DD-MM-YYYY format (e.g., 15-03-1990)</p>
             <ValidationMessage fieldName="dateOfBirth" />
+          </div>
+
+          <div>
+            <label htmlFor="gender" className="block text-sm font-medium text-slate-700 mb-2">
+              Gender <span className="text-slate-500">(Optional)</span>
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              value={formData.gender}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className={inputClassName('gender')}
+              aria-describedby="gender-error"
+            >
+              <option value="">Select gender</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
+              <option value="U">Prefer not to specify</option>
+            </select>
+            <ValidationMessage fieldName="gender" />
+          </div>
+        </div>
+
+        {/* Language Preferences Section */}
+        <div className="mt-8">
+          <h3 className="text-lg font-medium text-slate-800 mb-4">Language Preferences</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="primaryLanguage" className="block text-sm font-medium text-slate-700 mb-2">
+                Primary Language <span className="text-slate-500">(Optional)</span>
+              </label>
+              <select
+                id="primaryLanguage"
+                name="primaryLanguage"
+                value={formData.primaryLanguage}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                className={inputClassName('primaryLanguage')}
+                aria-describedby="primaryLanguage-error"
+              >
+                <option value="">Select primary language</option>
+                <option value="English">English</option>
+                <option value="French">French</option>
+                <option value="Spanish">Spanish</option>
+                <option value="Mandarin">Mandarin</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Russian">Russian</option>
+                <option value="Japanese">Japanese</option>
+                <option value="German">German</option>
+                <option value="Korean">Korean</option>
+                <option value="Italian">Italian</option>
+                <option value="Other">Other</option>
+              </select>
+              <ValidationMessage fieldName="primaryLanguage" />
+            </div>
+
+            <div>
+              <label htmlFor="preferredLanguage" className="block text-sm font-medium text-slate-700 mb-2">
+                Preferred Language for Correspondence <span className="text-slate-500">(Optional)</span>
+              </label>
+              <select
+                id="preferredLanguage"
+                name="preferredLanguage"
+                value={formData.preferredLanguage}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                className={inputClassName('preferredLanguage')}
+                aria-describedby="preferredLanguage-error"
+              >
+                <option value="">Select preferred language</option>
+                <option value="English">English</option>
+                <option value="French">French</option>
+                <option value="Spanish">Spanish</option>
+                <option value="Mandarin">Mandarin</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Russian">Russian</option>
+                <option value="Japanese">Japanese</option>
+                <option value="German">German</option>
+                <option value="Korean">Korean</option>
+                <option value="Italian">Italian</option>
+                <option value="Other">Other</option>
+              </select>
+              <ValidationMessage fieldName="preferredLanguage" />
+            </div>
           </div>
         </div>
       </section>
@@ -606,6 +766,44 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               autoComplete="email"
             />
             <ValidationMessage fieldName="emailAddress" />
+          </div>
+
+          <div>
+            <label htmlFor="cellPhone" className="block text-sm font-medium text-slate-700 mb-2">
+              Cell Phone <span className="text-slate-500">(Optional)</span>
+            </label>
+            <input
+              type="tel"
+              id="cellPhone"
+              name="cellPhone"
+              value={formData.cellPhone}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className={inputClassName('cellPhone')}
+              placeholder="249 806 0128"
+              aria-describedby="cellPhone-error"
+              autoComplete="tel"
+            />
+            <ValidationMessage fieldName="cellPhone" />
+          </div>
+
+          <div>
+            <label htmlFor="workPhone" className="block text-sm font-medium text-slate-700 mb-2">
+              Work Phone <span className="text-slate-500">(Optional)</span>
+            </label>
+            <input
+              type="tel"
+              id="workPhone"
+              name="workPhone"
+              value={formData.workPhone}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className={inputClassName('workPhone')}
+              placeholder="249 806 0128"
+              aria-describedby="workPhone-error"
+              autoComplete="tel"
+            />
+            <ValidationMessage fieldName="workPhone" />
           </div>
         </div>
       </section>
@@ -781,6 +979,36 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           required
         />
         <ValidationMessage fieldName="healthInformationNumber" />
+      </section>
+
+      {/* Communication Preferences Section */}
+      <section aria-labelledby="communication-preferences-heading">
+        <h2 id="communication-preferences-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+          Communication Preferences
+        </h2>
+        
+        <div className="space-y-4">
+          <div className="flex items-start space-x-3">
+            <input
+              type="checkbox"
+              id="newsletterOptIn"
+              name="newsletterOptIn"
+              checked={formData.newsletterOptIn}
+              onChange={handleInputChange}
+              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+              aria-describedby="newsletterOptIn-error"
+            />
+            <div className="flex-1">
+              <label htmlFor="newsletterOptIn" className="block text-sm font-medium text-slate-700">
+                Subscribe to Newsletter
+              </label>
+              <p className="text-sm text-slate-600 mt-1">
+                Receive health tips, appointment reminders, and clinic updates via email. You can unsubscribe at any time.
+              </p>
+              <ValidationMessage fieldName="newsletterOptIn" />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Privacy Policy Section */}

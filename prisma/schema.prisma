@@ -17,11 +17,23 @@ model PatientIntake {
   // Personal Information (Encrypted)
   legalFirstName        String   // Encrypted
   legalLastName         String   // Encrypted
+  middleName            String?  // Encrypted - Middle name
   preferredName         String?  // Encrypted
+  title                 String?  // Encrypted - Mr./Mrs./Dr./Ms. etc.
   dateOfBirth           String   // Encrypted (DD-MM-YYYY)
-  phoneNumber           String   // Encrypted
+  gender                String?  // Encrypted - M/F/O/U (Male/Female/Other/Unspecified)
+  phoneNumber           String   // Encrypted - Primary phone
+  cellPhone             String?  // Encrypted - Cell/mobile phone
+  workPhone             String?  // Encrypted - Work phone
   emailAddress          String   // Encrypted
   healthInformationNumber String   // Encrypted
+  
+  // Language and Communication Preferences (Encrypted)
+  primaryLanguage       String?  // Encrypted - Primary spoken language
+  preferredLanguage     String?  // Encrypted - Preferred language for correspondence
+  
+  // Communication Preferences
+  newsletterOptIn       Boolean  @default(false) // Newsletter subscription preference
   
   // Address Information (Encrypted)
   streetAddress         String   // Encrypted

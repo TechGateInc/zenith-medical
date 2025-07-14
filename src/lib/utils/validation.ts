@@ -319,14 +319,34 @@ export const validatePatientIntakeField = (
     case 'legalLastName':
       return validateName(stringValue, 'Legal last name', true)
     
+    case 'middleName':
+      return validateName(stringValue, 'Middle name', false)
+    
     case 'preferredName':
       return validateName(stringValue, 'Preferred name', false)
+    
+    case 'title':
+      // Title is optional, no specific validation needed beyond basic sanitization
+      return { isValid: true }
     
     case 'dateOfBirth':
       return validateDateOfBirth(stringValue)
     
+    case 'gender':
+      // Gender is optional, validate if provided
+      if (stringValue && !['M', 'F', 'O', 'U'].includes(stringValue)) {
+        return { isValid: false, error: 'Please select a valid gender option' }
+      }
+      return { isValid: true }
+    
     case 'phoneNumber':
       return validatePhone(stringValue, true)
+    
+    case 'cellPhone':
+      return validatePhone(stringValue, false)
+    
+    case 'workPhone':
+      return validatePhone(stringValue, false)
     
     case 'emailAddress':
       return validateEmail(stringValue, true)
@@ -351,6 +371,18 @@ export const validatePatientIntakeField = (
     
     case 'relationshipToPatient':
       return validateRelationship(stringValue)
+    
+    case 'primaryLanguage':
+      // Primary language is optional, no specific validation needed
+      return { isValid: true }
+    
+    case 'preferredLanguage':
+      // Preferred language is optional, no specific validation needed
+      return { isValid: true }
+    
+    case 'newsletterOptIn':
+      // Newsletter opt-in is boolean, always valid
+      return { isValid: true }
     
     case 'privacyPolicyAgreed':
       return validatePrivacyPolicy(booleanValue)

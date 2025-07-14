@@ -54,6 +54,7 @@ export const OSCAR_DEMOGRAPHIC_REQUIREMENTS = {
     lastName: 30,
     middleName: 30,
     preferredName: 30,
+    title: 10,
     address: 60,
     city: 25,
     province: 2,
@@ -65,7 +66,9 @@ export const OSCAR_DEMOGRAPHIC_REQUIREMENTS = {
     healthNumber: 12,
     emergencyContactName: 30,
     emergencyContactPhone: 20,
-    emergencyContactRelationship: 20
+    emergencyContactRelationship: 20,
+    primaryLanguage: 30,
+    preferredLanguage: 30
   },
   
   // Valid values for specific fields
@@ -109,6 +112,11 @@ export class OscarPatientMapper {
         dateOfBirth: this.normalizeDateOfBirth(patientIntake.dateOfBirth),
         healthNumber: this.normalizeHealthNumber(patientIntake.healthInformationNumber),
         
+        // Additional Personal Information (Optional)
+        title: patientIntake.title ? this.normalizeField(patientIntake.title, 'title') : undefined,
+        sexDesc: patientIntake.gender ? this.normalizeGender(patientIntake.gender) : undefined,
+        alias: patientIntake.preferredName ? this.normalizeField(patientIntake.preferredName, 'preferredName') : undefined,
+        
         // Address Information
         address: this.normalizeField(patientIntake.streetAddress, 'address'),
         city: this.normalizeField(patientIntake.city, 'city'),
@@ -117,7 +125,14 @@ export class OscarPatientMapper {
         
         // Contact Information
         phoneNumber: this.normalizePhone(patientIntake.phoneNumber),
-        email: this.normalizeEmail(patientIntake.emailAddress)
+        email: this.normalizeEmail(patientIntake.emailAddress),
+        
+        // Language Preferences (Optional)
+        spokenLanguage: patientIntake.primaryLanguage ? this.normalizeField(patientIntake.primaryLanguage, 'primaryLanguage') : undefined,
+        officialLanguage: patientIntake.preferredLanguage ? this.normalizeField(patientIntake.preferredLanguage, 'preferredLanguage') : undefined,
+        
+        // Communication Preferences (Optional)
+        newsletter: patientIntake.newsletterOptIn ? 'Y' : 'N'
       };
       
       // Validate mapped data
@@ -378,6 +393,29 @@ export class OscarPatientMapper {
       `Invalid or unsupported province/state: ${normalized}`,
       'validation',
       'province',
+      normalized
+    );
+  }
+  
+  /**
+   * Normalize gender code for OSCAR
+   */
+  private static normalizeGender(gender: string): string {
+    if (!gender?.trim()) {
+      return 'U'; // Unknown/Unspecified
+    }
+    
+    const normalized = gender.trim().toUpperCase();
+    
+    // Valid OSCAR gender codes: M, F, O, U
+    if (['M', 'F', 'O', 'U'].includes(normalized)) {
+      return normalized;
+    }
+    
+    throw new OscarDataError(
+      `Invalid gender code: ${normalized}. Must be M, F, O, or U`,
+      'validation',
+      'gender',
       normalized
     );
   }
