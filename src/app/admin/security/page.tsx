@@ -16,10 +16,10 @@ import {
   RefreshCw,
   ArrowLeft,
   UserX,
-  Key,
   Globe,
   Database,
   FileText,
+  Key,
 } from 'lucide-react';
 import { SecuritySkeleton } from '@/components/UI/SkeletonLoader';
 
@@ -170,9 +170,26 @@ export default function SecurityPage() {
     }
   };
 
-  const handleExportLogs = () => {
-    // TODO: Implement export functionality
-    console.log('Export security logs');
+  const handleExportLogs = async () => {
+    try {
+      const response = await fetch('/api/admin/security/export?format=csv&days=30');
+      if (response.ok) {
+        // Create blob and download
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `security-logs-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        console.error('Failed to export logs');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+    }
   };
 
   const tabs = [
@@ -331,24 +348,27 @@ export default function SecurityPage() {
                     <div className="bg-gray-50 rounded-xl p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Access Control</h3>
                       <p className="text-gray-600 mb-4">Manage user permissions and authentication settings</p>
-                      <button className="text-blue-600 hover:text-blue-700 font-medium">
-                        Manage Users →
-                      </button>
+                      <Link href="/admin/settings" className="text-blue-600 hover:text-blue-700 font-medium">
+                        Manage Settings →
+                      </Link>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Protection</h3>
                       <p className="text-gray-600 mb-4">Review encryption status and backup security</p>
-                      <button className="text-blue-600 hover:text-blue-700 font-medium">
-                        View Status →
-                      </button>
+                      <Link href="/admin/settings?tab=database" className="text-blue-600 hover:text-blue-700 font-medium">
+                        View Backups →
+                      </Link>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Security Scan</h3>
-                      <p className="text-gray-600 mb-4">Run comprehensive security analysis</p>
-                      <button className="text-blue-600 hover:text-blue-700 font-medium">
-                        Start Scan →
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Security Logs</h3>
+                      <p className="text-gray-600 mb-4">Export and analyze security audit logs</p>
+                      <button 
+                        onClick={handleExportLogs}
+                        className="text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        Export Logs →
                       </button>
                     </div>
                   </div>

@@ -52,6 +52,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const { handleApiError } = useApiAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [intakeCount, setIntakeCount] = useState<number>(0);
+  const [notificationCount, setNotificationCount] = useState<number>(0);
   const [loadingCount, setLoadingCount] = useState(true);
 
   const navigation: NavigationItem[] = [
@@ -104,7 +105,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
       name: 'Notifications',
       href: '/admin/notifications',
       icon: Bell,
-      badge: 3,
+      badge: notificationCount > 0 ? notificationCount : undefined,
     },
     {
       name: 'Export Data',
@@ -155,17 +156,50 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
       if (!handleApiError(error)) {
         console.error('Error fetching intake count:', error);
       }
-    } finally {
-      setLoadingCount(false);
     }
   };
 
-  // Fetch count on mount and set up polling
+  // Fetch notification count
+  const fetchNotificationCount = async () => {
+    try {
+      const response = await fetch('/api/admin/notifications/count');
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch notification count`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
+        }
+        
+        throw error;
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        setNotificationCount(data.count);
+      }
+    } catch (error) {
+      // Only log error if it wasn't handled by the API auth hook
+      if (!handleApiError(error)) {
+        console.error('Error fetching notification count:', error);
+      }
+    }
+  };
+
+  // Fetch all counts
+  const fetchCounts = async () => {
+    await Promise.all([fetchIntakeCount(), fetchNotificationCount()]);
+    setLoadingCount(false);
+  };
+
+  // Fetch counts on mount and set up polling
   useEffect(() => {
-    fetchIntakeCount();
+    fetchCounts();
     
     // Poll every 30 seconds for updates
-    const interval = setInterval(fetchIntakeCount, 30000);
+    const interval = setInterval(fetchCounts, 30000);
     
     return () => clearInterval(interval);
   }, []);
@@ -196,9 +230,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
               <span className="flex-1">{item.name}</span>
               {item.badge && (
                 <span className={`ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ${
-                  item.name === 'Patient Intake' && item.badge > 0 ? 'animate-pulse' : ''
+                  ((item.name === 'Patient Intake' && item.badge > 0) || (item.name === 'Notifications' && item.badge > 0)) ? 'animate-pulse' : ''
                 }`}>
-                  {loadingCount && item.name === 'Patient Intake' ? '...' : item.badge}
+                  {loadingCount && (item.name === 'Patient Intake' || item.name === 'Notifications') ? '...' : item.badge}
                 </span>
               )}
               {hasChildren && (

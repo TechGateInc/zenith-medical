@@ -372,7 +372,7 @@ export default function FAQ() {
                 </p>
                 <Link
                   href="/contact"
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
+                  className="bg-green-600 hover:bg-green-700 text-white hover:text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />

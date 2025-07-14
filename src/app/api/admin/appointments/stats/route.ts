@@ -10,11 +10,21 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+      // Check authentication
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Get user from database to verify current role
+  const user = await prisma.adminUser.findUnique({
+    where: { email: session.user.email },
+    select: { role: true }
+  });
+
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
     // Get current date ranges
     const now = new Date();

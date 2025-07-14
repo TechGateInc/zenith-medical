@@ -9,6 +9,9 @@ import {
   type PatientConfirmationData,
   type StaffNotificationData
 } from '../../../../lib/notifications/email'
+import { oscarPatientService, DuplicateScenario } from '../../../../lib/integrations/oscar-patient-service'
+import { OscarPatientMapper } from '../../../../lib/integrations/oscar-patient-mapping'
+import { OscarError, OscarErrorHandler } from '../../../../lib/integrations/oscar-errors'
 
 // Initialize Prisma client
 const prisma = new PrismaClient()
@@ -127,6 +130,135 @@ export async function POST(request: NextRequest) {
       }
     })
     
+    // OSCAR Integration - Create patient in OSCAR EMR system
+    let oscarIntegrationResult = {
+      attempted: false,
+      success: false,
+      demographicNo: null as string | null,
+      duplicateScenario: null as string | null,
+      error: null as string | null
+    }
+    
+    try {
+      // Check if OSCAR integration is enabled
+      if (process.env.OSCAR_BASE_URL && process.env.OSCAR_CONSUMER_KEY) {
+        oscarIntegrationResult.attempted = true
+        
+        // Decrypt patient data for OSCAR processing
+        const decryptedIntake = {
+          ...patientIntake,
+          legalFirstName,
+          legalLastName,
+          preferredName: preferredName || null,
+          dateOfBirth,
+          phoneNumber,
+          emailAddress,
+          streetAddress,
+          city,
+          provinceState,
+          postalZipCode,
+          nextOfKinName,
+          nextOfKinPhone,
+          relationshipToPatient,
+          healthInformationNumber
+        }
+        
+        // Detect duplicates first
+        const duplicateResult = await oscarPatientService.detectDuplicates(decryptedIntake)
+        oscarIntegrationResult.duplicateScenario = duplicateResult.scenario
+        
+        // Handle different duplicate scenarios
+        switch (duplicateResult.scenario) {
+          case DuplicateScenario.EXACT_MATCH:
+            // Link to existing patient
+            if (duplicateResult.existingPatients.length > 0) {
+              const existingPatient = duplicateResult.existingPatients[0]
+              await prisma.patientIntake.update({
+                where: { id: patientIntake.id },
+                data: {
+                  oscarDemographicNo: existingPatient.demographicNo,
+                  oscarCreatedAt: new Date(), // When we linked it
+                  oscarLastSyncAt: new Date()
+                }
+              })
+              oscarIntegrationResult.success = true
+              oscarIntegrationResult.demographicNo = existingPatient.demographicNo
+            }
+            break
+            
+          case DuplicateScenario.NO_MATCH:
+            // Safe to create new patient
+            const creationResult = await oscarPatientService.createPatient(decryptedIntake)
+            if (creationResult.success) {
+              await prisma.patientIntake.update({
+                where: { id: patientIntake.id },
+                data: {
+                  oscarDemographicNo: creationResult.demographicNo,
+                  oscarCreatedAt: new Date(),
+                  oscarLastSyncAt: new Date()
+                }
+              })
+              oscarIntegrationResult.success = true
+              oscarIntegrationResult.demographicNo = creationResult.demographicNo || null
+            } else {
+              oscarIntegrationResult.error = creationResult.errors?.join(', ') || 'Unknown creation error'
+            }
+            break
+            
+          case DuplicateScenario.SIMILAR_MATCH:
+          case DuplicateScenario.HEALTH_NUMBER_CONFLICT:
+          case DuplicateScenario.NAME_MISMATCH:
+            // Requires manual review - don't create automatically
+            oscarIntegrationResult.error = `Manual review required: ${duplicateResult.reasoning}`
+            break
+        }
+        
+        // Log OSCAR integration attempt
+        await prisma.auditLog.create({
+          data: {
+            action: 'OSCAR_INTEGRATION',
+            resource: 'patient_intake',
+            resourceId: patientIntake.id,
+            details: {
+              attempted: oscarIntegrationResult.attempted,
+              success: oscarIntegrationResult.success,
+              duplicateScenario: oscarIntegrationResult.duplicateScenario,
+              demographicNo: oscarIntegrationResult.demographicNo,
+              error: oscarIntegrationResult.error,
+              duplicateCount: duplicateResult.existingPatients.length,
+              confidence: duplicateResult.confidence,
+              recommendedAction: duplicateResult.recommendedAction,
+              timestamp: new Date().toISOString()
+            },
+            ipAddress: ipAddress,
+            userAgent: userAgent
+          }
+        })
+      }
+    } catch (oscarError) {
+      // Log OSCAR integration error but don't fail the submission
+      const errorMessage = oscarError instanceof OscarError 
+        ? OscarErrorHandler.getUserMessage(oscarError)
+        : (oscarError instanceof Error ? oscarError.message : 'Unknown OSCAR error')
+      
+      oscarIntegrationResult.error = errorMessage
+      
+      await prisma.auditLog.create({
+        data: {
+          action: 'OSCAR_INTEGRATION_ERROR',
+          resource: 'patient_intake',
+          resourceId: patientIntake.id,
+          details: {
+            error: errorMessage,
+            errorType: oscarError instanceof Error ? oscarError.name : 'unknown',
+            timestamp: new Date().toISOString()
+          },
+          ipAddress: ipAddress,
+          userAgent: userAgent
+        }
+      })
+    }
+    
     // Send email notifications (don't let email failures break the submission)
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
@@ -215,7 +347,17 @@ export async function POST(request: NextRequest) {
       message: 'Patient intake form submitted successfully',
       submissionId: patientIntake.id,
       status: patientIntake.status,
-      submittedAt: patientIntake.createdAt
+      submittedAt: patientIntake.createdAt,
+      oscarIntegration: {
+        attempted: oscarIntegrationResult.attempted,
+        success: oscarIntegrationResult.success,
+        demographicNo: oscarIntegrationResult.demographicNo,
+        status: oscarIntegrationResult.success 
+          ? 'Successfully integrated with OSCAR EMR'
+          : oscarIntegrationResult.error 
+            ? 'OSCAR integration requires manual review'
+            : 'OSCAR integration not configured'
+      }
     }, { status: 201 })
     
   } catch (error) {

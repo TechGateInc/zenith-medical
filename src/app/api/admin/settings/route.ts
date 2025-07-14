@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
+import { prisma } from '@/lib/prisma';
 
 // In a real application, these would be stored in a database
 // For now, we'll use in-memory storage (resets on server restart)
@@ -37,7 +38,17 @@ export async function GET() {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from database to verify current role
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { role: true }
+    });
+
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -63,7 +74,17 @@ export async function PUT(request: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from database to verify current role
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { role: true }
+    });
+
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -4,6 +4,7 @@ import { authOptions } from '../../../../../lib/auth/config'
 import { appointmentBookingService } from '../../../../../lib/integrations/appointment-booking'
 import { bookingProviderValidator, type ProviderHealthCheck } from '../../../../../lib/integrations/booking-provider-validator'
 import { auditLog } from '../../../../../lib/audit/audit-logger'
+import { prisma } from '../../../../../lib/prisma'
 import { z } from 'zod'
 
 // Validation schema for test request
@@ -15,11 +16,21 @@ const testProviderSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+      // Check authentication
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Get user from database to verify current role
+  const user = await prisma.adminUser.findUnique({
+    where: { email: session.user.email },
+    select: { role: true }
+  });
+
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
     const body = await request.json();
     const { providerType, includeConnectivity = true, includeConfiguration = true } = body;

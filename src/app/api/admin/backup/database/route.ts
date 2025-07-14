@@ -161,40 +161,112 @@ async function performDatabaseBackup(): Promise<BackupResult> {
 }
 
 async function createLogicalBackup(): Promise<string> {
-  // Create a logical backup of critical data
-  // This is a simplified version - in production you'd want full pg_dump
-  
+  // Create a comprehensive logical backup of all data
   try {
-    const tables = [
-      'patient_intakes',
-      'admin_users',
-      'audit_logs',
-      'notification_templates',
-      'appointments',
-      'booking_providers',
-      'blog_posts',
-      'faqs',
-      'team_members'
-    ]
-
+    const timestamp = new Date().toISOString()
     let backupData = `-- Zenith Medical Centre Database Backup\n`
-    backupData += `-- Generated on: ${new Date().toISOString()}\n\n`
+    backupData += `-- Generated on: ${timestamp}\n`
+    backupData += `-- Backup Type: Logical (Full Data Export)\n\n`
 
-    // Get schema information
-    for (const table of tables) {
-      try {
-        const count = await prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM ${table}`)
-        backupData += `-- Table: ${table}, Records: ${(count as any)[0]?.count || 0}\n`
-      } catch (error) {
-        backupData += `-- Table: ${table}, Error: ${error}\n`
+    // Get all patient intakes (encrypted data)
+    const patientIntakes = await prisma.patientIntake.findMany()
+    
+    backupData += `-- Patient Intakes: ${patientIntakes.length} records\n`
+    backupData += `INSERT INTO patient_intakes (id, legal_first_name, legal_last_name, preferred_name, email_address, phone_number, date_of_birth, street_address, city, province_state, postal_zip_code, next_of_kin_name, next_of_kin_phone, relationship_to_patient, health_information_number, status, appointment_booked, created_at, updated_at, viewed_at) VALUES\n`
+    
+    patientIntakes.forEach((intake, index) => {
+      const values = [
+        `'${intake.id}'`,
+        `'${intake.legalFirstName}'`,
+        `'${intake.legalLastName}'`,
+        `'${intake.preferredName || ''}'`,
+        `'${intake.emailAddress}'`,
+        `'${intake.phoneNumber}'`,
+        `'${intake.dateOfBirth}'`,
+        `'${intake.streetAddress}'`,
+        `'${intake.city}'`,
+        `'${intake.provinceState}'`,
+        `'${intake.postalZipCode}'`,
+        `'${intake.nextOfKinName}'`,
+        `'${intake.nextOfKinPhone}'`,
+        `'${intake.relationshipToPatient}'`,
+        `'${intake.healthInformationNumber || ''}'`,
+        `'${intake.status}'`,
+        `${intake.appointmentBooked}`,
+        `'${intake.createdAt.toISOString()}'`,
+        `'${intake.updatedAt.toISOString()}'`,
+        `'${intake.viewedAt?.toISOString() || null}'`
+      ]
+      backupData += `(${values.join(', ')})${index < patientIntakes.length - 1 ? ',' : ';'}\n`
+    })
+
+    // Get admin users (without passwords for security)
+    const adminUsers = await prisma.adminUser.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        lastLoginAt: true,
+        loginAttempts: true,
+        twoFactorEnabled: true
       }
+    })
+    
+    backupData += `\n-- Admin Users: ${adminUsers.length} records\n`
+    backupData += `INSERT INTO admin_users (id, email, name, role, created_at, updated_at, last_login_at, login_attempts, two_factor_enabled) VALUES\n`
+    
+    adminUsers.forEach((user, index) => {
+      const values = [
+        `'${user.id}'`,
+        `'${user.email}'`,
+        `'${user.name}'`,
+        `'${user.role}'`,
+        `'${user.createdAt.toISOString()}'`,
+        `'${user.updatedAt.toISOString()}'`,
+        `'${user.lastLoginAt?.toISOString() || null}'`,
+        `${user.loginAttempts}`,
+        `${user.twoFactorEnabled || false}`
+      ]
+      backupData += `(${values.join(', ')})${index < adminUsers.length - 1 ? ',' : ';'}\n`
+    })
+
+    // Get audit logs (last 1000 for performance)
+    const auditLogs = await prisma.auditLog.findMany({
+      take: 1000,
+      orderBy: { timestamp: 'desc' }
+    })
+    
+    backupData += `\n-- Audit Logs: ${auditLogs.length} records (last 1000)\n`
+    if (auditLogs.length > 0) {
+      backupData += `INSERT INTO audit_logs (id, user_id, action, resource, resource_id, details, ip_address, user_agent, created_at) VALUES\n`
+      
+      auditLogs.forEach((log, index) => {
+        const values = [
+          `'${log.id}'`,
+          `'${log.userId}'`,
+          `'${log.action}'`,
+          `'${log.resource}'`,
+          `'${log.resourceId}'`,
+          `'${JSON.stringify(log.details).replace(/'/g, "''")}'`,
+          `'${log.ipAddress || ''}'`,
+          `'${log.userAgent || ''}'`,
+          `'${log.timestamp.toISOString()}'`
+        ]
+        backupData += `(${values.join(', ')})${index < auditLogs.length - 1 ? ',' : ';'}\n`
+      })
     }
 
-    // Add metadata
+    // Add backup metadata
     backupData += `\n-- Backup Metadata\n`
-    backupData += `-- Total tables: ${tables.length}\n`
-    backupData += `-- Backup type: Logical\n`
+    backupData += `-- Total Patient Intakes: ${patientIntakes.length}\n`
+    backupData += `-- Total Admin Users: ${adminUsers.length}\n`
+    backupData += `-- Total Audit Logs: ${auditLogs.length}\n`
+    backupData += `-- Backup completed at: ${timestamp}\n`
     backupData += `-- Application: Zenith Medical Centre\n`
+    backupData += `-- Version: 1.0\n`
 
     return backupData
   } catch (error) {
@@ -249,7 +321,7 @@ export async function DELETE(request: NextRequest) {
       select: { id: true, email: true, role: true }
     })
 
-    if (!user || user.role !== AdminRole.SUPER_ADMIN) {
+    if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 

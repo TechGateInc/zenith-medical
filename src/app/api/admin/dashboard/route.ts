@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { prisma } from '../../../../lib/prisma'
-import { decryptPatientData } from '../../../../lib/utils/encryption'
+import { decryptPHI } from '../../../../lib/utils/encryption'
 import { authOptions } from '@/lib/auth/config'
 
 export async function GET(request: NextRequest) {
@@ -59,38 +59,28 @@ export async function GET(request: NextRequest) {
     // Decrypt patient data for display
     const decryptedSubmissions = intakeSubmissions.map((submission: any) => {
       try {
-        const decryptedData = decryptPatientData({
-          legalFirstName: submission.legalFirstName,
-          legalLastName: submission.legalLastName,
-          preferredName: submission.preferredName || '',
-          emailAddress: submission.emailAddress,
-          phoneNumber: submission.phoneNumber,
-          // Only decrypt what we need for the dashboard
-          dateOfBirth: '',
-          streetAddress: '',
-          city: '',
-          provinceState: '',
-          postalZipCode: '',
-          nextOfKinName: '',
-          nextOfKinPhone: '',
-          relationshipToPatient: '',
-          healthInformationNumber: submission.healthInformationNumber || ''
-        })
+        // Decrypt individual fields that we need for the dashboard
+        const decryptedFirstName = submission.legalFirstName ? decryptPHI(submission.legalFirstName) : ''
+        const decryptedLastName = submission.legalLastName ? decryptPHI(submission.legalLastName) : ''
+        const decryptedPreferredName = submission.preferredName ? decryptPHI(submission.preferredName) : ''
+        const decryptedEmail = submission.emailAddress ? decryptPHI(submission.emailAddress) : ''
+        const decryptedPhone = submission.phoneNumber ? decryptPHI(submission.phoneNumber) : ''
+        const decryptedHealthNumber = submission.healthInformationNumber ? decryptPHI(submission.healthInformationNumber) : ''
 
-          return {
-            id: submission.id,
-            legalFirstName: decryptedData.legalFirstName,
-            legalLastName: decryptedData.legalLastName,
-            preferredName: decryptedData.preferredName || undefined,
-            emailAddress: decryptedData.emailAddress,
-            phoneNumber: decryptedData.phoneNumber,
-            status: submission.status,
-            appointmentBooked: submission.appointmentBooked,
-            createdAt: submission.createdAt.toISOString(),
-            updatedAt: submission.updatedAt.toISOString(),
-            healthInformationNumber: decryptedData.healthInformationNumber
-          }
-        } catch (decryptionError) {
+        return {
+          id: submission.id,
+          legalFirstName: decryptedFirstName,
+          legalLastName: decryptedLastName,
+          preferredName: decryptedPreferredName || undefined,
+          emailAddress: decryptedEmail,
+          phoneNumber: decryptedPhone,
+          status: submission.status,
+          appointmentBooked: submission.appointmentBooked,
+          createdAt: submission.createdAt.toISOString(),
+          updatedAt: submission.updatedAt.toISOString(),
+          healthInformationNumber: decryptedHealthNumber
+        }
+      } catch (decryptionError) {
           console.error('Decryption error for submission:', submission.id, decryptionError)
           
           // Log decryption error (but don't await since we're not in async context)

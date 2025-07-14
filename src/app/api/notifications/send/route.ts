@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../lib/auth/config'
 import { notificationService } from '../../../../lib/integrations/notification-service'
 import { auditLog } from '../../../../lib/audit/audit-logger'
+import { prisma } from '../../../../lib/prisma'
 import { z } from 'zod'
 
 // Validation schema
@@ -138,11 +139,21 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+      // Check authentication
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Get user from database to verify current role
+  const user = await prisma.adminUser.findUnique({
+    where: { email: session.user.email },
+    select: { role: true }
+  });
+
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
     
     // Get active providers status
     const providers = notificationService.getActiveProviders()

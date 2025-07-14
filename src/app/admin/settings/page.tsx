@@ -17,12 +17,11 @@ import {
   RefreshCw,
   ArrowLeft,
   CheckCircle,
-  AlertCircle,
-  Eye,
-  EyeOff,
-  Key
+  AlertCircle
 } from 'lucide-react';
 import { SettingsSkeleton } from '@/components/UI/SkeletonLoader';
+import TwoFactorAuth from '@/components/Admin/TwoFactorAuth';
+import { useAuth } from '@/lib/auth/use-auth';
 
 interface SystemSettings {
   siteName: string;
@@ -49,6 +48,7 @@ interface SecuritySettings {
 }
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
     siteName: 'Zenith Medical Centre',
     siteDescription: 'Comprehensive healthcare services for the community',
@@ -77,10 +77,17 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
-  const [showApiKey, setShowApiKey] = useState(false);
+  const [backupLoading, setBackupLoading] = useState(false);
 
   useEffect(() => {
     fetchSettings();
+    
+    // Check URL for tab parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['system', 'notifications', 'security', 'database'].includes(tabParam)) {
+      setActiveTab(tabParam as 'system' | 'notifications' | 'security' | 'database');
+    }
   }, []);
 
   const fetchSettings = async () => {
@@ -176,6 +183,43 @@ export default function SettingsPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const createDatabaseBackup = async () => {
+    try {
+      setBackupLoading(true);
+      setMessage(null);
+      
+      const response = await fetch('/api/admin/backup/manual', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setMessage({ 
+            type: 'success', 
+            text: `Database backup created successfully! Backup ID: ${data.backup?.backupId || 'N/A'}` 
+          });
+        } else {
+          throw new Error(data.error || 'Database backup failed');
+        }
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Database backup failed');
+      }
+    } catch (error) {
+      console.error('Database backup error:', error);
+      setMessage({ 
+        type: 'error', 
+        text: error instanceof Error ? error.message : 'Database backup failed. Please try again.' 
+      });
+    } finally {
+      setBackupLoading(false);
     }
   };
 
@@ -428,98 +472,68 @@ export default function SettingsPage() {
           {/* Security Tab */}
           {activeTab === 'security' && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Session Timeout (minutes)
-                  </label>
-                  <input
-                    type="number"
-                    value={securitySettings.sessionTimeout}
-                    onChange={(e) => setSecuritySettings({...securitySettings, sessionTimeout: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Login Attempts
-                  </label>
-                  <input
-                    type="number"
-                    value={securitySettings.maxLoginAttempts}
-                    onChange={(e) => setSecuritySettings({...securitySettings, maxLoginAttempts: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password Expiry (days)
-                  </label>
-                  <input
-                    type="number"
-                    value={securitySettings.passwordExpiry}
-                    onChange={(e) => setSecuritySettings({...securitySettings, passwordExpiry: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div>
-                    <h4 className="font-medium text-gray-900">Two-Factor Authentication</h4>
-                    <p className="text-sm text-gray-600">Require 2FA for admin accounts</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={securitySettings.twoFactorAuth}
-                      onChange={(e) => setSecuritySettings({...securitySettings, twoFactorAuth: e.target.checked})}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  IP Whitelist (one per line)
-                </label>
-                <textarea
-                  value={securitySettings.ipWhitelist}
-                  onChange={(e) => setSecuritySettings({...securitySettings, ipWhitelist: e.target.value})}
-                  rows={4}
-                  placeholder="192.168.1.0/24&#10;10.0.0.0/8"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
+              {/* Two-Factor Authentication */}
+              {user?.email && (
+                <TwoFactorAuth 
+                  userEmail={user.email} 
+                  onStatusChange={(enabled) => {
+                    setSecuritySettings({...securitySettings, twoFactorAuth: enabled});
+                  }}
                 />
-              </div>
+              )}
 
-              {/* API Key Section */}
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">API Access</h3>
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-medium text-gray-700">API Key</label>
-                    <button
-                      onClick={() => setShowApiKey(!showApiKey)}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  <div className="flex space-x-3">
+              {/* Basic Security Settings */}
+              <div className="bg-white rounded-2xl border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Security Settings</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Session Timeout (minutes)
+                    </label>
                     <input
-                      type={showApiKey ? 'text' : 'password'}
-                      value="sk_live_abcd1234efgh5678ijkl9012mnop3456"
-                      readOnly
-                      className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg font-mono text-sm"
+                      type="number"
+                      value={securitySettings.sessionTimeout}
+                      onChange={(e) => setSecuritySettings({...securitySettings, sessionTimeout: parseInt(e.target.value)})}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
-                    <button className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium">
-                      <Key className="h-4 w-4 mr-1" />
-                      Regenerate
-                    </button>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Max Login Attempts
+                    </label>
+                    <input
+                      type="number"
+                      value={securitySettings.maxLoginAttempts}
+                      onChange={(e) => setSecuritySettings({...securitySettings, maxLoginAttempts: parseInt(e.target.value)})}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Password Expiry (days)
+                    </label>
+                    <input
+                      type="number"
+                      value={securitySettings.passwordExpiry}
+                      onChange={(e) => setSecuritySettings({...securitySettings, passwordExpiry: parseInt(e.target.value)})}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    IP Whitelist (one per line)
+                  </label>
+                  <textarea
+                    value={securitySettings.ipWhitelist}
+                    onChange={(e) => setSecuritySettings({...securitySettings, ipWhitelist: e.target.value})}
+                    rows={4}
+                    placeholder="192.168.1.0/24&#10;10.0.0.0/8"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
+                  />
                 </div>
               </div>
             </div>
@@ -569,14 +583,12 @@ export default function SettingsPage() {
                 <div className="bg-gray-50 rounded-xl p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Maintenance</h3>
                   <div className="space-y-3">
-                    <button className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                      Create Backup
-                    </button>
-                    <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                      Optimize Database
-                    </button>
-                    <button className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                      Clear Cache
+                    <button 
+                      onClick={createDatabaseBackup}
+                      disabled={backupLoading}
+                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    >
+                      {backupLoading ? 'Creating Backup...' : 'Create Backup'}
                     </button>
                   </div>
                 </div>

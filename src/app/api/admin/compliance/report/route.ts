@@ -3,14 +3,25 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../../lib/auth/config'
 import { complianceChecker } from '../../../../../lib/compliance/hipaa-pipeda-compliance'
 import { auditLog } from '../../../../../lib/audit/audit-logger'
+import { prisma } from '../../../../../lib/prisma'
+import { AdminRole } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    // Only allow super admin to view compliance reports
-    if (!session?.user?.role || session.user.role !== 'SUPER_ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get user details and verify admin permissions
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, role: true }
+    })
+
+    if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -102,9 +113,18 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    // Only allow super admin to trigger compliance checks
-    if (!session?.user?.role || session.user.role !== 'SUPER_ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get user details and verify admin permissions
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, role: true }
+    })
+
+    if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
     const body = await request.json()
@@ -272,7 +292,17 @@ export async function HEAD(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.user?.role || !['SUPER_ADMIN', 'ADMIN'].includes(session.user.role)) {
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get user details and verify admin permissions
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, role: true }
+    })
+
+    if (!user || !user.role || (user.role !== AdminRole.SUPER_ADMIN && user.role !== AdminRole.ADMIN)) {
       return new NextResponse(null, { status: 403 })
     }
 

@@ -6,14 +6,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+      // Check authentication
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Get user from database to verify current role
+  const user = await prisma.adminUser.findUnique({
+    where: { email: session.user.email },
+    select: { role: true }
+  });
+
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');

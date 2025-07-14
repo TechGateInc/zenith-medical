@@ -26,17 +26,17 @@ const getVariantStyles = (variant: ButtonVariant): string => {
   const variants = {
     primary: cn(
       'bg-primary-600 text-white border-primary-600',
-      'hover:bg-primary-700 hover:border-primary-700',
-      'active:bg-primary-800 active:border-primary-800',
-      'focus:ring-primary-500',
-      'disabled:bg-primary-300 disabled:border-primary-300'
+      'hover:bg-primary-700 hover:border-primary-700 hover:text-white',
+      'active:bg-primary-800 active:border-primary-800 active:text-white',
+      'focus:ring-primary-500 focus:text-white',
+      'disabled:bg-primary-300 disabled:border-primary-300 disabled:text-white'
     ),
     secondary: cn(
       'bg-secondary-600 text-white border-secondary-600',
-      'hover:bg-secondary-700 hover:border-secondary-700',
-      'active:bg-secondary-800 active:border-secondary-800',
-      'focus:ring-secondary-500',
-      'disabled:bg-secondary-300 disabled:border-secondary-300'
+      'hover:bg-secondary-700 hover:border-secondary-700 hover:text-white',
+      'active:bg-secondary-800 active:border-secondary-800 active:text-white',
+      'focus:ring-secondary-500 focus:text-white',
+      'disabled:bg-secondary-300 disabled:border-secondary-300 disabled:text-white'
     ),
     ghost: cn(
       'bg-transparent text-neutral-700 border-transparent',
@@ -47,24 +47,24 @@ const getVariantStyles = (variant: ButtonVariant): string => {
     ),
     outline: cn(
       'bg-transparent text-primary-600 border-primary-600',
-      'hover:bg-primary-50 hover:text-primary-700 hover:border-primary-700',
-      'active:bg-primary-100',
+      'hover:bg-primary-600 hover:text-white hover:border-primary-600',
+      'active:bg-primary-700 active:text-white',
       'focus:ring-primary-500',
-      'disabled:text-primary-300 disabled:border-primary-300 disabled:hover:bg-transparent'
+      'disabled:text-primary-300 disabled:border-primary-300 disabled:hover:bg-transparent disabled:hover:text-primary-300'
     ),
     destructive: cn(
       'bg-error-600 text-white border-error-600',
-      'hover:bg-error-700 hover:border-error-700',
-      'active:bg-error-800 active:border-error-800',
-      'focus:ring-error-500',
-      'disabled:bg-error-300 disabled:border-error-300'
+      'hover:bg-error-700 hover:border-error-700 hover:text-white',
+      'active:bg-error-800 active:border-error-800 active:text-white',
+      'focus:ring-error-500 focus:text-white',
+      'disabled:bg-error-300 disabled:border-error-300 disabled:text-white'
     ),
     success: cn(
       'bg-success-600 text-white border-success-600',
-      'hover:bg-success-700 hover:border-success-700',
-      'active:bg-success-800 active:border-success-800',
-      'focus:ring-success-500',
-      'disabled:bg-success-300 disabled:border-success-300'
+      'hover:bg-success-700 hover:border-success-700 hover:text-white',
+      'active:bg-success-800 active:border-success-800 active:text-white',
+      'focus:ring-success-500 focus:text-white',
+      'disabled:bg-success-300 disabled:border-success-300 disabled:text-white'
     ),
   }
   

@@ -87,23 +87,33 @@ export async function POST(request: NextRequest) {
     }
     
     // Store appointment in database
+    const appointmentData: any = {
+      patientIntakeId: validatedData.patientIntakeId,
+      providerType: activeProvider.type,
+      providerAppointmentId: bookingResult.appointmentId,
+      providerName: activeProvider.name,
+      patientName: validatedData.patientName,
+      patientEmail: validatedData.patientEmail,
+      patientPhone: validatedData.patientPhone,
+      appointmentDate: validatedData.appointmentDate,
+      appointmentTime: validatedData.appointmentTime,
+      appointmentType: validatedData.appointmentType,
+      status: 'scheduled',
+      notes: validatedData.notes,
+      bookingUrl: bookingResult.bookingUrl,
+      metadata: bookingResult.metadata as any
+    }
+
+    // Add OSCAR-specific fields if using OSCAR provider
+    if (activeProvider.type === 'oscar' && bookingResult.metadata) {
+      appointmentData.oscarAppointmentId = bookingResult.metadata.oscarAppointmentId
+      appointmentData.oscarProviderNo = bookingResult.metadata.oscarProviderNo
+      appointmentData.oscarCreatedAt = new Date()
+      appointmentData.oscarLastSyncAt = new Date()
+    }
+
     const appointment = await prisma.appointment.create({
-      data: {
-        patientIntakeId: validatedData.patientIntakeId,
-        providerType: activeProvider.type,
-        providerAppointmentId: bookingResult.appointmentId,
-        providerName: activeProvider.name,
-        patientName: validatedData.patientName,
-        patientEmail: validatedData.patientEmail,
-        patientPhone: validatedData.patientPhone,
-        appointmentDate: validatedData.appointmentDate,
-        appointmentTime: validatedData.appointmentTime,
-        appointmentType: validatedData.appointmentType,
-        status: 'scheduled',
-        notes: validatedData.notes,
-        bookingUrl: bookingResult.bookingUrl,
-        metadata: bookingResult.metadata as any
-      }
+      data: appointmentData
     })
     
     // Update patient intake status if linked
@@ -126,25 +136,37 @@ export async function POST(request: NextRequest) {
       // Don't fail the appointment booking if notifications fail
     }
     
-    // Audit log
+    // Audit log with OSCAR-specific details
+    const auditDetails: any = {
+      patientName: validatedData.patientName,
+      appointmentDate: validatedData.appointmentDate,
+      appointmentTime: validatedData.appointmentTime,
+      provider: activeProvider.name,
+      providerAppointmentId: bookingResult.appointmentId
+    }
+
+    // Add OSCAR-specific audit details
+    if (activeProvider.type === 'oscar' && bookingResult.metadata) {
+      auditDetails.oscarAppointmentId = bookingResult.metadata.oscarAppointmentId
+      auditDetails.oscarProviderNo = bookingResult.metadata.oscarProviderNo
+      auditDetails.demographicNo = bookingResult.metadata.demographicNo
+      auditDetails.providerName = bookingResult.metadata.providerName
+      auditDetails.integrationType = 'OSCAR_EMR'
+    }
+
     await auditLog({
       action: 'APPOINTMENT_BOOKED',
       userId: session?.user?.id || 'anonymous',
       userEmail: validatedData.patientEmail,
       resource: 'appointment',
       resourceId: appointment.id,
-      details: {
-        patientName: validatedData.patientName,
-        appointmentDate: validatedData.appointmentDate,
-        appointmentTime: validatedData.appointmentTime,
-        provider: activeProvider.name,
-        providerAppointmentId: bookingResult.appointmentId
-      },
+      details: auditDetails,
       ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown'
     })
     
-    return NextResponse.json({
+    // Build response with OSCAR-specific information if applicable
+    const responseData: any = {
       success: true,
       appointment: {
         id: appointment.id,
@@ -156,7 +178,23 @@ export async function POST(request: NextRequest) {
       redirectUrl: bookingResult.redirectUrl,
       bookingUrl: bookingResult.bookingUrl,
       message: 'Appointment booked successfully!'
-    })
+    }
+
+    // Add OSCAR-specific response details
+    if (activeProvider.type === 'oscar' && bookingResult.metadata) {
+      responseData.oscar = {
+        appointmentId: bookingResult.metadata.oscarAppointmentId,
+        providerNo: bookingResult.metadata.oscarProviderNo,
+        providerName: bookingResult.metadata.providerName,
+        demographicNo: bookingResult.metadata.demographicNo,
+        appointmentDate: bookingResult.metadata.appointmentDate,
+        startTime: bookingResult.metadata.startTime,
+        endTime: bookingResult.metadata.endTime
+      }
+      responseData.message = 'Appointment booked successfully in OSCAR EMR!'
+    }
+
+    return NextResponse.json(responseData)
     
   } catch (error) {
     console.error('Appointment booking error:', error)

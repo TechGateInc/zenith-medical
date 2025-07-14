@@ -8,6 +8,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
 import { prisma } from '@/lib/prisma';
 import { markMultipleIntakesAsViewed } from '@/lib/utils/intake-counter';
+import { decryptPHI } from '@/lib/utils/encryption';
 import { AdminRole } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
@@ -96,9 +97,33 @@ export async function GET(request: NextRequest) {
       await markMultipleIntakesAsViewed(unviewedSubmissionIds);
     }
 
+    // Decrypt the patient data for display
+    const decryptedSubmissions = submissions.map(submission => {
+      try {
+        return {
+          ...submission,
+          legalFirstName: decryptPHI(submission.legalFirstName),
+          legalLastName: decryptPHI(submission.legalLastName),
+          preferredName: submission.preferredName ? decryptPHI(submission.preferredName) : undefined,
+          emailAddress: decryptPHI(submission.emailAddress),
+          phoneNumber: decryptPHI(submission.phoneNumber)
+        };
+      } catch (decryptionError) {
+        console.error('Decryption failed for submission:', submission.id, decryptionError);
+        return {
+          ...submission,
+          legalFirstName: 'Decryption Failed',
+          legalLastName: 'Decryption Failed',
+          preferredName: submission.preferredName ? 'Decryption Failed' : undefined,
+          emailAddress: 'Decryption Failed',
+          phoneNumber: 'Decryption Failed'
+        };
+      }
+    });
+
     return NextResponse.json({
       success: true,
-      submissions,
+      submissions: decryptedSubmissions,
       pagination: {
         page,
         limit,

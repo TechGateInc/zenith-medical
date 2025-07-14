@@ -14,7 +14,17 @@ export async function GET(
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from database to verify current role
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { role: true }
+    });
+
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -74,7 +84,17 @@ export async function PATCH(
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from database to verify current role
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { role: true }
+    });
+
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -177,7 +197,17 @@ export async function DELETE(
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from database to verify current role
+    const user = await prisma.adminUser.findUnique({
+      where: { email: session.user.email },
+      select: { role: true }
+    });
+
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

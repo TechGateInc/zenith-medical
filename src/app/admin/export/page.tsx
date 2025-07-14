@@ -9,6 +9,7 @@ import { ExportSkeleton } from '@/components/UI/SkeletonLoader'
 export default function ExportPage() {
   const { isLoading, isAuthenticated, isAdmin } = useAuth()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [filters, setFilters] = useState({
     format: 'csv',
     status: '',
@@ -17,6 +18,11 @@ export default function ExportPage() {
   })
   const [exporting, setExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Ensure component is mounted before rendering
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Redirect if not authenticated or not admin
   useEffect(() => {
@@ -90,12 +96,9 @@ export default function ExportPage() {
     })
   }
 
-  if (isLoading) {
+  // Prevent hydration mismatch by showing skeleton during loading or before mount
+  if (!mounted || isLoading || !isAuthenticated || !isAdmin) {
     return <ExportSkeleton />
-  }
-
-  if (!isAuthenticated || !isAdmin) {
-    return null
   }
 
   return (

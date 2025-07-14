@@ -43,6 +43,11 @@ model PatientIntake {
   appointmentBooked     Boolean      @default(false)
   appointmentBookedAt   DateTime?
   
+  // OSCAR Integration
+  oscarDemographicNo    String?      // OSCAR demographic number for patient linkage
+  oscarCreatedAt        DateTime?    // When patient was created in OSCAR
+  oscarLastSyncAt       DateTime?    // Last successful sync with OSCAR
+  
   // View Tracking
   viewedAt              DateTime?    // When admin viewed the submission
   
@@ -70,6 +75,11 @@ model AdminUser {
   lastLoginAt       DateTime?
   loginAttempts     Int       @default(0)
   lockedUntil       DateTime?
+  
+  // Two-Factor Authentication
+  twoFactorEnabled  Boolean   @default(false)
+  twoFactorSecret   String?   // Base32 encoded secret
+  twoFactorBackupCodes String[] // Array of backup codes
   
   // Audit Trail
   createdAt         DateTime  @default(now())
@@ -265,6 +275,12 @@ model Appointment {
   bookingUrl              String?
   metadata                Json?    // Store provider-specific data
   
+  // OSCAR Integration
+  oscarAppointmentId      String?      // OSCAR appointment number for EMR linkage
+  oscarProviderNo         String?      // OSCAR provider number
+  oscarCreatedAt          DateTime?    // When appointment was created in OSCAR
+  oscarLastSyncAt         DateTime?    // Last successful sync with OSCAR
+  
   // Timestamps
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
@@ -323,4 +339,173 @@ enum NotificationMethod {
   EMAIL
   SMS
   BOTH
+}
+
+// OSCAR Job Queue System
+model OscarJobQueue {
+  id                String          @id @default(cuid())
+  
+  // Job identification
+  jobType           OscarJobType
+  priority          JobPriority     @default(NORMAL)
+  status            JobStatus       @default(PENDING)
+  
+  // Job data
+  payload           Json            // Contains the data needed to execute the job
+  result            Json?           // Result data from successful execution
+  error             Json?           // Error details from failed execution
+  
+  // Retry logic
+  attemptCount      Int             @default(0)
+  maxAttempts       Int             @default(3)
+  nextRetryAt       DateTime?       // When to retry next (exponential backoff)
+  
+  // Timing
+  scheduledAt       DateTime        @default(now())
+  startedAt         DateTime?       // When job execution started
+  completedAt       DateTime?       // When job completed (success or final failure)
+  
+  // Metadata
+  resourceType      String?         // 'patient', 'appointment', etc.
+  resourceId        String?         // ID of the resource being processed
+  correlationId     String?         // For tracking related operations
+  
+  // Audit
+  createdBy         String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  jobHistory        OscarJobHistory[]
+  
+  @@index([status, scheduledAt])
+  @@index([jobType, status])
+  @@index([resourceType, resourceId])
+  @@index([nextRetryAt])
+  @@map("oscar_job_queue")
+}
+
+model OscarJobHistory {
+  id                String          @id @default(cuid())
+  
+  // Job reference
+  jobId             String
+  job               OscarJobQueue   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  // Execution details
+  attemptNumber     Int
+  status            JobStatus
+  startedAt         DateTime
+  completedAt       DateTime
+  duration          Int?            // Execution time in milliseconds
+  
+  // Results
+  success           Boolean
+  result            Json?           // Result data
+  error             Json?           // Error details
+  errorType         OscarErrorType?
+  
+  // System info
+  executedBy        String?         // Worker/process identifier
+  serverInfo        Json?           // Server details, memory usage, etc.
+  
+  @@index([jobId, attemptNumber])
+  @@index([startedAt])
+  @@map("oscar_job_history")
+}
+
+model OscarErrorLog {
+  id                String          @id @default(cuid())
+  
+  // Error classification
+  errorType         OscarErrorType
+  errorCode         String?
+  severity          ErrorSeverity   @default(ERROR)
+  
+  // Context
+  operation         String          // 'patient_create', 'appointment_book', etc.
+  resourceType      String?
+  resourceId        String?
+  correlationId     String?
+  
+  // Error details
+  message           String
+  details           Json?           // Stack trace, request/response data, etc.
+  
+  // Resolution
+  resolved          Boolean         @default(false)
+  resolvedAt        DateTime?
+  resolvedBy        String?
+  resolution        String?
+  
+  // Retry info
+  retryable         Boolean         @default(true)
+  retryCount        Int             @default(0)
+  lastRetryAt       DateTime?
+  
+  // Notification
+  notificationSent  Boolean         @default(false)
+  notificationSentAt DateTime?
+  
+  // Audit
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@index([errorType, severity])
+  @@index([operation, createdAt])
+  @@index([resolved, severity])
+  @@index([createdAt])
+  @@map("oscar_error_log")
+}
+
+// Enums for Job Queue System
+enum OscarJobType {
+  PATIENT_CREATE
+  PATIENT_UPDATE
+  PATIENT_SEARCH
+  APPOINTMENT_CREATE
+  APPOINTMENT_UPDATE
+  APPOINTMENT_CANCEL
+  APPOINTMENT_SYNC
+  PROVIDER_SYNC
+  BULK_SYNC
+  HEALTH_CHECK
+  DATA_INTEGRITY_CHECK
+}
+
+enum JobStatus {
+  PENDING       // Waiting to be processed
+  PROCESSING    // Currently being executed
+  COMPLETED     // Successfully completed
+  FAILED        // Failed after all retries
+  CANCELLED     // Manually cancelled
+  DELAYED       // Scheduled for future execution
+}
+
+enum JobPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum OscarErrorType {
+  NETWORK_ERROR
+  AUTHENTICATION_ERROR
+  AUTHORIZATION_ERROR
+  VALIDATION_ERROR
+  RATE_LIMIT_ERROR
+  TIMEOUT_ERROR
+  SERVER_ERROR
+  CLIENT_ERROR
+  DATA_ERROR
+  CONFIGURATION_ERROR
+  UNKNOWN_ERROR
+}
+
+enum ErrorSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
 }

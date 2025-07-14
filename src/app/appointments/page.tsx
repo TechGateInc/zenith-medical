@@ -617,7 +617,7 @@ export default function AppointmentBooking() {
                       className={`px-6 py-3 rounded-lg font-medium transition-colors ${
                         (currentStep === 1 && selectedAppointmentType?.requiresIntake && !patientIntakeId)
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'bg-blue-600 hover:bg-blue-700 text-white hover:text-white'
                       }`}
                     >
                       Next

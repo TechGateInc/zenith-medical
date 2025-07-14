@@ -1,8 +1,11 @@
 import { auditLog } from '../audit/audit-logger'
+import { oscarAppointmentService } from './oscar-appointment-service'
+import { oscarPatientService } from './oscar-patient-service'
+import { prisma } from '../prisma'
 
 export interface BookingProvider {
   name: string
-  type: 'acuity' | 'calendly' | 'simplepractice' | 'generic_webhook' | 'embed'
+  type: 'acuity' | 'calendly' | 'simplepractice' | 'generic_webhook' | 'embed' | 'oscar'
   config: {
     apiKey?: string
     apiSecret?: string
@@ -10,6 +13,12 @@ export interface BookingProvider {
     embedUrl?: string
     webhookUrl?: string
     redirectUrl?: string
+    // OSCAR-specific config
+    oscarBaseUrl?: string
+    oscarConsumerKey?: string
+    oscarConsumerSecret?: string
+    oscarToken?: string
+    oscarTokenSecret?: string
   }
   active: boolean
 }
@@ -100,6 +109,19 @@ export class AppointmentBookingService {
           redirectUrl: process.env.BOOKING_REDIRECT_URL || `${process.env.NEXT_PUBLIC_BASE_URL}/book-appointment`
         },
         active: !!process.env.BOOKING_EMBED_URL
+      },
+      {
+        name: 'OSCAR EMR',
+        type: 'oscar',
+        config: {
+          oscarBaseUrl: process.env.OSCAR_BASE_URL,
+          oscarConsumerKey: process.env.OSCAR_CONSUMER_KEY,
+          oscarConsumerSecret: process.env.OSCAR_CONSUMER_SECRET,
+          oscarToken: process.env.OSCAR_TOKEN,
+          oscarTokenSecret: process.env.OSCAR_TOKEN_SECRET,
+          redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/appointments/success`
+        },
+        active: !!(process.env.OSCAR_BASE_URL && process.env.OSCAR_CONSUMER_KEY && process.env.OSCAR_CONSUMER_SECRET && process.env.OSCAR_TOKEN && process.env.OSCAR_TOKEN_SECRET)
       }
     ]
 
@@ -162,6 +184,9 @@ export class AppointmentBookingService {
           break
         case 'embed':
           result = this.createEmbedRedirect(appointmentData, provider)
+          break
+        case 'oscar':
+          result = await this.createOscarAppointment(appointmentData, provider)
           break
         default:
           result = {
@@ -482,6 +507,157 @@ export class AppointmentBookingService {
       success: true,
       bookingUrl: bookingUrl.toString(),
       redirectUrl: redirectUrl || bookingUrl.toString()
+    }
+  }
+
+  private async createOscarAppointment(appointmentData: AppointmentData, provider: BookingProvider): Promise<BookingResponse> {
+    try {
+      // Validate OSCAR configuration
+      const { oscarBaseUrl, oscarConsumerKey, oscarConsumerSecret, oscarToken, oscarTokenSecret } = provider.config
+      if (!oscarBaseUrl || !oscarConsumerKey || !oscarConsumerSecret || !oscarToken || !oscarTokenSecret) {
+        return {
+          success: false,
+          error: 'OSCAR EMR configuration incomplete. Please check environment variables.'
+        }
+      }
+
+      let demographicNo: string | null = null
+      let patientIntake = null
+
+      // If we have an intake submission ID, get the patient data
+      if (appointmentData.intakeSubmissionId) {
+        patientIntake = await prisma.patientIntake.findUnique({
+          where: { id: appointmentData.intakeSubmissionId }
+        })
+
+        if (patientIntake?.oscarDemographicNo) {
+          demographicNo = patientIntake.oscarDemographicNo
+        }
+      }
+
+      // If no demographic number, we need to search/create the patient in OSCAR
+      if (!demographicNo && patientIntake) {
+        try {
+          // Search for existing patient first
+          const searchResult = await oscarPatientService.searchPatientByIntakeData(patientIntake)
+          
+          if (searchResult.found && searchResult.patients.length > 0) {
+            // Use the best match
+            demographicNo = searchResult.patients[0].demographicNo
+            
+            // Update the intake record with the demographic number
+            await prisma.patientIntake.update({
+              where: { id: patientIntake.id },
+              data: {
+                oscarDemographicNo: demographicNo,
+                oscarLastSyncAt: new Date()
+              }
+            })
+          } else {
+            // Create new patient in OSCAR
+            const createResult = await oscarPatientService.createPatient(patientIntake)
+            
+            if (createResult.success && createResult.demographicNo) {
+              demographicNo = createResult.demographicNo
+              
+              // Update the intake record
+              await prisma.patientIntake.update({
+                where: { id: patientIntake.id },
+                data: {
+                  oscarDemographicNo: demographicNo,
+                  oscarCreatedAt: new Date(),
+                  oscarLastSyncAt: new Date()
+                }
+              })
+            } else {
+              return {
+                success: false,
+                error: `Failed to create patient in OSCAR: ${createResult.errors?.join(', ') || 'Unknown error'}`
+              }
+            }
+          }
+        } catch (patientError) {
+          console.error('Error handling OSCAR patient:', patientError)
+          return {
+            success: false,
+            error: `Patient registration failed: ${patientError instanceof Error ? patientError.message : 'Unknown error'}`
+          }
+        }
+      }
+
+      // If we still don't have a demographic number, we can't proceed
+      if (!demographicNo) {
+        return {
+          success: false,
+          error: 'Unable to identify or create patient in OSCAR EMR'
+        }
+      }
+
+      // Get OSCAR providers if a specific provider is requested
+      let oscarProviderNo = appointmentData.providerId
+      if (!oscarProviderNo) {
+        // Use default provider or first available provider
+        const providers = await oscarAppointmentService.getProviders()
+        const activeProviders = providers.filter(p => p.isActive)
+        
+        if (activeProviders.length === 0) {
+          return {
+            success: false,
+            error: 'No active providers available in OSCAR EMR'
+          }
+        }
+        
+        oscarProviderNo = activeProviders[0].providerNo
+      }
+
+      // Create appointment in OSCAR
+      const appointmentRequest = {
+        demographicNo,
+        patientName: appointmentData.patientName,
+        patientEmail: appointmentData.patientEmail,
+        patientPhone: appointmentData.patientPhone,
+        providerNo: oscarProviderNo,
+        appointmentDate: appointmentData.appointmentDate,
+        startTime: appointmentData.appointmentTime,
+        appointmentType: appointmentData.appointmentType,
+        reason: appointmentData.appointmentType || 'General Consultation',
+        notes: appointmentData.notes,
+        bookingSource: 'zenith_medical_booking',
+        intakeSubmissionId: appointmentData.intakeSubmissionId
+      }
+
+      const bookingResult = await oscarAppointmentService.createAppointment(appointmentRequest)
+
+      if (!bookingResult.success) {
+        return {
+          success: false,
+          error: bookingResult.error || 'Failed to create appointment in OSCAR EMR'
+        }
+      }
+
+      // Return success response
+      return {
+        success: true,
+        appointmentId: bookingResult.oscarAppointmentId || bookingResult.appointmentNo,
+        redirectUrl: provider.config.redirectUrl,
+        metadata: {
+          provider: 'oscar',
+          oscarAppointmentId: bookingResult.oscarAppointmentId,
+          oscarProviderNo,
+          demographicNo,
+          providerName: bookingResult.providerName,
+          appointmentDate: bookingResult.appointmentDate,
+          startTime: bookingResult.startTime,
+          endTime: bookingResult.endTime
+        }
+      }
+
+    } catch (error) {
+      console.error('OSCAR appointment creation error:', error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create OSCAR appointment'
+      }
     }
   }
 
