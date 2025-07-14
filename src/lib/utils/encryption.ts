@@ -102,9 +102,14 @@ export function hashForSearch(data: string): string {
 export interface EncryptedPatientData {
   legalFirstName: string
   legalLastName: string
+  middleName?: string
   preferredName?: string
+  title?: string
   dateOfBirth: string
+  gender?: string
   phoneNumber: string
+  cellPhone?: string
+  workPhone?: string
   emailAddress: string
   streetAddress: string
   city: string
@@ -113,15 +118,22 @@ export interface EncryptedPatientData {
   nextOfKinName: string
   nextOfKinPhone: string
   relationshipToPatient: string
+  primaryLanguage?: string
+  preferredLanguage?: string
   healthInformationNumber: string
 }
 
 export interface PlainPatientData {
   legalFirstName: string
   legalLastName: string
+  middleName?: string
   preferredName?: string
+  title?: string
   dateOfBirth: string
+  gender?: string
   phoneNumber: string
+  cellPhone?: string
+  workPhone?: string
   emailAddress: string
   streetAddress: string
   city: string
@@ -130,6 +142,8 @@ export interface PlainPatientData {
   nextOfKinName: string
   nextOfKinPhone: string
   relationshipToPatient: string
+  primaryLanguage?: string
+  preferredLanguage?: string
   healthInformationNumber: string
 }
 
@@ -137,9 +151,14 @@ export function encryptPatientData(data: PlainPatientData): EncryptedPatientData
   return {
     legalFirstName: encryptPHI(data.legalFirstName),
     legalLastName: encryptPHI(data.legalLastName),
+    middleName: data.middleName ? encryptPHI(data.middleName) : undefined,
     preferredName: data.preferredName ? encryptPHI(data.preferredName) : undefined,
+    title: data.title ? encryptPHI(data.title) : undefined,
     dateOfBirth: encryptPHI(data.dateOfBirth),
+    gender: data.gender ? encryptPHI(data.gender) : undefined,
     phoneNumber: encryptPHI(data.phoneNumber),
+    cellPhone: data.cellPhone ? encryptPHI(data.cellPhone) : undefined,
+    workPhone: data.workPhone ? encryptPHI(data.workPhone) : undefined,
     emailAddress: encryptPHI(data.emailAddress),
     streetAddress: encryptPHI(data.streetAddress),
     city: encryptPHI(data.city),
@@ -148,6 +167,8 @@ export function encryptPatientData(data: PlainPatientData): EncryptedPatientData
     nextOfKinName: encryptPHI(data.nextOfKinName),
     nextOfKinPhone: encryptPHI(data.nextOfKinPhone),
     relationshipToPatient: encryptPHI(data.relationshipToPatient),
+    primaryLanguage: data.primaryLanguage ? encryptPHI(data.primaryLanguage) : undefined,
+    preferredLanguage: data.preferredLanguage ? encryptPHI(data.preferredLanguage) : undefined,
     healthInformationNumber: encryptPHI(data.healthInformationNumber),
   }
 }
@@ -156,9 +177,14 @@ export function decryptPatientData(data: EncryptedPatientData): PlainPatientData
   return {
     legalFirstName: decryptPHI(data.legalFirstName),
     legalLastName: decryptPHI(data.legalLastName),
+    middleName: data.middleName ? decryptPHI(data.middleName) : undefined,
     preferredName: data.preferredName ? decryptPHI(data.preferredName) : undefined,
+    title: data.title ? decryptPHI(data.title) : undefined,
     dateOfBirth: decryptPHI(data.dateOfBirth),
+    gender: data.gender ? decryptPHI(data.gender) : undefined,
     phoneNumber: decryptPHI(data.phoneNumber),
+    cellPhone: data.cellPhone ? decryptPHI(data.cellPhone) : undefined,
+    workPhone: data.workPhone ? decryptPHI(data.workPhone) : undefined,
     emailAddress: decryptPHI(data.emailAddress),
     streetAddress: decryptPHI(data.streetAddress),
     city: decryptPHI(data.city),
@@ -167,6 +193,8 @@ export function decryptPatientData(data: EncryptedPatientData): PlainPatientData
     nextOfKinName: decryptPHI(data.nextOfKinName),
     nextOfKinPhone: decryptPHI(data.nextOfKinPhone),
     relationshipToPatient: decryptPHI(data.relationshipToPatient),
+    primaryLanguage: data.primaryLanguage ? decryptPHI(data.primaryLanguage) : undefined,
+    preferredLanguage: data.preferredLanguage ? decryptPHI(data.preferredLanguage) : undefined,
     healthInformationNumber: decryptPHI(data.healthInformationNumber),
   }
 } 

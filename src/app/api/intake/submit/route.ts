@@ -45,9 +45,14 @@ export async function POST(request: NextRequest) {
     const {
       legalFirstName,
       legalLastName,
+      middleName,
       preferredName,
+      title,
       dateOfBirth,
+      gender,
       phoneNumber,
+      cellPhone,
+      workPhone,
       emailAddress,
       streetAddress,
       city,
@@ -56,6 +61,9 @@ export async function POST(request: NextRequest) {
       nextOfKinName,
       nextOfKinPhone,
       relationshipToPatient,
+      primaryLanguage,
+      preferredLanguage,
+      newsletterOptIn,
       privacyPolicyAgreed,
       healthInformationNumber
     } = body
@@ -75,9 +83,14 @@ export async function POST(request: NextRequest) {
     const encryptedData = await encryptPatientData({
       legalFirstName,
       legalLastName,
+      middleName: middleName || '',
       preferredName: preferredName || '',
+      title: title || '',
       dateOfBirth,
+      gender: gender || '',
       phoneNumber,
+      cellPhone: cellPhone || '',
+      workPhone: workPhone || '',
       emailAddress,
       streetAddress,
       city,
@@ -86,6 +99,8 @@ export async function POST(request: NextRequest) {
       nextOfKinName,
       nextOfKinPhone,
       relationshipToPatient,
+      primaryLanguage: primaryLanguage || '',
+      preferredLanguage: preferredLanguage || '',
       healthInformationNumber
     })
     
@@ -94,9 +109,14 @@ export async function POST(request: NextRequest) {
       data: {
         legalFirstName: encryptedData.legalFirstName,
         legalLastName: encryptedData.legalLastName,
+        middleName: encryptedData.middleName || null,
         preferredName: encryptedData.preferredName || null,
+        title: encryptedData.title || null,
         dateOfBirth: encryptedData.dateOfBirth,
+        gender: encryptedData.gender || null,
         phoneNumber: encryptedData.phoneNumber,
+        cellPhone: encryptedData.cellPhone || null,
+        workPhone: encryptedData.workPhone || null,
         emailAddress: encryptedData.emailAddress,
         streetAddress: encryptedData.streetAddress,
         city: encryptedData.city,
@@ -105,6 +125,9 @@ export async function POST(request: NextRequest) {
         nextOfKinName: encryptedData.nextOfKinName,
         nextOfKinPhone: encryptedData.nextOfKinPhone,
         relationshipToPatient: encryptedData.relationshipToPatient,
+        primaryLanguage: encryptedData.primaryLanguage || null,
+        preferredLanguage: encryptedData.preferredLanguage || null,
+        newsletterOptIn: newsletterOptIn || false,
         privacyPolicyAccepted: privacyPolicyAgreed,
         status: 'SUBMITTED',
         ipAddress: ipAddress,
@@ -149,9 +172,14 @@ export async function POST(request: NextRequest) {
           ...patientIntake,
           legalFirstName,
           legalLastName,
+          middleName: middleName || null,
           preferredName: preferredName || null,
+          title: title || null,
           dateOfBirth,
+          gender: gender || null,
           phoneNumber,
+          cellPhone: cellPhone || null,
+          workPhone: workPhone || null,
           emailAddress,
           streetAddress,
           city,
@@ -160,6 +188,9 @@ export async function POST(request: NextRequest) {
           nextOfKinName,
           nextOfKinPhone,
           relationshipToPatient,
+          primaryLanguage: primaryLanguage || null,
+          preferredLanguage: preferredLanguage || null,
+          newsletterOptIn: newsletterOptIn || false,
           healthInformationNumber
         }
         
