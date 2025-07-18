@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.zenithmedical.ca'
   
   const robotsTxt = `# Robots.txt for Zenith Medical Centre
 # Healthcare website - ensuring proper indexing while protecting patient privacy

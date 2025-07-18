@@ -13,7 +13,7 @@ import { prisma } from '@/lib/prisma';
 const systemSettings = {
   siteName: 'Zenith Medical Centre',
   siteDescription: 'Comprehensive healthcare services for the community',
-  adminEmail: 'admin@zenithmedical.com',
+  adminEmail: 'admin@zenithmedical.ca',
   timezone: 'America/Toronto',
   dateFormat: 'MM/DD/YYYY',
   language: 'en'

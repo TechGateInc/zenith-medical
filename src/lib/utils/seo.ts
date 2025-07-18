@@ -14,7 +14,7 @@ interface SEOData {
   tags?: string[]
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.zenithmedical.ca'
 const siteName = 'Zenith Medical Centre'
 const defaultImage = `${baseUrl}/api/og`
 

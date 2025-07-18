@@ -292,7 +292,7 @@ export async function POST(request: NextRequest) {
     
     // Send email notifications (don't let email failures break the submission)
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.zenithmedical.ca'
       const patientName = preferredName || legalFirstName
       
       // Send patient confirmation email

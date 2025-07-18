@@ -17,7 +17,7 @@ const prisma = new PrismaClient();
 
 // Admin user data
 const adminUser = {
-  email: 'admin@zenithmedical.com',
+  email: 'admin@zenithmedical.ca',
   password: 'Admin123!', // Change this in production!
   name: 'System Administrator',
   role: 'SUPER_ADMIN'
@@ -29,7 +29,7 @@ const teamMembers = [
     name: "Dr. Sarah Mitchell",
     title: "Chief Medical Officer & Family Physician",
     bio: "Board-certified family physician dedicated to comprehensive patient care with expertise in preventive medicine and chronic disease management.",
-    email: "s.mitchell@zenithmedical.com",
+    email: "s.mitchell@zenithmedical.ca",
     phone: "(555) 123-4567",
     specialties: ["Family Medicine", "Preventive Care", "Women's Health"],
     orderIndex: 1,
@@ -39,7 +39,7 @@ const teamMembers = [
     name: "Dr. Michael Chen",
     title: "Family Physician",
     bio: "Experienced family doctor with special interest in chronic disease management and geriatric medicine, committed to patient-centered care.",
-    email: "m.chen@zenithmedical.com",
+    email: "m.chen@zenithmedical.ca",
     phone: "(555) 123-4568",
     specialties: ["Family Medicine", "Chronic Care", "Geriatrics"],
     orderIndex: 2,
@@ -49,7 +49,7 @@ const teamMembers = [
     name: "Dr. Emily Rodriguez",
     title: "Family Physician",
     bio: "Compassionate physician specializing in family medicine with additional training in pediatric care and mental health support.",
-    email: "e.rodriguez@zenithmedical.com",
+    email: "e.rodriguez@zenithmedical.ca",
     phone: "(555) 123-4569",
     specialties: ["Family Medicine", "Pediatrics", "Mental Health"],
     orderIndex: 3,
@@ -59,7 +59,7 @@ const teamMembers = [
     name: "Jennifer Thompson",
     title: "Nurse Practitioner",
     bio: "Experienced nurse practitioner focused on primary care, health promotion, and patient education with a holistic approach to wellness.",
-    email: "j.thompson@zenithmedical.com",
+    email: "j.thompson@zenithmedical.ca",
     phone: "(555) 123-4570",
     specialties: ["Primary Care", "Health Promotion", "Patient Education"],
     orderIndex: 4,

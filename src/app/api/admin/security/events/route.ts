@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       {
         id: '1',
         type: 'login',
-        user: session.user?.email || 'admin@zenithmedical.com',
+        user: session.user?.email || 'admin@zenithmedical.ca',
         description: 'Successful admin login',
         timestamp: new Date().toISOString(),
         severity: 'low',
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       {
         id: '3',
         type: 'admin_action',
-        user: session.user?.email || 'admin@zenithmedical.com',
+        user: session.user?.email || 'admin@zenithmedical.ca',
         description: 'Updated system settings',
         timestamp: new Date(Date.now() - 7200000).toISOString(),
         severity: 'low',
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       {
         id: '5',
         type: 'data_access',
-        user: session.user?.email || 'admin@zenithmedical.com',
+        user: session.user?.email || 'admin@zenithmedical.ca',
         description: 'Accessed patient intake records',
         timestamp: new Date(Date.now() - 14400000).toISOString(),
         severity: 'low',
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
       {
         id: '7',
         type: 'admin_action',
-        user: session.user?.email || 'admin@zenithmedical.com',
+        user: session.user?.email || 'admin@zenithmedical.ca',
         description: 'Created new team member',
         timestamp: new Date(Date.now() - 86400000).toISOString(),
         severity: 'low',

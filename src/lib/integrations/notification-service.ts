@@ -94,7 +94,7 @@ export class NotificationService {
         type: 'sendgrid',
         config: {
           apiKey: process.env.SENDGRID_API_KEY,
-          fromEmail: process.env.SENDGRID_FROM_EMAIL || 'noreply@zenithmedical.com',
+          fromEmail: process.env.SENDGRID_FROM_EMAIL || 'noreply@zenithmedical.ca',
           fromName: process.env.SENDGRID_FROM_NAME || 'Zenith Medical Centre'
         },
         active: !!process.env.SENDGRID_API_KEY
@@ -104,7 +104,7 @@ export class NotificationService {
         type: 'resend',
         config: {
           apiKey: process.env.RESEND_API_KEY,
-          fromEmail: process.env.RESEND_FROM_EMAIL || 'noreply@zenithmedical.com',
+          fromEmail: process.env.RESEND_FROM_EMAIL || 'noreply@zenithmedical.ca',
           fromName: process.env.RESEND_FROM_NAME || 'Zenith Medical Centre'
         },
         active: !!process.env.RESEND_API_KEY
@@ -117,7 +117,7 @@ export class NotificationService {
           smtpPort: parseInt(process.env.SMTP_PORT || '587'),
           smtpUser: process.env.SMTP_USER,
           smtpPassword: process.env.SMTP_PASSWORD,
-          fromEmail: process.env.SMTP_FROM_EMAIL || 'noreply@zenithmedical.com',
+          fromEmail: process.env.SMTP_FROM_EMAIL || 'noreply@zenithmedical.ca',
           fromName: process.env.SMTP_FROM_NAME || 'Zenith Medical Centre'
         },
         active: !!(process.env.SMTP_HOST && process.env.SMTP_USER)

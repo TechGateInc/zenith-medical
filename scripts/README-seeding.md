@@ -57,7 +57,7 @@ The script will output progress and a summary:
 
 After seeding, you can access the admin panel with:
 
-- **Email:** `admin@zenithmedical.com`
+- **Email:** `admin@zenithmedical.ca`
 - **Password:** `Admin123!`
 
 ⚠️ **IMPORTANT:** Change the admin password immediately after first login!
