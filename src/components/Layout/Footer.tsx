@@ -27,7 +27,7 @@ export default function Footer() {
             <div className="flex items-center mb-6">
               <div className="h-16 w-16 mr-4 relative">
                 <Image
-                  src="/images/zenith-medical-logo.png"
+                  src="/images/zenith-medical-logo new 1.png"
                   alt="Zenith Medical Centre Logo"
                   width={64}
                   height={64}

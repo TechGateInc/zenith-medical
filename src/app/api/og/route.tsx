@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server'
 export const runtime = 'edge'
 
 export async function GET(req: NextRequest) {
-  const logoUrl = new URL('/images/zenith-medical-logo.png', req.url).toString()
+  const logoUrl = new URL('/images/zenith-medical-logo new 1.png', req.url).toString()
   const width = 1200
   const height = 630
 

@@ -104,7 +104,7 @@ export function generateHomepageStructuredData() {
     name: siteName,
     description: 'Comprehensive family medicine and healthcare services providing compassionate, patient-centered care for individuals and families.',
     url: baseUrl,
-    logo: `${baseUrl}/images/zenith-medical-logo.png`,
+    logo: `${baseUrl}/images/zenith-medical-logo new 1.png`,
     image: `${baseUrl}/images/zenith-medical-center.jpg`,
     telephone: '+1-555-123-2273',
     email: 'info@zenithmediacl.ca',
@@ -219,7 +219,7 @@ export function generateBlogStructuredData(post: {
       name: siteName,
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/images/zenith-medical-logo.png`,
+        url: `${baseUrl}/images/zenith-medical-logo new 1.png`,
       },
     },
     datePublished: post.publishDate,

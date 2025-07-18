@@ -35,15 +35,15 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/images/zenith-medical-logo single.png',
+        url: '/images/zenith-medical-logo single new.png',
         sizes: 'any',
         type: 'image/png',
       },
     ],
-    shortcut: '/images/zenith-medical-logo single.png',
+    shortcut: '/images/zenith-medical-logo single new.png',
     apple: [
       {
-        url: '/images/zenith-medical-logo single.png',
+        url: '/images/zenith-medical-logo single new.png',
         sizes: '180x180',
         type: 'image/png',
       },

@@ -60,7 +60,7 @@ export default function AdminLogin() {
           <div className="text-center mb-8">
             <div className="mx-auto h-16 w-16 mb-6 relative">
               <Image
-                src="/images/zenith-medical-logo.png"
+                src="/images/zenith-medical-logo new 1.png"
                 alt="Zenith Medical Centre Logo"
                 width={64}
                 height={64}

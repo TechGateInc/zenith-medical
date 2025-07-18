@@ -233,7 +233,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
       name: 'Zenith Medical Centre',
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/images/zenith-medical-logo.png`,
+        url: `${baseUrl}/images/zenith-medical-logo new 1.png`,
         width: 200,
         height: 60
       },

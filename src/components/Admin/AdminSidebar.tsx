@@ -263,7 +263,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
           <div className="flex items-center">
             <div className="relative w-8 h-8 mr-3">
               <Image
-                src="/images/zenith-medical-logo.png"
+                src="/images/zenith-medical-logo new 1.png"
                 alt="Zenith Medical Centre"
                 width={32}
                 height={32}
