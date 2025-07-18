@@ -16,7 +16,7 @@ interface SEOData {
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.com'
 const siteName = 'Zenith Medical Centre'
-const defaultImage = `${baseUrl}/images/zenith-medical-og.jpg`
+const defaultImage = `${baseUrl}/api/og`
 
 export function generateMetadata(data: SEOData): Metadata {
   const {

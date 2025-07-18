@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     description: 'Quality family medicine and healthcare services in Medical District, MD. Preventive care, chronic disease management, and comprehensive health services for all ages.',
     images: [
       {
-        url: `${baseUrl}/images/zenith-medical-og.jpg`,
+        url: `${baseUrl}/api/og`,
         width: 1200,
         height: 630,
         alt: 'Zenith Medical Centre',

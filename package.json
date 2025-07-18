@@ -41,6 +41,7 @@
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@vercel/og": "^0.7.2",
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
