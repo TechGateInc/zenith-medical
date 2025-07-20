@@ -304,7 +304,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
       <div class="email-container">
         <div class="header">
           <h1>Zenith Medical Centre</h1>
-          <p>Your Health, Our Innovation</p>
+                          <p>Expert Care Personal Touch</p>
         </div>
         
         <div class="content">
@@ -386,7 +386,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
   
   const text = `
     ZENITH MEDICAL CENTRE
-    Your Health, Our Innovation
+    Expert Care Personal Touch
     
     Patient Intake Form Confirmation
     

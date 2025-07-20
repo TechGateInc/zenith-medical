@@ -198,7 +198,7 @@ export default function FAQ() {
                   <div className="text-slate-600 font-medium">Questions</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">24/7</div>
+                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Clinic</div>
                   <div className="text-slate-600 font-medium">Available</div>
                 </div>
               </div>

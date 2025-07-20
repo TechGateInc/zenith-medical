@@ -39,7 +39,7 @@ export default function Header() {
               </div>
               <div className="hidden sm:flex flex-col justify-center">
                 <span className="text-xl font-bold text-slate-800 leading-tight">Zenith Medical Centre</span>
-                <span className="text-sm text-slate-600 leading-tight">Your Health, Our Innovation</span>
+                <span className="text-sm text-slate-600 leading-tight">Expert Care Personal Touch</span>
               </div>
             </Link>
           </div>

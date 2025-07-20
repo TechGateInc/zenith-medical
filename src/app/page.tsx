@@ -64,7 +64,7 @@ export default async function Home() {
               {/* Left Content */}
               <div className="text-center lg:text-left">
                 <h1 className="text-5xl lg:text-6xl font-bold mb-6 text-slate-800 leading-tight">
-                  Your Health, Our Innovation
+                  Expert Care Personal Touch
                 </h1>
                 <p className="text-xl text-slate-600 mb-8 leading-relaxed">
                   Experience healthcare reimagined at our state-of-the-art medical centre. We combine efficient medical technology with compassionate patient care to deliver exceptional healthcare for you and your family.

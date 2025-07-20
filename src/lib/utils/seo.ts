@@ -107,7 +107,7 @@ export function generateHomepageStructuredData() {
     logo: `${baseUrl}/images/zenith-medical-logo new 1.png`,
     image: `${baseUrl}/images/zenith-medical-center.jpg`,
     telephone: '+1-555-123-2273',
-    email: 'info@zenithmediacl.ca',
+    email: 'admin@zenithmedical.ca',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '123 Healthcare Drive',

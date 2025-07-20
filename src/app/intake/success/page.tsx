@@ -970,7 +970,7 @@ export default function IntakeSuccessPage() {
                         href="mailto:appointments@zenithmediacl.ca"
                         className="hover:text-purple-700 transition-colors"
                       >
-                        info@zenithmediacl.ca
+                        admin@zenithmedical.ca
                       </a>
                     </p>
                     <p className="text-sm text-slate-500">
