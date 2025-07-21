@@ -46,6 +46,14 @@ export default function ContentManagementPage() {
     fetchContentStats();
   }, []);
 
+  const [serviceCount, setServiceCount] = useState(0);
+  useEffect(() => {
+    fetch('/api/admin/content/services')
+      .then(res => res.json())
+      .then(data => setServiceCount(Array.isArray(data.services) ? data.services.length : 0))
+      .catch(() => setServiceCount(0));
+  }, []);
+
   const fetchContentStats = async () => {
     try {
       setLoading(true);
@@ -155,7 +163,19 @@ export default function ContentManagementPage() {
         { label: 'View All', href: '/admin/content/faq', icon: Eye },
         { label: 'Add FAQ', href: '/admin/content/faq/new', icon: Plus }
       ]
-    }
+    },
+    {
+      title: 'Services',
+      description: 'Manage medical services offered by the clinic',
+      icon: BookOpen,
+      href: '/admin/content/services',
+      count: serviceCount,
+      color: 'blue',
+      actions: [
+        { label: 'View All', href: '/admin/content/services', icon: Eye },
+        { label: 'Add Service', href: '/admin/content/services', icon: Plus }
+      ]
+    },
   ];
 
   const getColorClasses = (color: string) => {

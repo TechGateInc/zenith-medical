@@ -87,6 +87,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
           href: '/admin/content/faq',
           icon: HelpCircle,
         },
+        {
+          name: 'Services',
+          href: '/admin/content/services',
+          icon: BookOpen,
+        },
       ],
     },
     {

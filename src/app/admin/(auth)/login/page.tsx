@@ -103,7 +103,7 @@ export default function AdminLogin() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        placeholder="admin@zenithmediacl.ca"
+                                        placeholder="admin@zenithmedical.ca"
               />
             </div>
 

@@ -938,8 +938,8 @@ export const sendStaffNotificationEmail = async (
     
     // Get staff notification emails from environment variables
     const staffEmails = process.env.STAFF_NOTIFICATION_EMAILS?.split(',') || [
-      'admin@zenithmediacl.ca',
-      'intake@zenithmediacl.ca'
+      'admin@zenithmedical.ca',
+      'intake@zenithmedical.ca'
     ]
     
     // Send to first staff email (can be extended to send to multiple)
