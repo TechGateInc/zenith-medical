@@ -6,6 +6,7 @@ import SessionProvider from '../lib/auth/session-provider'
 import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Analytics/AnalyticsProvider'
 import AnalyticsConsent from '../components/Analytics/AnalyticsConsent'
 import { usePathname } from 'next/navigation'
+import ToastProvider from '../components/UI/ToastProvider'
 
 // Primary font for body text and UI elements
 const inter = Inter({ 
@@ -101,6 +102,7 @@ export default function RootLayout({
         <SessionProvider>
           <Suspense fallback={null}>
             <AnalyticsProvider>
+              <ToastProvider />
               {children}
               <ScrollTracker />
               <TimeTracker />

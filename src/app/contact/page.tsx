@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     name: '',
     email: '',
     phone: '',
@@ -13,7 +14,8 @@ export default function Contact() {
     subject: '',
     message: '',
     appointmentType: ''
-  })
+  }
+  const [formData, setFormData] = useState(initialFormData)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, ] = useState('')
   const [, setSubmitted] = useState(false)
@@ -31,11 +33,22 @@ export default function Contact() {
     setIsSubmitting(true)
 
     try {
-      // TODO: Implement contact form submission
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-      setSubmitted(true)
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      const result = await res.json()
+      if (result.success) {
+        setSubmitted(true)
+        setFormData(initialFormData)
+        toast.success('Your message has been sent!')
+      } else {
+        toast.error(result.error || 'Failed to send message.')
+      }
     } catch (error) {
       console.error('Contact form submission failed:', error)
+      toast.error('Failed to send message.')
     } finally {
       setIsSubmitting(false)
     }
