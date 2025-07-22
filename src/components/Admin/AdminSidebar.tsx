@@ -106,12 +106,13 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
         },
       ],
     },
-    {
-      name: 'Notifications',
-      href: '/admin/notifications',
-      icon: Bell,
-      badge: notificationCount > 0 ? notificationCount : undefined,
-    },
+    // Notifications temporarily removed
+    // {
+    //   name: 'Notifications',
+    //   href: '/admin/notifications',
+    //   icon: Bell,
+    //   badge: notificationCount > 0 ? notificationCount : undefined,
+    // },
     {
       name: 'Export Data',
       href: '/admin/export',
@@ -263,25 +264,24 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className={`flex items-center ${collapsed ? 'justify-center px-4' : 'justify-between px-6'} py-6 border-b border-gray-200`}>
+      <div className={`flex items-center ${collapsed ? 'justify-center px-4' : 'justify-between px-6'} py-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white rounded-t-2xl shadow-sm`}>
         {!collapsed && (
-          <div className="flex items-center">
-            <div className="relative w-8 h-8 mr-3">
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10 mr-3 rounded-xl overflow-hidden border-2 border-blue-200 shadow-sm">
               <Image
                 src="/images/zenith-medical-logo new 1.png"
                 alt="Zenith Medical Centre"
-                width={32}
-                height={32}
+                width={40}
+                height={40}
                 className="object-contain"
               />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
-              <p className="text-xs text-gray-500">Zenith Medical Centre</p>
+              <h2 className="text-lg font-extrabold text-blue-900 leading-tight mb-1">Admin Panel</h2>
+              <p className="text-xs text-blue-700 font-medium tracking-wide">Zenith Medical Centre</p>
             </div>
           </div>
         )}
-        
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -327,21 +327,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
       </nav>
 
       {/* User Profile */}
-      <div className="border-t border-gray-200 p-4">
+      <div className="border-t border-gray-200 p-4 bg-gradient-to-r from-blue-50 to-white rounded-b-2xl shadow-sm">
         {!collapsed ? (
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">
-                {user?.name?.split(' ').map(n => n[0]).join('') || 'AD'}
-              </span>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow text-white font-bold text-lg">
+              {user?.name?.split(' ').map(n => n[0]).join('') || 'AD'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.name || 'Admin User'}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {user?.role || 'Administrator'}
-              </p>
+              <p className="text-base font-semibold text-blue-900 truncate">{user?.name || 'Admin User'}</p>
+              <p className="text-xs text-blue-700 font-medium truncate">{user?.role || 'Administrator'}</p>
             </div>
             <Link
               href="/api/auth/signout"
@@ -353,10 +347,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
           </div>
         ) : (
           <div className="flex flex-col space-y-2 items-center">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">
-                {user?.name?.split(' ').map(n => n[0]).join('') || 'AD'}
-              </span>
+            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow text-white font-bold text-lg">
+              {user?.name?.split(' ').map(n => n[0]).join('') || 'AD'}
             </div>
             <Link
               href="/api/auth/signout"

@@ -252,27 +252,19 @@ export default function TwoFactorAuth({ userEmail, onStatusChange }: TwoFactorAu
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-6 bg-gradient-to-r from-green-50 to-white rounded-t-2xl px-6 pt-6">
         <div className="flex items-center">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-4 ${
-            isEnabled ? 'bg-green-100' : 'bg-gray-100'
-          }`}>
-            <Shield className={`w-6 h-6 ${isEnabled ? 'text-green-600' : 'text-gray-600'}`} />
+          <div className={`w-14 h-14 rounded-xl flex items-center justify-center mr-5 ${isEnabled ? 'bg-green-100' : 'bg-gray-100'}`}>
+            <Shield className={`w-7 h-7 ${isEnabled ? 'text-green-600' : 'text-gray-600'}`} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Two-Factor Authentication</h3>
-            <p className="text-gray-600">
+            <h3 className="text-2xl font-extrabold text-green-900 mb-1">Two-Factor Authentication</h3>
+            <p className="text-gray-600 text-base">
               {isEnabled ? 'Enabled' : 'Add an extra layer of security to your account'}
             </p>
           </div>
         </div>
-        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-          isEnabled 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-gray-100 text-gray-800'
-        }`}>
-          {isEnabled ? 'Enabled' : 'Disabled'}
-        </div>
+        <div className={`px-4 py-2 rounded-full text-base font-semibold ${isEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>{isEnabled ? 'Enabled' : 'Disabled'}</div>
       </div>
 
       {isEnabled ? (

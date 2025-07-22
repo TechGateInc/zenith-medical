@@ -72,6 +72,50 @@ interface ApiResponse {
   };
 }
 
+// Add TagInput component inside TeamManager for specialties
+function TagInput({ value, onChange, placeholder }: { value: string[]; onChange: (tags: string[]) => void; placeholder?: string }) {
+  const [input, setInput] = useState('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.key === 'Enter' || e.key === ',') && input.trim()) {
+      e.preventDefault();
+      if (!value.includes(input.trim())) {
+        onChange([...value, input.trim()]);
+      }
+      setInput('');
+    } else if (e.key === 'Backspace' && !input && value.length > 0) {
+      onChange(value.slice(0, -1));
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    onChange(value.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 border border-gray-300 rounded-lg px-2 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-500">
+      {value.map((tag, idx) => (
+        <span key={idx} className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+          {tag}
+          <button type="button" onClick={() => handleRemove(idx)} className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none">&times;</button>
+        </span>
+      ))}
+      <input
+        type="text"
+        value={input}
+        onChange={handleInputChange}
+        onKeyDown={handleInputKeyDown}
+        className="flex-1 min-w-[120px] px-2 py-1 border-none outline-none bg-transparent text-sm"
+        placeholder={placeholder || 'Add specialty'}
+      />
+    </div>
+  );
+}
+
 const TeamManager: React.FC = () => {
   // API authentication hook
   const { handleApiError } = useApiAuth();
@@ -417,16 +461,16 @@ const TeamManager: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 border-b border-gray-200 pb-6 bg-gradient-to-r from-blue-50 to-white rounded-t-2xl px-6 pt-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
-          <p className="text-gray-600">Manage your medical center team</p>
+          <h1 className="text-3xl font-extrabold text-blue-900 tracking-tight mb-2">Team Members</h1>
+          <p className="text-gray-600 text-base">Manage your medical center team</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-base font-semibold shadow-md"
         >
-          <Plus size={16} />
+          <Plus size={18} />
           Add Team Member
         </button>
       </div>
@@ -804,15 +848,13 @@ const TeamManager: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Specialties
                 </label>
-                <input
-                  type="text"
-                  value={formData.specialties.join(', ')}
-                  onChange={(e) => handleSpecialtiesChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Cardiology, Internal Medicine, Emergency Care"
+                <TagInput
+                  value={formData.specialties}
+                  onChange={specialties => setFormData(prev => ({ ...prev, specialties }))}
+                  placeholder="Add specialty and press Enter"
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  Separate multiple specialties with commas
+                  Press Enter or comma to add. Click × to remove.
                 </p>
               </div>
 

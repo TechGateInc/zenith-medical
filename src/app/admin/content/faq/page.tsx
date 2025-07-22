@@ -179,26 +179,26 @@ export default function FAQManagementPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow">
+      <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-200 rounded-t-2xl shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8">
             <div className="flex items-center space-x-4">
               <Link
                 href="/admin/dashboard"
                 className="text-gray-500 hover:text-gray-700"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">FAQ Management</h1>
-                <p className="text-gray-600">Manage frequently asked questions and patient resources</p>
+                <h1 className="text-3xl font-extrabold text-blue-900 tracking-tight mb-2">FAQ Management</h1>
+                <p className="text-gray-600 text-base">Manage frequently asked questions and patient resources</p>
               </div>
             </div>
             <Link
               href="/admin/content/faq/new"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-semibold transition-colors flex items-center shadow-md text-base"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
