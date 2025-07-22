@@ -148,7 +148,7 @@ export default function Contact() {
           {/* Make the grid single column so the form is full width and Location & Hours is below */}
           <div className="grid grid-cols-1 gap-16">
             {/* Contact Form */}
-            <section>
+            <section id="contact-form">
               {/* Section Badge */}
               <div className="text-center lg:text-left mb-8">
                 <div className="inline-flex items-center justify-center px-4 py-2 bg-purple-50 border border-purple-200 rounded-full mb-6">

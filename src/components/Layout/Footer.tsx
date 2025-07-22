@@ -69,7 +69,7 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 8.5a6.5 6.5 0 0113 0V12a6.5 6.5 0 01-13 0V8.5z" />
                 </svg>
                 <div>
-                  <Link href="/contact" className="text-white hover:underline">Contact Us Form</Link>
+                  <Link href="/contact#contact-form" className="text-white hover:underline">Contact Us Form</Link>
                   <div className="text-gray-300 text-sm">General Inquiries</div>
                 </div>
               </div>
