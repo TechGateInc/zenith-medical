@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmediacl.ca'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.ca'
 
 export const metadata: Metadata = {
   title: 'Patient Intake Form - Zenith Medical Centre',

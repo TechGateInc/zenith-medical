@@ -52,23 +52,25 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation to user
     const userEmail = buildUserEmail(data)
-    await resend.emails.send({
+    const userRes = await resend.emails.send({
       from: `${fromName} <${fromEmail}>`,
       to: [data.email],
       subject: userEmail.subject,
       html: userEmail.html,
       text: userEmail.text
     })
+    console.log('Resend user email response:', userRes)
 
     // Send notification to admin
     const adminEmail = buildAdminEmail(data)
-    await resend.emails.send({
+    const adminRes = await resend.emails.send({
       from: `${fromName} <${fromEmail}>`,
       to: [ADMIN_EMAIL],
       subject: adminEmail.subject,
       html: adminEmail.html,
       text: adminEmail.text
     })
+    console.log('Resend admin email response:', adminRes)
 
     return NextResponse.json({ success: true, message: 'Message sent successfully.' })
   } catch (error) {

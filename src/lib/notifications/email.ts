@@ -368,7 +368,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
             <h3>Contact Information</h3>
             <p>
               <strong>Phone:</strong> <a href="tel:+12498060128">249 806 0128</a><br>
-              <strong>Email:</strong> <a href="mailto:intake@zenithmediacl.ca">intake@zenithmediacl.ca</a><br>
+              <strong>Email:</strong> <a href="mailto:intake@zenithmedical.ca">intake@zenithmedical.ca</a><br>
               <strong>Address:</strong> Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
             </p>
           </div>
@@ -419,7 +419,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
     
     CONTACT INFORMATION:
     Phone: 249 806 0128
-    Email: intake@zenithmediacl.ca
+    Email: intake@zenithmedical.ca
     Address: Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
     
     This is an automated message from Zenith Medical Centre. Please do not reply to this email.
@@ -720,7 +720,7 @@ const generateStaffNotificationTemplate = (data: StaffNotificationData): { subje
         <div class="footer">
           <p class="timestamp">Generated: ${new Date().toLocaleString()}</p>
           <p>This is an automated notification from Zenith Medical Centre Staff System.</p>
-          <p>For technical support, contact IT at <a href="mailto:support@zenithmediacl.ca" style="color: #2563eb;">support@zenithmediacl.ca</a></p>
+          <p>For technical support, contact IT at <a href="mailto:support@zenithmedical.ca" style="color: #2563eb;">support@zenithmedical.ca</a></p>
         </div>
       </div>
     </body>
@@ -759,7 +759,7 @@ const generateStaffNotificationTemplate = (data: StaffNotificationData): { subje
     Generated: ${new Date().toLocaleString()}
     
     This is an automated notification from Zenith Medical Centre Staff System.
-    For technical support, contact IT at support@zenithmediacl.ca
+    For technical support, contact IT at support@zenithmedical.ca
   `
   
   return { subject, html, text }
@@ -838,7 +838,7 @@ const sendEmailWithSMTP = async (
       headers: {
         'X-Priority': '3',
         'X-MSMail-Priority': 'Normal',
-        'List-Unsubscribe': '<mailto:unsubscribe@zenithmediacl.ca>'
+        'List-Unsubscribe': '<mailto:unsubscribe@zenithmedical.ca>'
       }
     }
     

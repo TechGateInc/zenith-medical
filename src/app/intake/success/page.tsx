@@ -967,7 +967,7 @@ export default function IntakeSuccessPage() {
                     </h3>
                     <p className="text-lg font-medium text-purple-600 mb-2">
                       <a
-                        href="mailto:appointments@zenithmediacl.ca"
+                        href="mailto:appointments@zenithmedical.ca"
                         className="hover:text-purple-700 transition-colors"
                       >
                         admin@zenithmedical.ca

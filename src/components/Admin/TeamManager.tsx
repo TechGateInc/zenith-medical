@@ -767,7 +767,7 @@ const TeamManager: React.FC = () => {
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="jane.smith@zenithmediacl.ca"
+                                            placeholder="jane.smith@zenithmedical.ca"
                   />
                 </div>
 
