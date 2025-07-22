@@ -407,29 +407,21 @@ export default function Contact() {
                 </div>
               </div>
               {/* Quick Actions */}
-              <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-8 relative overflow-hidden mt-8">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-4 right-4 w-8 h-8 bg-blue-600 rounded-full"></div>
-                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-blue-500 rounded-full"></div>
-                </div>
-                
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
-                      <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-blue-800">Ready to Schedule?</h3>
+              <section className="bg-slate-50 rounded-2xl p-8 border border-slate-200 mb-8 mt-12">
+                <div className="max-w-3xl mx-auto text-center">
+                  <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
+                    <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                      Ready to Schedule?
+                    </span>
                   </div>
-                  <p className="text-blue-700 mb-6 text-lg leading-relaxed">
+                  <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4 leading-tight">Start your healthcare journey today</h2>
+                  <p className="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
                     Start your healthcare journey with a simple intake form or call us directly for immediate assistance.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
                       href="/intake"
-                      className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold rounded-lg transition-colors shadow-lg"
+                      className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
                     >
                       <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -438,7 +430,7 @@ export default function Contact() {
                     </Link>
                     <a
                       href="tel:2498060128"
-                      className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 hover:bg-slate-50 font-semibold rounded-lg transition-colors border-2 border-blue-200"
+                      className="inline-flex items-center justify-center px-8 py-3 bg-white text-blue-600 hover:bg-slate-50 font-semibold rounded-lg transition-colors border-2 border-blue-200 text-lg whitespace-nowrap"
                     >
                       <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -447,7 +439,7 @@ export default function Contact() {
                     </a>
                   </div>
                 </div>
-              </div>
+              </section>
             </section>
           </div>
         </div>
