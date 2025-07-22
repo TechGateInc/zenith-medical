@@ -52,25 +52,6 @@ export async function GET(request: NextRequest) {
       },
       {
         id: '2',
-        title: 'Health Newsletter - Monthly',
-        type: 'newsletter',
-        status: 'scheduled',
-        template: 'monthly_newsletter',
-        scheduledFor: new Date(Date.now() + 604800000).toISOString(), // Next week
-        recipient: {
-          type: 'group',
-          group: 'newsletter_subscribers',
-          count: 247
-        },
-        metadata: {
-          newsletterTheme: 'Winter Health Tips',
-          contentItems: 5
-        },
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      {
-        id: '3',
         title: 'Follow-up Survey',
         type: 'survey',
         status: 'sent',
@@ -90,7 +71,7 @@ export async function GET(request: NextRequest) {
         updatedAt: new Date(Date.now() - 3600000).toISOString()
       },
       {
-        id: '4',
+        id: '3',
         title: 'Prescription Refill Reminder',
         type: 'medication_reminder',
         status: 'failed',
@@ -111,7 +92,7 @@ export async function GET(request: NextRequest) {
         updatedAt: new Date(Date.now() - 7200000).toISOString()
       },
       {
-        id: '5',
+        id: '4',
         title: 'Welcome Message - New Patient',
         type: 'welcome',
         status: 'pending',

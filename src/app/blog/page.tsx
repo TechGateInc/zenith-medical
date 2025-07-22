@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 interface BlogPost {
   slug: string
@@ -210,39 +211,6 @@ export default function Blog() {
       </section>
 
       <div className="container mx-auto px-4 py-12">
-        {/* Newsletter Signup */}
-        <section className="mb-16">
-          <div className="max-w-4xl mx-auto">
-            {/* Section Badge */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
-                <span className="text-sm font-semibold text-green-700 uppercase tracking-wider">
-                  Stay Updated
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
-              <div className="text-center">
-                <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">Stay Informed</h2>
-                <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
-                  Subscribe to receive the latest health tips and medical insights directly in your inbox from our healthcare professionals.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                    className="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              />
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all hover:shadow-lg">
-                Subscribe
-              </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Category Filter */}
         <section className="mb-8">
           <div className="flex flex-wrap gap-2 justify-center">

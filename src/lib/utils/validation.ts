@@ -380,10 +380,6 @@ export const validatePatientIntakeField = (
       // Preferred language is optional, no specific validation needed
       return { isValid: true }
     
-    case 'newsletterOptIn':
-      // Newsletter opt-in is boolean, always valid
-      return { isValid: true }
-    
     case 'privacyPolicyAgreed':
       return validatePrivacyPolicy(booleanValue)
     

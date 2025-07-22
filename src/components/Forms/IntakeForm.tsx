@@ -38,7 +38,6 @@ export interface PatientIntakeData {
   relationshipToPatient: string
   primaryLanguage: string
   preferredLanguage: string
-  newsletterOptIn: boolean
   privacyPolicyAgreed: boolean
   healthInformationNumber: string
 }
@@ -64,7 +63,6 @@ interface FormErrors {
   relationshipToPatient?: string
   primaryLanguage?: string
   preferredLanguage?: string
-  newsletterOptIn?: string
   privacyPolicyAgreed?: string
   healthInformationNumber?: string
 }
@@ -99,7 +97,6 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     relationshipToPatient: '',
     primaryLanguage: '',
     preferredLanguage: '',
-    newsletterOptIn: false,
     privacyPolicyAgreed: false,
     healthInformationNumber: ''
   })
@@ -256,8 +253,8 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       'legalFirstName', 'legalLastName', 'middleName', 'preferredName', 'title', 'dateOfBirth', 
       'gender', 'phoneNumber', 'cellPhone', 'workPhone', 'emailAddress', 'streetAddress', 
       'city', 'provinceState', 'postalZipCode', 'nextOfKinName', 'nextOfKinPhone', 
-      'relationshipToPatient', 'primaryLanguage', 'preferredLanguage', 'newsletterOptIn',
-      'privacyPolicyAgreed', 'healthInformationNumber'
+      'relationshipToPatient', 'primaryLanguage', 'preferredLanguage', 'privacyPolicyAgreed',
+      'healthInformationNumber'
     ]
     
     setTouched(

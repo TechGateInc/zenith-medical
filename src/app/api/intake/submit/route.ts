@@ -63,7 +63,6 @@ export async function POST(request: NextRequest) {
       relationshipToPatient,
       primaryLanguage,
       preferredLanguage,
-      newsletterOptIn,
       privacyPolicyAgreed,
       healthInformationNumber
     } = body
@@ -127,7 +126,6 @@ export async function POST(request: NextRequest) {
         relationshipToPatient: encryptedData.relationshipToPatient,
         primaryLanguage: encryptedData.primaryLanguage || null,
         preferredLanguage: encryptedData.preferredLanguage || null,
-        newsletterOptIn: newsletterOptIn || false,
         privacyPolicyAccepted: privacyPolicyAgreed,
         status: 'SUBMITTED',
         ipAddress: ipAddress,
@@ -190,7 +188,6 @@ export async function POST(request: NextRequest) {
           relationshipToPatient,
           primaryLanguage: primaryLanguage || null,
           preferredLanguage: preferredLanguage || null,
-          newsletterOptIn: newsletterOptIn || false,
           healthInformationNumber
         }
         

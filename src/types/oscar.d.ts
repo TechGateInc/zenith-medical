@@ -30,7 +30,6 @@ export interface OscarDemographic {
   rosterStatus?: string
   patientStatus?: string
   countryOfOrigin?: string
-  newsletter?: string
   anonymized?: string
   hsAllergyFlag?: string
 }
