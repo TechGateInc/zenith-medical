@@ -142,7 +142,7 @@ export default function IntakePage() {
                     <h3 className="text-xl font-bold text-red-800 mb-2">Submission Error</h3>
                     <p className="text-red-700 mb-2">{error}</p>
                     <p className="text-red-600 text-sm">
-                      Please try again or contact us at 249 806 0128 if the problem persists.
+                      Please try again or contact us at <a href="tel:2498060128" className="text-blue-600 hover:underline">249 806 0128</a> if the problem persists.
                     </p>
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export default function IntakePage() {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                                            Call 249 806 0128
+                                            <a href="tel:2498060128" className="text-blue-600 hover:underline">Call 249 806 0128</a>
                   </a>
                 </div>
 

@@ -61,7 +61,7 @@ export default function Contact() {
   const contactMethods = [
     {
       title: 'Phone',
-      primary: '249 806 0128',
+      primary: <a href="tel:2498060128" className="text-blue-600 hover:underline">249 806 0128</a>,
       secondary: 'Main office line',
       icon: (
         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,7 +306,7 @@ export default function Contact() {
                 <div className="mt-6 text-center">
                   <p className="text-sm text-slate-600">
                     For urgent medical needs, please call us directly at{' '}
-                    <span className="font-semibold text-blue-600">249 806 0128</span>
+                    <span className="font-semibold text-blue-600"><a href="tel:2498060128" className="hover:underline">249 806 0128</a></span>
                   </p>
                 </div>
               </div>

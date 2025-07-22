@@ -149,7 +149,7 @@ export default function IntakeSuccessPage() {
         success: false,
         error: "Failed to connect to booking system",
         fallbackMessage:
-          "Please call 249 806 0128 to schedule your appointment.",
+          "Please call <a href='tel:2498060128' className='text-blue-600 hover:underline'>249 806 0128</a> to schedule your appointment.",
       });
     } finally {
       setIsBooking(false);
@@ -939,7 +939,9 @@ export default function IntakeSuccessPage() {
                       Phone Support
                     </h3>
                     <p className="text-xl font-bold text-blue-600 mb-2">
-                      249 806 0128
+                      <a href="tel:2498060128" className="text-blue-600 hover:underline">
+                        249 806 0128
+                      </a>
                     </p>
                     <p className="text-sm text-slate-500">
                       Monday - Friday, 9:00 AM - 5:00 PM
