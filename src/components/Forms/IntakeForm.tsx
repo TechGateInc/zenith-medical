@@ -979,34 +979,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       </section>
 
       {/* Communication Preferences Section */}
-      <section aria-labelledby="communication-preferences-heading">
-        <h2 id="communication-preferences-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
-          Communication Preferences
-        </h2>
-        
-        <div className="space-y-4">
-          <div className="flex items-start space-x-3">
-            <input
-              type="checkbox"
-              id="newsletterOptIn"
-              name="newsletterOptIn"
-              checked={formData.newsletterOptIn}
-              onChange={handleInputChange}
-              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-              aria-describedby="newsletterOptIn-error"
-            />
-            <div className="flex-1">
-              <label htmlFor="newsletterOptIn" className="block text-sm font-medium text-slate-700">
-                Subscribe to Newsletter
-              </label>
-              <p className="text-sm text-slate-600 mt-1">
-                Receive health tips, appointment reminders, and clinic updates via email. You can unsubscribe at any time.
-              </p>
-              <ValidationMessage fieldName="newsletterOptIn" />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Newsletter Opt-In removed */}
 
       {/* Privacy Policy Section */}
       <section aria-labelledby="privacy-policy-heading">

@@ -7,6 +7,7 @@ import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Ana
 import AnalyticsConsent from '../components/Analytics/AnalyticsConsent'
 import { usePathname } from 'next/navigation'
 import ToastProvider from '../components/UI/ToastProvider'
+import { Analytics } from '@vercel/analytics/react'
 
 // Primary font for body text and UI elements
 const inter = Inter({ 
@@ -110,6 +111,7 @@ export default function RootLayout({
             </AnalyticsProvider>
           </Suspense>
         </SessionProvider>
+        <Analytics />
       </body>
     </html>
   )
