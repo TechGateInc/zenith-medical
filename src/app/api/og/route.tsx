@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
             textShadow: '0 2px 8px rgba(0,0,0,0.04)',
           }}
         >
-          Expert Care Personal Touch
+          Expert Care, Patient Centered
         </span>
       </div>
     ),

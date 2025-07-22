@@ -9,6 +9,7 @@ export default function Contact() {
     name: '',
     email: '',
     phone: '',
+    healthInformationNumber: '',
     subject: '',
     message: '',
     appointmentType: ''
@@ -207,6 +208,24 @@ export default function Contact() {
                         placeholder="249 806 0128"
                       />
                     </div>
+                    <div>
+                      <label htmlFor="healthInformationNumber" className="block text-sm font-medium text-slate-700 mb-2">
+                        Health Information Number
+                      </label>
+                      <input
+                        type="text"
+                        id="healthInformationNumber"
+                        name="healthInformationNumber"
+                        value={formData.healthInformationNumber}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Enter your health information number (optional)"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="appointmentType" className="block text-sm font-medium text-slate-700 mb-2">
                         Appointment Type

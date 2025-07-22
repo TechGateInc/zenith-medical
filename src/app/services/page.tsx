@@ -94,7 +94,7 @@ export default async function Services() {
             {services.length === 0 ? (
               <div className="text-center text-slate-500 py-12">No services available at this time.</div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
                 {services.map((service) => (
                   <div
                     key={service.id}
@@ -127,51 +127,6 @@ export default async function Services() {
           </div>
         </section>
 
-        {/* Emergency & Urgent Care */}
-        <section className="bg-red-50 border-l-4 border-red-500 p-8 rounded-r-lg mb-16">
-          <div className="flex items-start">
-            <svg className="h-8 w-8 text-red-500 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-            <div className="flex-grow">
-              <h3 className="text-2xl font-bold text-red-800 mb-4">Emergency & Urgent Care</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-red-700 mb-2">Walk-In Patients Welcome</h4>
-                  <p className="text-red-700 mb-4">
-                    Walk-in patients are always welcome. Being seen depends on doctor availability for urgent medical needs.
-                  </p>
-                  <ul className="space-y-1 text-red-700">
-                    <li>• Acute illness and infections</li>
-                    <li>• Severe cold and flu symptoms</li>
-                    <li>• Allergic reactions</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-red-700 mb-2">When to Call 911</h4>
-                  <p className="text-red-700 mb-4">
-                    For life-threatening emergencies, always call 911 immediately:
-                  </p>
-                  <ul className="space-y-1 text-red-700">
-                    <li>• Chest pain or heart attack symptoms</li>
-                    <li>• Difficulty breathing</li>
-                    <li>• Severe bleeding or trauma</li>
-                    <li>• Loss of consciousness</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="mt-6">
-                <Link
-                  href="/contact"
-                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-                >
-                  Walk-In Welcome
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Insurance & Payment */}
         <section className="mb-20">
           <div className="max-w-6xl mx-auto">
@@ -184,7 +139,7 @@ export default async function Services() {
               </div>
               <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">Payment & Insurance Options</h2>
               <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                We accept most major insurance plans and offer flexible payment options for your convenience
+                We accept OHIP for covered services and offer out-of-pocket payment options for non-OHIP services.
               </p>
             </div>
 
@@ -210,11 +165,7 @@ export default async function Services() {
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Most major health insurance plans</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Out-of-pocket payment for non-OHIP services</span>
+                      <span className="text-slate-700">Out-of-pocket payment (cash, debit, or credit) for non-OHIP services</span>
                     </div>
                   </div>
                 </div>

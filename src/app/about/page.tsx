@@ -121,14 +121,14 @@ export default async function About() {
             </h1>
             
             <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Our state-of-the-art medical centre combines cutting-edge technology, experienced medical professionals, and patient-centered care to deliver exceptional healthcare to our growing community.
+              Our cutting-edge medical centre combines cutting-edge technology, experienced medical professionals, and patient-centered care to deliver exceptional healthcare to our growing community.
             </p>
 
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="text-center">
                 <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">Efficient</div>
-                <div className="text-slate-600 font-medium">State-of-the-Art Facility</div>
+                <div className="text-slate-600 font-medium">Cutting-Edge Facility</div>
               </div>
               <div className="text-center">
                 <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">Advanced</div>
@@ -257,7 +257,7 @@ export default async function About() {
                 </p>
                 <p>
                   Led by Dr. Gabriel Oyelayo and our dedicated medical team, we provide comprehensive healthcare in our purpose-built facility. 
-                  Our state-of-the-art medical centre features the latest diagnostic equipment, efficient treatment rooms, and comfortable 
+                  Our cutting-edge medical centre features the latest diagnostic equipment, efficient treatment rooms, and comfortable 
                   spaces designed to enhance patient wellness and comfort.
                 </p>
                 <p>
@@ -369,7 +369,7 @@ export default async function About() {
               Efficient Facilities & Technology
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              State-of-the-art equipment and comfortable spaces designed for optimal patient care.
+              Cutting-edge equipment and comfortable spaces designed for optimal patient care.
             </p>
           </div>
           
@@ -424,7 +424,7 @@ export default async function About() {
                 </h2>
                 <p className="text-lg text-slate-600 mb-8 leading-relaxed">
                   Join our growing community of patients who trust Zenith Medical Centre for their healthcare needs. 
-                  Experience personalized care in our efficient, state-of-the-art facility.
+                  Experience personalized care in our efficient, cutting-edge facility.
                 </p>
 
                 {/* Feature Grid */}

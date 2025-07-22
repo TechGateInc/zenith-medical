@@ -11,10 +11,10 @@ export default function Header() {
 
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
     { name: 'Contact', href: '/contact' },
     { name: 'Blog', href: '/blog' },
+    { name: 'About', href: '/about' },
     { name: 'FAQs', href: '/faq' },
   ]
 
@@ -39,7 +39,7 @@ export default function Header() {
               </div>
               <div className="hidden sm:flex flex-col justify-center">
                 <span className="text-xl font-bold text-slate-800 leading-tight">Zenith Medical Centre</span>
-                <span className="text-sm text-slate-600 leading-tight">Expert Care Personal Touch</span>
+                <span className="text-sm text-slate-600 leading-tight">Expert Care, Patient Centered</span>
               </div>
             </Link>
           </div>

@@ -5,6 +5,7 @@ import './globals.css'
 import SessionProvider from '../lib/auth/session-provider'
 import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Analytics/AnalyticsProvider'
 import AnalyticsConsent from '../components/Analytics/AnalyticsConsent'
+import { usePathname } from 'next/navigation'
 
 // Primary font for body text and UI elements
 const inter = Inter({ 
@@ -92,6 +93,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
+  const isAdmin = pathname.startsWith('/admin')
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans`}>
@@ -101,7 +104,7 @@ export default function RootLayout({
               {children}
               <ScrollTracker />
               <TimeTracker />
-              <AnalyticsConsent />
+              {!isAdmin && <AnalyticsConsent />}
             </AnalyticsProvider>
           </Suspense>
         </SessionProvider>

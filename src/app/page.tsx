@@ -64,10 +64,10 @@ export default async function Home() {
               {/* Left Content */}
               <div className="text-center lg:text-left">
                 <h1 className="text-5xl lg:text-6xl font-bold mb-6 text-slate-800 leading-tight">
-                  Expert Care Personal Touch
+                  Expert Care, Patient Centered
                 </h1>
                 <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                  Experience healthcare reimagined at our state-of-the-art medical centre. We combine efficient medical technology with compassionate patient care to deliver exceptional healthcare for you and your family.
+                  Experience healthcare reimagined at our cutting-edge medical centre. We combine efficient medical technology with compassionate patient care to deliver exceptional healthcare for you and your family.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
@@ -108,7 +108,7 @@ export default async function Home() {
                 <div className="w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
                   <img 
                     src="/images/home.webp" 
-                    alt="Zenith Medical Centre - State-of-the-art medical facility" 
+                    alt="Zenith Medical Centre - Cutting-edge medical facility" 
                     className="w-full h-full object-cover"
                     loading="eager"
                   />
@@ -262,7 +262,7 @@ export default async function Home() {
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-slate-800 mb-3">Efficient Facilities</h3>
-                    <p className="text-slate-600 leading-relaxed">State-of-the-art medical equipment and comfortable, clean facilities designed for optimal patient care.</p>
+                    <p className="text-slate-600 leading-relaxed">Cutting-edge medical equipment and comfortable, clean facilities designed for optimal patient care.</p>
                   </div>
                 </div>
                 
