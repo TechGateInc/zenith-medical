@@ -132,7 +132,6 @@ export class OscarPatientMapper {
         officialLanguage: patientIntake.preferredLanguage ? this.normalizeField(patientIntake.preferredLanguage, 'preferredLanguage') : undefined,
         
         // Communication Preferences (Optional)
-        newsletter: 'N' // newsletterOptIn is removed, so default to 'N'
       };
       
       // Validate mapped data
