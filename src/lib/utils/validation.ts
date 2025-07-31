@@ -14,8 +14,9 @@ export interface ValidationRule {
 // Common validation patterns
 export const ValidationPatterns = {
   email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-  phone: /^[\+]?[1-9][\d\s\-\(\)\.]{7,15}$/,
-  phoneClean: /^[\+]?[1-9][\d]{7,15}$/,
+  // Canadian/North American phone number patterns
+  phone: /^(\+?1[-.\s]?)?(\(?[2-9]\d{2}\)?[-.\s]?[2-9]\d{2}[-.\s]?\d{4})$/,
+  phoneClean: /^1?[2-9]\d{2}[2-9]\d{2}\d{4}$/,
   name: /^[a-zA-Z\s'\-\.]{2,50}$/,
   canadianPostal: /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/,
   usZip: /^\d{5}(-\d{4})?$/,
@@ -27,18 +28,165 @@ export const ValidationPatterns = {
 
 // Utility functions
 export const cleanPhone = (phone: string): string => {
-  return phone.replace(/[\s\-\(\)\.]/g, '')
+  // Remove all non-digit characters except plus sign
+  return phone.replace(/[^\d+]/g, '')
 }
 
 export const formatPhone = (phone: string): string => {
   const cleaned = cleanPhone(phone)
-  if (cleaned.length === 10) {
-    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+  
+  // Remove leading + and 1 for processing
+  let digits = cleaned.replace(/^\+?1?/, '')
+  
+  // Ensure we have exactly 10 digits for Canadian numbers
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
   }
+  
+  // If we have 11 digits starting with 1, format with country code
   if (cleaned.length === 11 && cleaned[0] === '1') {
-    return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`
+    const areaCode = cleaned.slice(1, 4)
+    const exchange = cleaned.slice(4, 7)
+    const number = cleaned.slice(7)
+    return `+1 (${areaCode}) ${exchange}-${number}`
   }
+  
+  // Return original if we can't format it properly
   return phone
+}
+
+export const validateCanadianPhone = (phone: string): ValidationResult => {
+  const cleaned = cleanPhone(phone)
+  
+  // Remove country code if present
+  let digits = cleaned.replace(/^\+?1/, '')
+  
+  // Must be exactly 10 digits
+  if (digits.length !== 10) {
+    return { 
+      isValid: false, 
+      error: 'Canadian phone numbers must be 10 digits (area code + 7 digits)' 
+    }
+  }
+  
+  // Area code must start with 2-9
+  const areaCode = digits.slice(0, 3)
+  if (!/^[2-9]\d{2}$/.test(areaCode)) {
+    return { 
+      isValid: false, 
+      error: 'Area code must start with digits 2-9' 
+    }
+  }
+  
+  // Exchange code (first 3 digits after area code) must start with 2-9
+  const exchange = digits.slice(3, 6)
+  if (!/^[2-9]\d{2}$/.test(exchange)) {
+    return { 
+      isValid: false, 
+      error: 'Phone number format is invalid' 
+    }
+  }
+  
+  return { isValid: true }
+}
+
+export const validateDateYYYYMMDD = (dateString: string): ValidationResult => {
+  const sanitized = sanitizeInput(dateString)
+  
+  if (!sanitized || sanitized.length === 0) {
+    return { isValid: false, error: 'Date is required' }
+  }
+  
+  // Check format YYYY/MM/DD
+  const datePattern = /^\d{4}\/\d{2}\/\d{2}$/
+  if (!datePattern.test(sanitized)) {
+    return { isValid: false, error: 'Please use YYYY/MM/DD format' }
+  }
+  
+  const [year, month, day] = sanitized.split('/').map(Number)
+  
+  // Basic range validation
+  if (year < 1900 || year > new Date().getFullYear() + 1) {
+    return { isValid: false, error: 'Please enter a valid year (1900-current)' }
+  }
+  
+  if (month < 1 || month > 12) {
+    return { isValid: false, error: 'Month must be between 01 and 12' }
+  }
+  
+  if (day < 1 || day > 31) {
+    return { isValid: false, error: 'Day must be between 01 and 31' }
+  }
+  
+  // Validate actual date exists (handles leap years, days in month, etc.)
+  const date = new Date(year, month - 1, day)
+  if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+    return { isValid: false, error: 'Please enter a valid date' }
+  }
+  
+  return { isValid: true }
+}
+
+export const validateDateOfBirthYYYYMMDD = (dateString: string): ValidationResult => {
+  const basicValidation = validateDateYYYYMMDD(dateString)
+  if (!basicValidation.isValid) {
+    return basicValidation
+  }
+  
+  const [year, month, day] = dateString.split('/').map(Number)
+  const date = new Date(year, month - 1, day)
+  const now = new Date()
+  
+  // Check if date is in the future
+  if (date > now) {
+    return { isValid: false, error: 'Date of birth cannot be in the future' }
+  }
+  
+  // Check if person would be over 150 years old
+  const age = now.getFullYear() - year
+  if (age > 150) {
+    return { isValid: false, error: 'Please enter a valid date of birth' }
+  }
+  
+  return { isValid: true }
+}
+
+export const validateCanadianPostalCode = (postalCode: string): ValidationResult => {
+  const cleaned = postalCode.replace(/\s/g, '').toUpperCase()
+  
+  if (!cleaned) {
+    return { isValid: false, error: 'Postal code is required' }
+  }
+  
+  // Canadian postal code format: A1A 1A1
+  const canadianPattern = /^[A-Z]\d[A-Z]\d[A-Z]\d$/
+  if (!canadianPattern.test(cleaned)) {
+    return { isValid: false, error: 'Please enter a valid Canadian postal code (e.g., K1A 0A6)' }
+  }
+  
+  // Check for invalid first letters (these don't exist in Canada)
+  const firstLetter = cleaned[0]
+  const invalidFirstLetters = ['D', 'F', 'I', 'O', 'Q', 'U', 'W', 'Z']
+  if (invalidFirstLetters.includes(firstLetter)) {
+    return { isValid: false, error: 'Invalid postal code format' }
+  }
+  
+  return { isValid: true }
+}
+
+export const validateHealthNumber = (healthNumber: string): ValidationResult => {
+  const cleaned = healthNumber.replace(/\s/g, '').toUpperCase()
+  
+  if (!cleaned) {
+    return { isValid: false, error: 'Health number is required' }
+  }
+  
+  // Basic format validation - alphanumeric, reasonable length
+  if (!/^[A-Z0-9]{8,15}$/.test(cleaned)) {
+    return { isValid: false, error: 'Health number must be 8-15 alphanumeric characters' }
+  }
+  
+  return { isValid: true }
 }
 
 export const normalizePostalCode = (postal: string): string => {
@@ -122,26 +270,14 @@ export const validateEmail = (email: string, required = true): ValidationResult 
 
 export const validatePhone = (phone: string, required = true): ValidationResult => {
   const sanitized = sanitizeInput(phone)
-  const cleaned = cleanPhone(sanitized)
   
   if (required && (!sanitized || sanitized.length === 0)) {
     return { isValid: false, error: 'Phone number is required' }
   }
   
-  if (sanitized && !ValidationPatterns.phone.test(sanitized)) {
-    return { isValid: false, error: 'Please enter a valid phone number (e.g., (555) 123-4567)' }
-  }
-  
-  if (sanitized && cleaned.length < 7) {
-    return { isValid: false, error: 'Phone number must be at least 7 digits' }
-  }
-  
-  if (sanitized && cleaned.length > 15) {
-    return { isValid: false, error: 'Phone number must be less than 15 digits' }
-  }
-  
-  if (sanitized && !ValidationPatterns.phoneClean.test(cleaned)) {
-    return { isValid: false, error: 'Phone number contains invalid characters' }
+  // If phone is provided, validate it as Canadian phone number
+  if (sanitized) {
+    return validateCanadianPhone(sanitized)
   }
   
   return { isValid: true }

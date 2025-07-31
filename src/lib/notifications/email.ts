@@ -975,7 +975,7 @@ export const testEmailConfiguration = async (): Promise<EmailResult> => {
         hour: '2-digit',
         minute: '2-digit'
       }),
-      appointmentBookingUrl: 'https://www.zenithmedical.ca/contact?booking=true'
+      appointmentBookingUrl: 'https://zenithmedical.cortico.ca/'
     }
     
     const template = generatePatientConfirmationTemplate(testData)

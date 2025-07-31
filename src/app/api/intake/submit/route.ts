@@ -28,44 +28,84 @@ export async function POST(request: NextRequest) {
                      'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
     
-    // Validate the form data
-    const validation = validateIntakeForm(body)
-    if (!validation.isValid) {
+    // Destructure form data from request body
+    const { section1, section2, section3, section4, privacyPolicyAgreed } = body
+    
+    // Basic validation for new structure
+    if (!section1 || !section3 || privacyPolicyAgreed === undefined) {
       return NextResponse.json(
         { 
           error: 'Validation failed', 
-          message: 'Please correct the errors in your form',
-          details: validation.errors 
+          message: 'Please complete all required sections of the form',
+          details: { structure: 'Missing required sections' }
         }, 
         { status: 400 }
       )
     }
     
-    // Extract the form data
+    // Validate required fields in section1
+    const requiredSection1Fields = ['lastName', 'firstName', 'healthNumber', 'residenceStreetAddress', 'residenceCity', 'residencePostalCode', 'dateOfBirth', 'sex', 'emailAddress']
+    const missingSection1Fields = requiredSection1Fields.filter(field => !section1[field] || section1[field].trim() === '')
+    
+    // Validate required fields in section3
+    const requiredSection3Fields = ['patientName', 'signature', 'signatureDate', 'phoneNumber']
+    const missingSection3Fields = requiredSection3Fields.filter(field => !section3[field] || section3[field].trim() === '')
+    
+    // Check email if email preference is selected
+    if (section1.noticePreference === 'email' && (!section1.emailAddress || section1.emailAddress.trim() === '')) {
+      missingSection1Fields.push('emailAddress')
+    }
+    
+    if (missingSection1Fields.length > 0 || missingSection3Fields.length > 0) {
+      return NextResponse.json(
+        { 
+          error: 'Validation failed', 
+          message: 'Please complete all required fields',
+          details: { 
+            section1: missingSection1Fields,
+            section3: missingSection3Fields
+          }
+        }, 
+        { status: 400 }
+      )
+    }
+    
+    // Extract the form data from the new structure (already available from validation above)
+    
+    // Destructure section1 data for backward compatibility
     const {
-      legalFirstName,
-      legalLastName,
-      middleName,
-      preferredName,
-      title,
+      lastName: legalLastName,
+      firstName: legalFirstName,
+      healthNumber: healthInformationNumber,
       dateOfBirth,
-      gender,
-      phoneNumber,
-      cellPhone,
-      workPhone,
+      sex: gender,
       emailAddress,
-      streetAddress,
-      city,
-      provinceState,
-      postalZipCode,
-      nextOfKinName,
-      nextOfKinPhone,
-      relationshipToPatient,
-      primaryLanguage,
-      preferredLanguage,
-      privacyPolicyAgreed,
-      healthInformationNumber
-    } = body
+      residenceApartmentNumber,
+      residenceStreetAddress: streetAddress,
+      residenceCity: city,
+      residencePostalCode: postalZipCode
+    } = section1
+    
+    // Extract section3 data
+    const {
+      patientName,
+      signature,
+      signatureDate,
+      phoneNumber
+    } = section3
+    
+    // Set defaults for fields that don't exist in new structure
+    const middleName = '' // Removed from new structure
+    const preferredName = '' // Not in new structure
+    const title = '' // Not in new structure
+    const cellPhone = '' // Not in new structure
+    const workPhone = '' // Not in new structure (only one phone field now)
+    const nextOfKinName = '' // Not in new structure for now
+    const nextOfKinPhone = '' // Not in new structure for now
+    const relationshipToPatient = '' // Not in new structure for now
+    const primaryLanguage = '' // Not in new structure
+    const preferredLanguage = '' // Not in new structure
+    const provinceState = 'ON' // Default to Ontario for Canadian form
     
     // Ensure privacy policy is agreed to
     if (!privacyPolicyAgreed) {
@@ -140,12 +180,12 @@ export async function POST(request: NextRequest) {
         action: 'CREATE',
         resource: 'patient_intake',
         resourceId: patientIntake.id,
-        details: {
-          submissionMethod: 'online_form',
-          privacyPolicyAccepted: privacyPolicyAgreed,
-          hasPreferredName: !!preferredName,
-          submissionTimestamp: new Date().toISOString()
-        },
+                  details: {
+            submissionMethod: 'online_form',
+            privacyPolicyAccepted: privacyPolicyAgreed,
+            hasPreferredName: false, // Not applicable in new form structure
+            submissionTimestamp: new Date().toISOString()
+          },
         ipAddress: ipAddress,
         userAgent: userAgent
       }
@@ -290,7 +330,7 @@ export async function POST(request: NextRequest) {
     // Send email notifications (don't let email failures break the submission)
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.zenithmedical.ca'
-      const patientName = preferredName || legalFirstName
+      const patientName = legalFirstName
       
       // Send patient confirmation email
       const patientConfirmationData: PatientConfirmationData = {
@@ -304,7 +344,7 @@ export async function POST(request: NextRequest) {
           hour: '2-digit',
           minute: '2-digit'
         }),
-        appointmentBookingUrl: `${baseUrl}/contact?booking=true&submission=${patientIntake.id}`
+        appointmentBookingUrl: 'https://zenithmedical.cortico.ca/'
       }
       
       const patientEmailResult = await sendPatientConfirmationEmail(
@@ -325,7 +365,7 @@ export async function POST(request: NextRequest) {
           minute: '2-digit'
         }),
         patientEmail: emailAddress,
-        hasPreferredName: !!preferredName,
+        hasPreferredName: false, // Not applicable in new form structure
         dashboardUrl: `${baseUrl}/admin/dashboard/intake/${patientIntake.id}`
       }
       

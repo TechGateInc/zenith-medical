@@ -8,7 +8,12 @@ import {
   formatPhone, 
   normalizePostalCode,
   sanitizeInput,
-  sanitizeNameInput
+  sanitizeNameInput,
+  validatePhone,
+  validateDateOfBirthYYYYMMDD,
+  validateDateYYYYMMDD,
+  validateCanadianPostalCode,
+  validateHealthNumber
 } from '../../lib/utils/validation'
 import PrivacyPolicyAgreement from './PrivacyPolicyAgreement'
 import { 
@@ -17,54 +22,93 @@ import {
   responsiveAccessibility
 } from '../../lib/utils/accessibility'
 
-export interface PatientIntakeData {
-  legalFirstName: string
-  legalLastName: string
-  middleName: string
-  preferredName: string
-  title: string
-  dateOfBirth: string
-  gender: string
-  phoneNumber: string
-  cellPhone: string
-  workPhone: string
+// Section 1: Self-enrollment data
+export interface Section1Data {
+  lastName: string
+  firstName: string
+  healthNumber: string
+  dateOfBirth: string // yyyy/mm/dd format
+  sex: string // 'M' or 'F'
   emailAddress: string
-  streetAddress: string
-  city: string
-  provinceState: string
-  postalZipCode: string
-  nextOfKinName: string
-  nextOfKinPhone: string
-  relationshipToPatient: string
-  primaryLanguage: string
-  preferredLanguage: string
+  residenceApartmentNumber: string
+  residenceStreetAddress: string
+  residenceCity: string
+  residencePostalCode: string
+}
+
+// Section 2: Dependent enrollment data (optional)
+export interface DependentData {
+  lastName: string
+  firstName: string
+  healthNumber: string
+  dateOfBirth: string // yyyy/mm/dd format
+  sex: string // 'M' or 'F'
+  relationship: string // 'parent', 'legal guardian', 'attorney for personal care'
+  residenceAddressSameAsSection1: boolean
+  residenceApartmentNumber: string
+  residenceStreetAddress: string
+  residenceCity: string
+  residencePostalCode: string
+}
+
+// Section 3: Signature data
+export interface Section3Data {
+  signingFor: string[] // ['myself', 'children', 'dependentAdults']
+  patientName: string
+  signature: string
+  signatureDate: string // yyyy/mm/dd format
+  phoneNumber: string
+}
+
+// Section 4: Family doctor information (static display)
+export interface Section4Data {
+  doctorName: string
+  isStatic: boolean
+}
+
+// Complete patient intake data structure
+export interface PatientIntakeData {
+  section1: Section1Data
+  section2: DependentData[]
+  section3: Section3Data
+  section4: Section4Data
   privacyPolicyAgreed: boolean
-  healthInformationNumber: string
 }
 
 interface FormErrors {
-  legalFirstName?: string
-  legalLastName?: string
-  middleName?: string
-  preferredName?: string
-  title?: string
-  dateOfBirth?: string
-  gender?: string
-  phoneNumber?: string
-  cellPhone?: string
-  workPhone?: string
-  emailAddress?: string
-  streetAddress?: string
-  city?: string
-  provinceState?: string
-  postalZipCode?: string
-  nextOfKinName?: string
-  nextOfKinPhone?: string
-  relationshipToPatient?: string
-  primaryLanguage?: string
-  preferredLanguage?: string
+  // Section 1 errors
+  'section1.lastName'?: string
+  'section1.firstName'?: string
+  'section1.secondName'?: string
+  'section1.healthNumber'?: string
+  'section1.versionCode'?: string
+  'section1.mailingApartmentNumber'?: string
+  'section1.mailingStreetAddress'?: string
+  'section1.mailingCity'?: string
+  'section1.mailingPostalCode'?: string
+  'section1.dateOfBirth'?: string
+  'section1.sex'?: string
+  'section1.emailAddress'?: string
+  'section1.residenceApartmentNumber'?: string
+  'section1.residenceStreetAddress'?: string
+  'section1.residenceCity'?: string
+  'section1.residencePostalCode'?: string
+  
+  // Section 2 errors (dynamic for multiple dependents)
+  [key: string]: string | undefined  // To handle section2[index].fieldName pattern
+  
+  // Section 3 errors
+  'section3.signingFor'?: string
+  'section3.patientName'?: string
+  'section3.signature'?: string
+  'section3.signatureDate'?: string
+  'section3.homePhone'?: string
+  'section3.workPhone'?: string
+  
+  // Section 4 - no errors needed (static display)
+  
+  // Privacy policy
   privacyPolicyAgreed?: string
-  healthInformationNumber?: string
 }
 
 interface IntakeFormProps {
@@ -77,32 +121,35 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
   const errorSummaryRef = useRef<HTMLDivElement>(null)
   
   const [formData, setFormData] = useState<PatientIntakeData>({
-    legalFirstName: '',
-    legalLastName: '',
-    middleName: '',
-    preferredName: '',
-    title: '',
-    dateOfBirth: '',
-    gender: '',
-    phoneNumber: '',
-    cellPhone: '',
-    workPhone: '',
-    emailAddress: '',
-    streetAddress: '',
-    city: '',
-    provinceState: '',
-    postalZipCode: '',
-    nextOfKinName: '',
-    nextOfKinPhone: '',
-    relationshipToPatient: '',
-    primaryLanguage: '',
-    preferredLanguage: '',
-    privacyPolicyAgreed: false,
-    healthInformationNumber: ''
+        section1: {
+      lastName: '',
+      firstName: '',
+      healthNumber: '',
+      dateOfBirth: '',
+      sex: '',
+      emailAddress: '',
+      residenceApartmentNumber: '',
+      residenceStreetAddress: '',
+      residenceCity: '',
+      residencePostalCode: ''
+    },
+    section2: [],
+    section3: {
+      signingFor: [],
+      patientName: '',
+      signature: '',
+      signatureDate: '',
+      phoneNumber: ''
+    },
+    section4: {
+      doctorName: 'Dr Oyelayo Gabriel',
+      isStatic: true
+    },
+    privacyPolicyAgreed: false
   })
 
   const [errors, setErrors] = useState<FormErrors>({})
-  const [touched, setTouched] = useState<Partial<Record<keyof PatientIntakeData, boolean>>>({})
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   // Accessibility initialization
   useEffect(() => {
@@ -132,14 +179,125 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     }
   }, [errors])
 
-  const validateField = (name: keyof PatientIntakeData, value: string | boolean): string => {
-    const result = validatePatientIntakeField(name, value)
-    return result.isValid ? '' : (result.error || '')
+  const validateField = (fieldPath: string, value: string | boolean | string[]): string => {
+    // Custom validation for the new form structure
+    if (fieldPath === 'privacyPolicyAgreed') {
+      return !value ? 'You must agree to the Privacy & Data-Use Policy to continue' : ''
+    }
+    
+    // Section 1 validation
+    if (fieldPath.startsWith('section1.')) {
+      const field = fieldPath.split('.')[1]
+      const stringValue = typeof value === 'string' ? value : ''
+      
+      switch (field) {
+        case 'lastName':
+        case 'firstName':
+          if (!stringValue.trim()) {
+            return `${field === 'lastName' ? 'Last' : 'First'} name is required`
+          }
+          if (stringValue.length < 2) {
+            return `${field === 'lastName' ? 'Last' : 'First'} name must be at least 2 characters`
+          }
+          if (stringValue.length > 50) {
+            return `${field === 'lastName' ? 'Last' : 'First'} name must be less than 50 characters`
+          }
+          // Allow only letters, spaces, hyphens, apostrophes, and periods
+          if (!/^[a-zA-Z\s'\-\.]+$/.test(stringValue)) {
+            return `${field === 'lastName' ? 'Last' : 'First'} name contains invalid characters`
+          }
+          return ''
+        case 'healthNumber':
+          const healthValidation = validateHealthNumber(stringValue)
+          return healthValidation.isValid ? '' : (healthValidation.error || 'Invalid health number')
+        case 'residenceStreetAddress':
+          if (!stringValue.trim()) {
+            return 'Street address is required'
+          }
+          if (stringValue.length > 100) {
+            return 'Street address must be less than 100 characters'
+          }
+          // Allow alphanumeric, spaces, commas, hyphens, periods, apostrophes, and #
+          if (!/^[a-zA-Z0-9\s,'\-\.#]+$/.test(stringValue)) {
+            return 'Street address contains invalid characters'
+          }
+          return ''
+        case 'residenceCity':
+          if (!stringValue.trim()) {
+            return 'City is required'
+          }
+          if (stringValue.length > 50) {
+            return 'City name must be less than 50 characters'
+          }
+          // Allow letters, spaces, hyphens, apostrophes, and periods
+          if (!/^[a-zA-Z\s'\-\.]+$/.test(stringValue)) {
+            return 'City name contains invalid characters'
+          }
+          return ''
+        case 'residencePostalCode':
+          const postalValidation = validateCanadianPostalCode(stringValue)
+          return postalValidation.isValid ? '' : (postalValidation.error || 'Invalid postal code')
+        case 'dateOfBirth':
+          const dobValidation = validateDateOfBirthYYYYMMDD(stringValue)
+          return dobValidation.isValid ? '' : (dobValidation.error || 'Invalid date of birth')
+        case 'sex':
+          return !stringValue.trim() ? 'Sex is required' : ''
+        case 'emailAddress':
+          if (!stringValue.trim()) {
+            return 'Email address is required'
+          }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(stringValue)) {
+            return 'Please enter a valid email address'
+          }
+          return ''
+      }
+    }
+    
+    // Section 3 validation
+    if (fieldPath.startsWith('section3.')) {
+      const field = fieldPath.split('.')[1]
+      const stringValue = typeof value === 'string' ? value : ''
+      
+      switch (field) {
+        case 'patientName':
+          if (!stringValue.trim()) {
+            return 'Patient name is required'
+          }
+          if (stringValue.length > 100) {
+            return 'Patient name must be less than 100 characters'
+          }
+          // Allow letters, spaces, hyphens, apostrophes, and periods
+          if (!/^[a-zA-Z\s'\-\.]+$/.test(stringValue)) {
+            return 'Patient name contains invalid characters'
+          }
+          return ''
+        case 'signature':
+          if (!stringValue.trim()) {
+            return 'Signature is required'
+          }
+          if (stringValue.length > 100) {
+            return 'Signature must be less than 100 characters'
+          }
+          // Allow letters, spaces, hyphens, apostrophes, and periods
+          if (!/^[a-zA-Z\s'\-\.]+$/.test(stringValue)) {
+            return 'Signature contains invalid characters'
+          }
+          return ''
+        case 'signatureDate':
+          const sigDateValidation = validateDateYYYYMMDD(stringValue)
+          return sigDateValidation.isValid ? '' : (sigDateValidation.error || 'Invalid signature date')
+        case 'phoneNumber':
+          if (!stringValue.trim()) return 'Phone number is required'
+          const phoneValidation = validatePhone(stringValue, true)
+          return phoneValidation.isValid ? '' : (phoneValidation.error || 'Invalid phone number')
+      }
+    }
+    
+    return ''
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
-    const fieldName = name as keyof PatientIntakeData
     
     let newValue: string | boolean = value
     
@@ -147,52 +305,89 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     if (type === 'checkbox') {
       newValue = (e.target as HTMLInputElement).checked
     } else {
-      // Don't sanitize during typing to avoid interfering with space input
-      // Only apply specific formatting for certain fields
-      let processedValue = value
-      
       // Format specific fields
-      if (fieldName === 'dateOfBirth' && type === 'text') {
-        // Auto-format as user types DD-MM-YYYY
+      if (name.includes('dateOfBirth') || name.includes('signatureDate')) {
+        // Auto-format as user types YYYY/MM/DD
         const cleaned = value.replace(/\D/g, '')
         let formatted = cleaned
-        if (cleaned.length >= 2) {
-          formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2)
-        }
         if (cleaned.length >= 4) {
-          formatted = cleaned.slice(0, 2) + '-' + cleaned.slice(2, 4) + '-' + cleaned.slice(4, 8)
+          formatted = cleaned.slice(0, 4) + '/' + cleaned.slice(4)
         }
-        processedValue = formatted
-      } else if (fieldName === 'postalZipCode') {
+        if (cleaned.length >= 6) {
+          formatted = cleaned.slice(0, 4) + '/' + cleaned.slice(4, 6) + '/' + cleaned.slice(6, 8)
+        }
+        newValue = formatted
+      } else if (name.includes('postalCode')) {
         // Normalize postal code formatting
-        processedValue = normalizePostalCode(value)
-      } else if (fieldName === 'phoneNumber' || fieldName === 'cellPhone' || fieldName === 'workPhone' || fieldName === 'nextOfKinPhone') {
-        // Allow phone formatting characters while typing
-        processedValue = value // Don't auto-format while typing to avoid cursor jumping
-      } else if (fieldName === 'healthInformationNumber') {
-        processedValue = value.replace(/[^a-zA-Z0-9]/g, '')
+        newValue = normalizePostalCode(value)
+      } else if (name.includes('Phone') || name.includes('phoneNumber')) {
+        // Format phone as user types but allow partial entry
+        const digitsOnly = value.replace(/[^\d]/g, '')
+        if (digitsOnly.length <= 3) {
+          newValue = digitsOnly
+        } else if (digitsOnly.length <= 6) {
+          newValue = `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3)}`
+        } else if (digitsOnly.length <= 10) {
+          newValue = `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6)}`
+        } else {
+          // Don't allow more than 10 digits for Canadian numbers
+          const truncated = digitsOnly.slice(0, 10)
+          newValue = `(${truncated.slice(0, 3)}) ${truncated.slice(3, 6)}-${truncated.slice(6)}`
+        }
+      } else if (name.includes('healthNumber')) {
+        newValue = value.replace(/[^a-zA-Z0-9]/g, '')
+      } else {
+        newValue = value
       }
-      
-      newValue = processedValue
     }
     
+    // Update form data based on field path
+    if (name === 'privacyPolicyAgreed') {
     setFormData(prev => ({
       ...prev,
-      [fieldName]: newValue
-    }))
+        privacyPolicyAgreed: newValue as boolean
+      }))
+    } else if (name.startsWith('section1.')) {
+      const field = name.split('.')[1] as keyof Section1Data
+      setFormData(prev => ({
+        ...prev,
+        section1: {
+          ...prev.section1,
+          [field]: newValue
+        }
+      }))
+    } else if (name.startsWith('section3.')) {
+      const field = name.split('.')[1] as keyof Section3Data
+      setFormData(prev => ({
+        ...prev,
+        section3: {
+          ...prev.section3,
+          [field]: newValue
+        }
+      }))
+    } else if (name.startsWith('section4.')) {
+      const field = name.split('.')[1] as keyof Section4Data
+      setFormData(prev => ({
+        ...prev,
+        section4: {
+          ...prev.section4,
+          [field]: newValue
+        }
+      }))
+    }
     
     // Validate field on change if it has been touched
-    if (touched[fieldName]) {
-      const error = validateField(fieldName, newValue)
+    if (touched[name]) {
+      const error = validateField(name, newValue)
       setErrors(prev => ({
         ...prev,
-        [fieldName]: error
+        [name]: error
       }))
     }
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const fieldName = e.target.name as keyof PatientIntakeData
+    const fieldName = e.target.name
     setTouched(prev => ({ ...prev, [fieldName]: true }))
     
     let value = fieldName === 'privacyPolicyAgreed' 
@@ -202,7 +397,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     // Apply sanitization and formatting on blur for better UX
     if (typeof value === 'string') {
       // Apply appropriate sanitization based on field type
-      if (['legalFirstName', 'legalLastName', 'middleName', 'preferredName', 'nextOfKinName', 'relationshipToPatient'].includes(fieldName)) {
+      if (fieldName.includes('Name') || fieldName.includes('name')) {
         // Use less aggressive sanitization for name fields
         value = sanitizeNameInput(value)
       } else {
@@ -210,29 +405,35 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
         value = sanitizeInput(value)
       }
       
-      // Format specific fields
-      if (fieldName === 'phoneNumber' || fieldName === 'cellPhone' || fieldName === 'workPhone' || fieldName === 'nextOfKinPhone') {
+            // Format specific fields
+      if (fieldName.includes('Phone') || fieldName.includes('phoneNumber')) {
         const formatted = formatPhone(value)
-        setFormData(prev => ({
-          ...prev,
-          [fieldName]: formatted
-        }))
+        // Update the appropriate section based on field path
+        if (fieldName.startsWith('section3.')) {
+          const field = fieldName.split('.')[1] as keyof Section3Data
+          setFormData(prev => ({
+            ...prev,
+            section3: {
+              ...prev.section3,
+              [field]: formatted
+            }
+          }))
+        }
         value = formatted
-      } else if (fieldName === 'postalZipCode') {
+      } else if (fieldName.includes('postalCode')) {
         const normalized = normalizePostalCode(value)
+        // Update the appropriate section
+        if (fieldName.startsWith('section1.')) {
+          const field = fieldName.split('.')[1] as keyof Section1Data
         setFormData(prev => ({
           ...prev,
-          [fieldName]: normalized
+            section1: {
+              ...prev.section1,
+              [field]: normalized
+            }
         }))
+        }
         value = normalized
-      } else if (fieldName === 'healthInformationNumber') {
-        // Optionally format or validate here
-      } else {
-        // Update form data with sanitized value for other fields
-        setFormData(prev => ({
-          ...prev,
-          [fieldName]: value
-        }))
       }
     }
     
@@ -244,27 +445,61 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
   }
 
   const validateForm = (): boolean => {
-    const validation = validateIntakeForm(formData)
+    const errors: FormErrors = {}
+    let isValid = true
     
-    setErrors(validation.errors as FormErrors)
-    
-    // Mark all fields as touched to show errors
-    const allFields: (keyof PatientIntakeData)[] = [
-      'legalFirstName', 'legalLastName', 'middleName', 'preferredName', 'title', 'dateOfBirth', 
-      'gender', 'phoneNumber', 'cellPhone', 'workPhone', 'emailAddress', 'streetAddress', 
-      'city', 'provinceState', 'postalZipCode', 'nextOfKinName', 'nextOfKinPhone', 
-      'relationshipToPatient', 'primaryLanguage', 'preferredLanguage', 'privacyPolicyAgreed',
-      'healthInformationNumber'
+    // Required fields for Section 1
+    const section1RequiredFields = [
+      'lastName', 'firstName', 'healthNumber', 'residenceStreetAddress', 
+      'residenceCity', 'residencePostalCode', 'dateOfBirth', 'sex', 'emailAddress'
     ]
     
-    setTouched(
-      allFields.reduce((acc, field) => ({
-        ...acc,
-        [field]: true
-      }), {})
-    )
+    section1RequiredFields.forEach(field => {
+      const fieldPath = `section1.${field}`
+      const value = formData.section1[field as keyof Section1Data]
+      const error = validateField(fieldPath, value)
+      if (error) {
+        errors[fieldPath as keyof FormErrors] = error
+        isValid = false
+      }
+    })
     
-    return validation.isValid
+    // Required fields for Section 3
+    const section3RequiredFields = ['patientName', 'signature', 'signatureDate', 'phoneNumber']
+    
+    section3RequiredFields.forEach(field => {
+      const fieldPath = `section3.${field}`
+      const value = formData.section3[field as keyof Section3Data]
+      const error = validateField(fieldPath, value)
+      if (error) {
+        errors[fieldPath as keyof FormErrors] = error
+        isValid = false
+      }
+    })
+    
+    // Privacy policy validation
+    const privacyError = validateField('privacyPolicyAgreed', formData.privacyPolicyAgreed)
+    if (privacyError) {
+      errors.privacyPolicyAgreed = privacyError
+      isValid = false
+    }
+    
+    setErrors(errors)
+    
+    // Mark all fields as touched to show errors
+    const touchedFields: Record<string, boolean> = {}
+    section1RequiredFields.forEach(field => {
+      touchedFields[`section1.${field}`] = true
+    })
+    section3RequiredFields.forEach(field => {
+      touchedFields[`section3.${field}`] = true
+    })
+    touchedFields['privacyPolicyAgreed'] = true
+    touchedFields['section1.emailAddress'] = true
+    
+    setTouched(touchedFields)
+    
+    return isValid
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -281,111 +516,53 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     }
   }
 
-  const provinceStateOptions = [
-    // Canadian Provinces
-    { value: 'AB', label: 'Alberta' },
-    { value: 'BC', label: 'British Columbia' },
-    { value: 'MB', label: 'Manitoba' },
-    { value: 'NB', label: 'New Brunswick' },
-    { value: 'NL', label: 'Newfoundland and Labrador' },
-    { value: 'NT', label: 'Northwest Territories' },
-    { value: 'NS', label: 'Nova Scotia' },
-    { value: 'NU', label: 'Nunavut' },
-    { value: 'ON', label: 'Ontario' },
-    { value: 'PE', label: 'Prince Edward Island' },
-    { value: 'QC', label: 'Quebec' },
-    { value: 'SK', label: 'Saskatchewan' },
-    { value: 'YT', label: 'Yukon' },
-    // US States (major ones)
-    { value: 'AL', label: 'Alabama' },
-    { value: 'AK', label: 'Alaska' },
-    { value: 'AZ', label: 'Arizona' },
-    { value: 'AR', label: 'Arkansas' },
-    { value: 'CA', label: 'California' },
-    { value: 'CO', label: 'Colorado' },
-    { value: 'CT', label: 'Connecticut' },
-    { value: 'DE', label: 'Delaware' },
-    { value: 'FL', label: 'Florida' },
-    { value: 'GA', label: 'Georgia' },
-    { value: 'HI', label: 'Hawaii' },
-    { value: 'ID', label: 'Idaho' },
-    { value: 'IL', label: 'Illinois' },
-    { value: 'IN', label: 'Indiana' },
-    { value: 'IA', label: 'Iowa' },
-    { value: 'KS', label: 'Kansas' },
-    { value: 'KY', label: 'Kentucky' },
-    { value: 'LA', label: 'Louisiana' },
-    { value: 'ME', label: 'Maine' },
-    { value: 'MD', label: 'Maryland' },
-    { value: 'MA', label: 'Massachusetts' },
-    { value: 'MI', label: 'Michigan' },
-    { value: 'MN', label: 'Minnesota' },
-    { value: 'MS', label: 'Mississippi' },
-    { value: 'MO', label: 'Missouri' },
-    { value: 'MT', label: 'Montana' },
-    { value: 'NE', label: 'Nebraska' },
-    { value: 'NV', label: 'Nevada' },
-    { value: 'NH', label: 'New Hampshire' },
-    { value: 'NJ', label: 'New Jersey' },
-    { value: 'NM', label: 'New Mexico' },
-    { value: 'NY', label: 'New York' },
-    { value: 'NC', label: 'North Carolina' },
-    { value: 'ND', label: 'North Dakota' },
-    { value: 'OH', label: 'Ohio' },
-    { value: 'OK', label: 'Oklahoma' },
-    { value: 'OR', label: 'Oregon' },
-    { value: 'PA', label: 'Pennsylvania' },
-    { value: 'RI', label: 'Rhode Island' },
-    { value: 'SC', label: 'South Carolina' },
-    { value: 'SD', label: 'South Dakota' },
-    { value: 'TN', label: 'Tennessee' },
-    { value: 'TX', label: 'Texas' },
-    { value: 'UT', label: 'Utah' },
-    { value: 'VT', label: 'Vermont' },
-    { value: 'VA', label: 'Virginia' },
-    { value: 'WA', label: 'Washington' },
-    { value: 'WV', label: 'West Virginia' },
-    { value: 'WI', label: 'Wisconsin' },
-    { value: 'WY', label: 'Wyoming' }
-  ]
+  // Add dependent to Section 2
+  const addDependent = () => {
+    const newDependent: DependentData = {
+      lastName: '',
+      firstName: '',
+      healthNumber: '',
+      dateOfBirth: '',
+      sex: '',
+      relationship: '',
+      residenceAddressSameAsSection1: false,
+      residenceApartmentNumber: '',
+      residenceStreetAddress: '',
+      residenceCity: '',
+      residencePostalCode: ''
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      section2: [...prev.section2, newDependent]
+    }))
+  }
 
-  const relationshipOptions = [
-    'Spouse',
-    'Parent',
-    'Child',
-    'Sibling',
-    'Relative',
-    'Friend',
-    'Partner',
-    'Guardian',
-    'Other'
-  ]
+  const removeDependent = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      section2: prev.section2.filter((_, i) => i !== index)
+    }))
+  }
 
-  const inputClassName = (fieldName: keyof FormErrors) => {
-    const baseClasses = 'w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors duration-200'
-    const isTouched = touched[fieldName as keyof PatientIntakeData]
-    const hasError = isTouched && errors[fieldName]
-    const hasValue = formData[fieldName as keyof PatientIntakeData]
-    const isValid = isTouched && !errors[fieldName] && hasValue
+  const inputClassName = (fieldName: string) => {
+    const baseClasses = 'w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 transition-colors duration-200'
+    const isTouched = touched[fieldName]
+    const hasError = isTouched && errors[fieldName as keyof FormErrors]
     
     if (hasError) {
       return `${baseClasses} border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50`
-    } else if (isValid) {
-      return `${baseClasses} border-green-300 focus:ring-green-500 focus:border-green-500 bg-green-50`
     } else {
       return `${baseClasses} border-slate-300 focus:ring-blue-500 focus:border-blue-500 bg-white`
     }
   }
 
-  const ValidationMessage = ({ fieldName }: { fieldName: keyof FormErrors }) => {
-    const isTouched = touched[fieldName as keyof PatientIntakeData]
-    const hasError = errors[fieldName]
-    const hasValue = formData[fieldName as keyof PatientIntakeData]
-    const isValid = isTouched && !hasError && hasValue
+  const ValidationMessage = ({ fieldName }: { fieldName: string }) => {
+    const isTouched = touched[fieldName]
+    const hasError = errors[fieldName as keyof FormErrors]
     
-    if (!isTouched) return null
+    if (!isTouched || !hasError) return null
     
-    if (hasError) {
       return (
         <div className="mt-1 flex items-center space-x-1">
           <svg className="h-4 w-4 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,22 +573,6 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           </p>
         </div>
       )
-    }
-    
-    if (isValid) {
-      return (
-        <div className="mt-1 flex items-center space-x-1">
-          <svg className="h-4 w-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <p className="text-sm text-green-600">
-            Valid
-          </p>
-        </div>
-      )
-    }
-    
-    return null
   }
 
   // Generate field attributes with accessibility features - REMOVED (unused)
@@ -419,571 +580,556 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
   const hasFormErrors = Object.keys(errors).some(key => errors[key as keyof FormErrors])
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Skip Link */}
-      <a 
-        href="#submit-section" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50 text-sm font-medium"
-      >
-        Skip to submit button
-      </a>
-
+    <div className="max-w-6xl mx-auto">
       {/* Form Title and Description */}
       <div className="text-center mb-8">
-        <h1 id="intake-form-title" className="text-3xl font-bold text-slate-800 mb-4">
-          Patient Intake Form
+        <h1 className="text-3xl font-bold text-slate-800 mb-4">
+          Patient Enrollment Form
         </h1>
-        <p id="intake-form-description" className="text-lg text-slate-600 max-w-2xl mx-auto">
-          Please complete all required fields marked with an asterisk (*). 
-          Your information is encrypted and protected according to HIPAA and PIPEDA standards.
+        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          Please complete all required sections. Section 2 is optional for enrolling dependents under 16 or dependent adults.
         </p>
       </div>
 
       {/* Error Summary */}
       {hasFormErrors && (
-        <div 
-          ref={errorSummaryRef}
-          className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mb-8"
-          role="alert"
-          aria-labelledby="error-summary-title"
-          tabIndex={-1}
-          style={{ scrollMarginTop: '20px' }}
-        >
-          <h2 id="error-summary-title" className="text-lg font-semibold text-red-800 mb-4 flex items-center">
-            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Please correct the following {Object.keys(errors).filter(key => errors[key as keyof FormErrors]).length} error{Object.keys(errors).filter(key => errors[key as keyof FormErrors]).length !== 1 ? 's' : ''}:
-            <span className="ml-2 text-sm font-normal text-red-600">(Click links to focus fields)</span>
+        <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mb-8" role="alert">
+          <h2 className="text-lg font-semibold text-red-800 mb-4">
+            Please correct the following errors:
           </h2>
           <ul className="list-disc list-inside space-y-2 text-red-700">
             {Object.entries(errors).map(([field, error]) => 
-              error ? (
-                <li key={field}>
-                  <a 
-                    href={`#${formAccessibility.generateFieldId(field)}`}
-                    className="underline hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded transition-colors duration-200"
-                    title="Focus field (no scrolling)"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      const element = document.getElementById(formAccessibility.generateFieldId(field))
-                      if (element) {
-                        element.focus()
-                        // Don't scroll to avoid interrupting user typing
-                        // The field will be visible if it's in the viewport
-                        announceToScreenReader(`Moved to ${field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} field`, 'assertive')
-                      }
-                    }}
-                  >
-                    {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}: {error}
-                  </a>
-                </li>
-              ) : null
+              error ? <li key={field}>{field}: {error}</li> : null
             )}
           </ul>
         </div>
       )}
 
-      <form 
-        ref={formRef}
-        onSubmit={handleSubmit} 
-        className="space-y-8"
-        role="form"
-        aria-labelledby="intake-form-title"
-        aria-describedby="intake-form-description"
-        noValidate
-      >
-        {/* Personal Information Section */}
-        <section aria-labelledby="personal-info-heading">
-        <h2 id="personal-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
-          Personal Information
+      <form onSubmit={handleSubmit} className="space-y-12">
+        {/* Section 1 - Self Enrollment */}
+        <section className="bg-white p-8 rounded-lg border border-slate-200 shadow-sm">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-300 pb-3">
+            Section 1 - I want to enrol myself with the family doctor identified in Section 4
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Names */}
           <div>
-            <label htmlFor="legalFirstName" className="block text-sm font-medium text-slate-700 mb-2">
-              Legal First Name *
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Last Name *
             </label>
             <input
               type="text"
-              id="legalFirstName"
-              name="legalFirstName"
+                name="section1.lastName"
+                value={formData.section1.lastName}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+                className={inputClassName('section1.lastName')}
+                required
+              />
+              <ValidationMessage fieldName="section1.lastName" />
+          </div>
+
+          <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                First Name *
+            </label>
+            <input
+              type="text"
+                name="section1.firstName"
+                value={formData.section1.firstName}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+                className={inputClassName('section1.firstName')}
+                required
+              />
+              <ValidationMessage fieldName="section1.firstName" />
+          </div>
+
+            {/* Health Number */}
+          <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Health Number *
+            </label>
+              <input
+                type="text"
+                name="section1.healthNumber"
+                value={formData.section1.healthNumber}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+                className={inputClassName('section1.healthNumber')}
+                required
+              />
+              <ValidationMessage fieldName="section1.healthNumber" />
+          </div>
+
+            {/* Date of Birth */}
+          <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Date of Birth (YYYY/MM/DD) *
+            </label>
+            <input
+              type="text"
+                name="section1.dateOfBirth"
+                value={formData.section1.dateOfBirth}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+                className={inputClassName('section1.dateOfBirth')}
+                placeholder="YYYY/MM/DD"
+                maxLength={10}
+                required
+              />
+              <ValidationMessage fieldName="section1.dateOfBirth" />
+            </div>
+          </div>
+
+          {/* Sex Selection */}
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-slate-700 mb-3">
+              Sex *
+            </label>
+            <div className="flex space-x-6">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="section1.sex"
+                  value="M"
+                  checked={formData.section1.sex === 'M'}
+                  onChange={handleInputChange}
+                  className="mr-2"
+                  required
+                />
+                M (Male)
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="section1.sex"
+                  value="F"
+                  checked={formData.section1.sex === 'F'}
+                  onChange={handleInputChange}
+                  className="mr-2"
+                  required
+                />
+                F (Female)
+              </label>
+            </div>
+            <ValidationMessage fieldName="section1.sex" />
+          </div>
+
+                    {/* Address */}
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Address</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Apartment #
+            </label>
+            <input
+              type="text"
+                  name="section1.residenceApartmentNumber"
+                  value={formData.section1.residenceApartmentNumber}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+                  className={inputClassName('section1.residenceApartmentNumber')}
+            />
+                <ValidationMessage fieldName="section1.residenceApartmentNumber" />
+          </div>
+
+          <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Street No. and Name *
+            </label>
+            <input
+              type="text"
+                  name="section1.residenceStreetAddress"
+                  value={formData.section1.residenceStreetAddress}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClassName('section1.residenceStreetAddress')}
               required
-              value={formData.legalFirstName}
+                />
+                <ValidationMessage fieldName="section1.residenceStreetAddress" />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  City/Town *
+                </label>
+                <input
+                  type="text"
+                  name="section1.residenceCity"
+                  value={formData.section1.residenceCity}
               onChange={handleInputChange}
               onBlur={handleBlur}
-              className={inputClassName('legalFirstName')}
-              placeholder="Enter your legal first name"
-              aria-describedby="legalFirstName-error"
-              autoComplete="given-name"
-            />
-            <ValidationMessage fieldName="legalFirstName" />
+                  className={inputClassName('section1.residenceCity')}
+                  required
+                />
+                <ValidationMessage fieldName="section1.residenceCity" />
           </div>
 
           <div>
-            <label htmlFor="legalLastName" className="block text-sm font-medium text-slate-700 mb-2">
-              Legal Last Name *
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Postal Code *
             </label>
-            <input
-              type="text"
-              id="legalLastName"
-              name="legalLastName"
-              required
-              value={formData.legalLastName}
+                <input
+                  type="text"
+                  name="section1.residencePostalCode"
+                  value={formData.section1.residencePostalCode}
               onChange={handleInputChange}
               onBlur={handleBlur}
-              className={inputClassName('legalLastName')}
-              placeholder="Enter your legal last name"
-              aria-describedby="legalLastName-error"
-              autoComplete="family-name"
-            />
-            <ValidationMessage fieldName="legalLastName" />
-          </div>
-
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-2">
-              Title <span className="text-slate-500">(Optional)</span>
-            </label>
-            <select
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('title')}
-              aria-describedby="title-error"
-              autoComplete="honorific-prefix"
-            >
-              <option value="">Select title</option>
-              <option value="Mr.">Mr.</option>
-              <option value="Mrs.">Mrs.</option>
-              <option value="Ms.">Ms.</option>
-              <option value="Dr.">Dr.</option>
-              <option value="Prof.">Prof.</option>
-              <option value="Rev.">Rev.</option>
-              <option value="Other">Other</option>
-            </select>
-            <ValidationMessage fieldName="title" />
-          </div>
-
-          <div>
-            <label htmlFor="middleName" className="block text-sm font-medium text-slate-700 mb-2">
-              Middle Name <span className="text-slate-500">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              id="middleName"
-              name="middleName"
-              value={formData.middleName}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('middleName')}
-              placeholder="Enter your middle name"
-              aria-describedby="middleName-error"
-              autoComplete="additional-name"
-            />
-            <ValidationMessage fieldName="middleName" />
-          </div>
-
-          <div>
-            <label htmlFor="preferredName" className="block text-sm font-medium text-slate-700 mb-2">
-              Preferred Name <span className="text-slate-500">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              id="preferredName"
-              name="preferredName"
-              value={formData.preferredName}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('preferredName')}
-              placeholder="How would you like to be addressed?"
-              aria-describedby="preferredName-error"
-              autoComplete="nickname"
-            />
-            <ValidationMessage fieldName="preferredName" />
-          </div>
-
-          <div>
-            <label htmlFor="dateOfBirth" className="block text-sm font-medium text-slate-700 mb-2">
-              Date of Birth *
-            </label>
-            <input
-              type="text"
-              id="dateOfBirth"
-              name="dateOfBirth"
-              required
-              value={formData.dateOfBirth}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('dateOfBirth')}
-              placeholder="DD-MM-YYYY"
-              maxLength={10}
-              aria-describedby="dateOfBirth-error"
-              autoComplete="bday"
-            />
-            <p className="mt-1 text-xs text-slate-500">Please use DD-MM-YYYY format (e.g., 15-03-1990)</p>
-            <ValidationMessage fieldName="dateOfBirth" />
-          </div>
-
-          <div>
-            <label htmlFor="gender" className="block text-sm font-medium text-slate-700 mb-2">
-              Gender <span className="text-slate-500">(Optional)</span>
-            </label>
-            <select
-              id="gender"
-              name="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('gender')}
-              aria-describedby="gender-error"
-            >
-              <option value="">Select gender</option>
-              <option value="M">Male</option>
-              <option value="F">Female</option>
-              <option value="O">Other</option>
-              <option value="U">Prefer not to specify</option>
-            </select>
-            <ValidationMessage fieldName="gender" />
+                  className={inputClassName('section1.residencePostalCode')}
+                  required
+                />
+                <ValidationMessage fieldName="section1.residencePostalCode" />
+              </div>
           </div>
         </div>
 
-        {/* Language Preferences Section */}
+          {/* Email Address */}
         <div className="mt-8">
-          <h3 className="text-lg font-medium text-slate-800 mb-4">Language Preferences</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="primaryLanguage" className="block text-sm font-medium text-slate-700 mb-2">
-                Primary Language <span className="text-slate-500">(Optional)</span>
-              </label>
-              <select
-                id="primaryLanguage"
-                name="primaryLanguage"
-                value={formData.primaryLanguage}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                className={inputClassName('primaryLanguage')}
-                aria-describedby="primaryLanguage-error"
-              >
-                <option value="">Select primary language</option>
-                <option value="English">English</option>
-                <option value="French">French</option>
-                <option value="Spanish">Spanish</option>
-                <option value="Mandarin">Mandarin</option>
-                <option value="Arabic">Arabic</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Portuguese">Portuguese</option>
-                <option value="Russian">Russian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="German">German</option>
-                <option value="Korean">Korean</option>
-                <option value="Italian">Italian</option>
-                <option value="Other">Other</option>
-              </select>
-              <ValidationMessage fieldName="primaryLanguage" />
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Email Address *
+          </label>
+          <input
+            type="email"
+            name="section1.emailAddress"
+            value={formData.section1.emailAddress}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            className={inputClassName('section1.emailAddress')}
+            placeholder="your.email@example.com"
+            required
+          />
+          <ValidationMessage fieldName="section1.emailAddress" />
+        </div>
+
+          
+        </section>
+
+        {/* Section 2 - Dependents (Optional) */}
+        <section className="bg-blue-50 p-8 rounded-lg border border-blue-200 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-slate-800 border-b border-slate-300 pb-3">
+              Section 2 - I want to enrol my child(ren) under 16 and/or dependent adults (Optional)
+            </h2>
+            <Button
+              type="button"
+              onClick={addDependent}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Add Dependent
+            </Button>
             </div>
 
+          {formData.section2.length === 0 && (
+            <p className="text-slate-600 italic text-center py-8">
+              No dependents added. Click "Add Dependent" to enroll children under 16 or dependent adults.
+            </p>
+          )}
+
+          {formData.section2.map((dependent, index) => (
+            <div key={index} className="bg-white p-6 rounded-lg border border-slate-200 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-slate-800">
+                  Dependent {index + 1}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => removeDependent(index)}
+                  className="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Remove
+                </button>
+          </div>
+              
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label htmlFor="preferredLanguage" className="block text-sm font-medium text-slate-700 mb-2">
-                Preferred Language for Correspondence <span className="text-slate-500">(Optional)</span>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Last Name *
+                  </label>
+                  <input
+                    type="text"
+                    name={`section2.${index}.lastName`}
+                    value={dependent.lastName}
+                    onChange={(e) => {
+                      const newSection2 = [...formData.section2]
+                      newSection2[index] = { ...newSection2[index], lastName: e.target.value }
+                      setFormData(prev => ({ ...prev, section2: newSection2 }))
+                    }}
+                    className={inputClassName(`section2.${index}.lastName`)}
+                    required
+                  />
+                  <ValidationMessage fieldName={`section2.${index}.lastName`} />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    First Name *
+                  </label>
+                  <input
+                    type="text"
+                    name={`section2.${index}.firstName`}
+                    value={dependent.firstName}
+                    onChange={(e) => {
+                      const newSection2 = [...formData.section2]
+                      newSection2[index] = { ...newSection2[index], firstName: e.target.value }
+                      setFormData(prev => ({ ...prev, section2: newSection2 }))
+                    }}
+                    className={inputClassName(`section2.${index}.firstName`)}
+                    required
+                  />
+                  <ValidationMessage fieldName={`section2.${index}.firstName`} />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Health Number *
+                  </label>
+                  <input
+                    type="text"
+                    name={`section2.${index}.healthNumber`}
+                    value={dependent.healthNumber}
+                    onChange={(e) => {
+                      const newSection2 = [...formData.section2]
+                      newSection2[index] = { ...newSection2[index], healthNumber: e.target.value }
+                      setFormData(prev => ({ ...prev, section2: newSection2 }))
+                    }}
+                    className={inputClassName(`section2.${index}.healthNumber`)}
+                    required
+                  />
+                  <ValidationMessage fieldName={`section2.${index}.healthNumber`} />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Date of Birth (YYYY/MM/DD) *
+                  </label>
+                  <input
+                    type="text"
+                    name={`section2.${index}.dateOfBirth`}
+                    value={dependent.dateOfBirth}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      // Auto-format as user types YYYY/MM/DD
+                      const cleaned = value.replace(/\D/g, '')
+                      let formatted = cleaned
+                      if (cleaned.length >= 4) {
+                        formatted = cleaned.slice(0, 4) + '/' + cleaned.slice(4)
+                      }
+                      if (cleaned.length >= 6) {
+                        formatted = cleaned.slice(0, 4) + '/' + cleaned.slice(4, 6) + '/' + cleaned.slice(6, 8)
+                      }
+                      
+                      const newSection2 = [...formData.section2]
+                      newSection2[index] = { ...newSection2[index], dateOfBirth: formatted }
+                      setFormData(prev => ({ ...prev, section2: newSection2 }))
+                    }}
+                    className={inputClassName(`section2.${index}.dateOfBirth`)}
+                    placeholder="YYYY/MM/DD"
+                    maxLength={10}
+                    required
+                  />
+                  <ValidationMessage fieldName={`section2.${index}.dateOfBirth`} />
+                </div>
+              </div>
+
+              {/* Sex Selection */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-slate-700 mb-3">
+                  Sex *
+                </label>
+                <div className="flex space-x-6">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name={`section2.${index}.sex`}
+                      value="M"
+                      checked={dependent.sex === 'M'}
+                      onChange={(e) => {
+                        const newSection2 = [...formData.section2]
+                        newSection2[index] = { ...newSection2[index], sex: e.target.value }
+                        setFormData(prev => ({ ...prev, section2: newSection2 }))
+                      }}
+                      className="mr-2"
+                      required
+                    />
+                    M (Male)
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name={`section2.${index}.sex`}
+                      value="F"
+                      checked={dependent.sex === 'F'}
+                      onChange={(e) => {
+                        const newSection2 = [...formData.section2]
+                        newSection2[index] = { ...newSection2[index], sex: e.target.value }
+                        setFormData(prev => ({ ...prev, section2: newSection2 }))
+                      }}
+                      className="mr-2"
+                      required
+                    />
+                    F (Female)
+                  </label>
+                </div>
+                <ValidationMessage fieldName={`section2.${index}.sex`} />
+              </div>
+
+              {/* Relationship */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  I am this person's *
               </label>
               <select
-                id="preferredLanguage"
-                name="preferredLanguage"
-                value={formData.preferredLanguage}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                className={inputClassName('preferredLanguage')}
-                aria-describedby="preferredLanguage-error"
-              >
-                <option value="">Select preferred language</option>
-                <option value="English">English</option>
-                <option value="French">French</option>
-                <option value="Spanish">Spanish</option>
-                <option value="Mandarin">Mandarin</option>
-                <option value="Arabic">Arabic</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Portuguese">Portuguese</option>
-                <option value="Russian">Russian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="German">German</option>
-                <option value="Korean">Korean</option>
-                <option value="Italian">Italian</option>
-                <option value="Other">Other</option>
+                  name={`section2.${index}.relationship`}
+                  value={dependent.relationship}
+                  onChange={(e) => {
+                    const newSection2 = [...formData.section2]
+                    newSection2[index] = { ...newSection2[index], relationship: e.target.value }
+                    setFormData(prev => ({ ...prev, section2: newSection2 }))
+                  }}
+                  className={inputClassName(`section2.${index}.relationship`)}
+                  required
+                >
+                  <option value="">Select relationship</option>
+                  <option value="parent">Parent</option>
+                  <option value="legal guardian">Legal Guardian</option>
+                  <option value="attorney for personal care">Attorney for Personal Care</option>
               </select>
-              <ValidationMessage fieldName="preferredLanguage" />
+                <ValidationMessage fieldName={`section2.${index}.relationship`} />
             </div>
+
+              {/* Address: Same as Section 1 checkbox for now */}
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name={`section2.${index}.residenceAddressSameAsSection1`}
+                    checked={dependent.residenceAddressSameAsSection1}
+                    onChange={(e) => {
+                      const newSection2 = [...formData.section2]
+                      newSection2[index] = { ...newSection2[index], residenceAddressSameAsSection1: e.target.checked }
+                      setFormData(prev => ({ ...prev, section2: newSection2 }))
+                    }}
+                    className="mr-2"
+                  />
+                  Same address as Section 1
+                </label>
           </div>
         </div>
+          ))}
       </section>
 
-      {/* Contact Information Section */}
-      <section aria-labelledby="contact-info-heading">
-        <h2 id="contact-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
-          Contact Information
+        {/* Section 3 - Signature */}
+        <section className="bg-white p-8 rounded-lg border border-slate-200 shadow-sm">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-300 pb-3">
+            Section 3 - Signature
         </h2>
+          
+          <div className="mb-6">
+            <p className="text-sm text-slate-700 mb-4">
+              I have read and agree to the Patient Commitment, the Consent to Release Personal Health Information 
+              and the Cancellation Conditions on the back of this form. I acknowledge that this Enrolment is not 
+              intended to be a legally binding contract and is not intended to give rise to any new legal obligations 
+              between my family doctor and me.
+            </p>
+          </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="phoneNumber" className="block text-sm font-medium text-slate-700 mb-2">
-              Phone Number *
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                My Name (Last name, First name) *
             </label>
             <input
-              type="tel"
-              id="phoneNumber"
-              name="phoneNumber"
-              required
-              value={formData.phoneNumber}
+                type="text"
+                name="section3.patientName"
+                value={formData.section3.patientName}
               onChange={handleInputChange}
               onBlur={handleBlur}
-              className={inputClassName('phoneNumber')}
-                                      placeholder="249 806 0128"
-              aria-describedby="phoneNumber-error"
-              autoComplete="tel"
-            />
-            <ValidationMessage fieldName="phoneNumber" />
+                className={inputClassName('section3.patientName')}
+                required
+              />
+              <ValidationMessage fieldName="section3.patientName" />
           </div>
 
           <div>
-            <label htmlFor="emailAddress" className="block text-sm font-medium text-slate-700 mb-2">
-              Email Address *
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Signature *
             </label>
             <input
-              type="email"
-              id="emailAddress"
-              name="emailAddress"
-              required
-              value={formData.emailAddress}
+                type="text"
+                name="section3.signature"
+                value={formData.section3.signature}
               onChange={handleInputChange}
               onBlur={handleBlur}
-              className={inputClassName('emailAddress')}
-              placeholder="your.email@example.com"
-              aria-describedby="emailAddress-error"
-              autoComplete="email"
-            />
-            <ValidationMessage fieldName="emailAddress" />
+                className={inputClassName('section3.signature')}
+                placeholder="Type your full name as signature"
+                required
+              />
+              <ValidationMessage fieldName="section3.signature" />
           </div>
 
           <div>
-            <label htmlFor="cellPhone" className="block text-sm font-medium text-slate-700 mb-2">
-              Cell Phone <span className="text-slate-500">(Optional)</span>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Date (YYYY/MM/DD) *
             </label>
             <input
-              type="tel"
-              id="cellPhone"
-              name="cellPhone"
-              value={formData.cellPhone}
+                type="text"
+                name="section3.signatureDate"
+                value={formData.section3.signatureDate}
               onChange={handleInputChange}
               onBlur={handleBlur}
-              className={inputClassName('cellPhone')}
-              placeholder="249 806 0128"
-              aria-describedby="cellPhone-error"
-              autoComplete="tel"
-            />
-            <ValidationMessage fieldName="cellPhone" />
+                className={inputClassName('section3.signatureDate')}
+                placeholder="YYYY/MM/DD"
+                maxLength={10}
+                required
+              />
+              <ValidationMessage fieldName="section3.signatureDate" />
           </div>
 
-          <div>
-            <label htmlFor="workPhone" className="block text-sm font-medium text-slate-700 mb-2">
-              Work Phone <span className="text-slate-500">(Optional)</span>
-            </label>
-            <input
-              type="tel"
-              id="workPhone"
-              name="workPhone"
-              value={formData.workPhone}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('workPhone')}
-              placeholder="249 806 0128"
-              aria-describedby="workPhone-error"
-              autoComplete="tel"
-            />
-            <ValidationMessage fieldName="workPhone" />
-          </div>
+                      <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Telephone No. *
+              </label>
+              <input
+                type="tel"
+                name="section3.phoneNumber"
+                value={formData.section3.phoneNumber}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                className={inputClassName('section3.phoneNumber')}
+                placeholder="(416) 555-1234"
+                required
+              />
+              <p className="mt-1 text-xs text-slate-500">Enter a 10-digit Canadian phone number</p>
+              <ValidationMessage fieldName="section3.phoneNumber" />
+            </div>
         </div>
       </section>
 
-      {/* Address Information Section */}
-      <section aria-labelledby="address-info-heading">
-        <h2 id="address-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
-          Address Information
-        </h2>
-        
-        <div className="space-y-6">
-          <div>
-            <label htmlFor="streetAddress" className="block text-sm font-medium text-slate-700 mb-2">
-              Street Address *
-            </label>
-            <input
-              type="text"
-              id="streetAddress"
-              name="streetAddress"
-              required
-              value={formData.streetAddress}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className={inputClassName('streetAddress')}
-              placeholder="123 Main Street, Apt 4B"
-              aria-describedby="streetAddress-error"
-              autoComplete="street-address"
-            />
-            <ValidationMessage fieldName="streetAddress" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-2">
-                City *
-              </label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                required
-                value={formData.city}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                className={inputClassName('city')}
-                placeholder="Toronto"
-                aria-describedby="city-error"
-                autoComplete="address-level2"
-              />
-              <ValidationMessage fieldName="city" />
-            </div>
-
-            <div>
-              <label htmlFor="provinceState" className="block text-sm font-medium text-slate-700 mb-2">
-                Province/State *
-              </label>
-              <select
-                id="provinceState"
-                name="provinceState"
-                required
-                value={formData.provinceState}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                className={inputClassName('provinceState')}
-                aria-describedby="provinceState-error"
-                autoComplete="address-level1"
-              >
-                <option value="">Select province/state</option>
-                {provinceStateOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <ValidationMessage fieldName="provinceState" />
-            </div>
-
-            <div>
-              <label htmlFor="postalZipCode" className="block text-sm font-medium text-slate-700 mb-2">
-                Postal/ZIP Code *
-              </label>
-              <input
-                type="text"
-                id="postalZipCode"
-                name="postalZipCode"
-                required
-                value={formData.postalZipCode}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                className={inputClassName('postalZipCode')}
-                placeholder="M5V 3A8 or 12345"
-                aria-describedby="postalZipCode-error"
-                autoComplete="postal-code"
-              />
-              <ValidationMessage fieldName="postalZipCode" />
+        {/* Section 4 - Family Doctor Information */}
+        <section className="bg-green-50 p-8 rounded-lg border border-green-200 shadow-sm">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-300 pb-3">
+            Section 4 - Family Doctor Information
+          </h2>
+          
+          <div className="bg-white p-6 rounded-lg border border-green-300 shadow-sm">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">Family Doctor</h3>
+                <p className="text-2xl font-bold text-green-700">{formData.section4.doctorName}</p>
+                <p className="text-sm text-slate-600 mt-2">Assigned Family Physician</p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Next of Kin Section */}
-      <section aria-labelledby="next-of-kin-heading">
-        <h2 id="next-of-kin-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
-          Next of Kin Information
-        </h2>
-        <label htmlFor="nextOfKinName" className="block text-sm font-medium text-slate-700 mb-2">
-          Next of Kin Full Name *
-            </label>
-            <input
-          id="nextOfKinName"
-          name="nextOfKinName"
-          value={formData.nextOfKinName}
-          onChange={handleInputChange}
-          className={inputClassName('nextOfKinName')}
-          placeholder="Enter full name of next of kin"
-          aria-describedby="nextOfKinName-error"
-              required
-            />
-        <ValidationMessage fieldName="nextOfKinName" />
-        <label htmlFor="nextOfKinPhone" className="block text-sm font-medium text-slate-700 mb-2 mt-4">
-          Next of Kin Phone *
-            </label>
-            <input
-          id="nextOfKinPhone"
-          name="nextOfKinPhone"
-          value={formData.nextOfKinPhone}
-          onChange={handleInputChange}
-          className={inputClassName('nextOfKinPhone')}
-          placeholder="Enter phone number of next of kin"
-          aria-describedby="nextOfKinPhone-error"
-              required
-        />
-        <ValidationMessage fieldName="nextOfKinPhone" />
-        <label htmlFor="relationshipToPatient" className="block text-sm font-medium text-slate-700 mb-2 mt-4">
-              Relationship to Patient *
-            </label>
-            <select
-              id="relationshipToPatient"
-              name="relationshipToPatient"
-              value={formData.relationshipToPatient}
-              onChange={handleInputChange}
-              className={inputClassName('relationshipToPatient')}
-              aria-describedby="relationshipToPatient-error"
-          required
-            >
-              <option value="">Select relationship</option>
-          <option value="Spouse">Spouse</option>
-          <option value="Parent">Parent</option>
-          <option value="Child">Child</option>
-          <option value="Sibling">Sibling</option>
-          <option value="Friend">Friend</option>
-          <option value="Other">Other</option>
-            </select>
-            <ValidationMessage fieldName="relationshipToPatient" />
-      </section>
-
-      {/* Health Information Number Section */}
-      <section aria-labelledby="health-info-heading">
-        <h2 id="health-info-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
-          Health Information Number
-        </h2>
-        <label htmlFor="healthInformationNumber" className="block text-sm font-medium text-slate-700 mb-2">
-          Health Information Number *
-        </label>
-        <input
-          id="healthInformationNumber"
-          name="healthInformationNumber"
-          value={formData.healthInformationNumber}
-          onChange={handleInputChange}
-          className={inputClassName('healthInformationNumber')}
-          placeholder="Enter your health information number"
-          aria-describedby="healthInformationNumber-error"
-          required
-        />
-        <ValidationMessage fieldName="healthInformationNumber" />
-      </section>
-
-      {/* Communication Preferences Section */}
-      {/* Newsletter Opt-In removed */}
+        </section>
 
       {/* Privacy Policy Section */}
-      <section aria-labelledby="privacy-policy-heading">
-        <h2 id="privacy-policy-heading" className="text-2xl font-semibold text-slate-800 mb-6 border-b border-slate-200 pb-2">
+        <section className="bg-white p-8 rounded-lg border border-slate-200 shadow-sm">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-300 pb-3">
           Privacy & Data-Use Agreement
         </h2>
         
@@ -995,7 +1141,6 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               privacyPolicyAgreed: agreed
             }))
             
-            // Validate immediately when changed
             if (touched.privacyPolicyAgreed) {
               const error = validateField('privacyPolicyAgreed', agreed)
               setErrors(prev => ({
@@ -1010,7 +1155,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       </section>
 
       {/* Submit Button */}
-      <div id="submit-section" className="pt-6 border-t border-slate-200">
+        <div className="pt-6 border-t border-slate-200">
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
           <p className="text-sm text-slate-600">
             * Required fields. All information is encrypted and securely stored.
@@ -1020,14 +1165,10 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
             disabled={isSubmitting}
             size="lg"
             className="w-full sm:w-auto min-w-[200px]"
-            aria-describedby="submit-description"
           >
-            {isSubmitting ? 'Submitting...' : 'Complete Intake Form'}
+              {isSubmitting ? 'Submitting...' : 'Submit Enrollment Form'}
           </Button>
         </div>
-        <p id="submit-description" className="sr-only">
-          Submit the patient intake form. All information will be encrypted and securely stored.
-        </p>
       </div>
     </form>
     </div>
