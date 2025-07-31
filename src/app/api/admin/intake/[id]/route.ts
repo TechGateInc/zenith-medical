@@ -339,23 +339,29 @@ export async function PATCH(
       }
     })
 
-    // Decrypt the updated data for response
-    const decryptedData = decryptPatientData({
-      legalFirstName: updatedSubmission.legalFirstName,
-      legalLastName: updatedSubmission.legalLastName,
-      preferredName: updatedSubmission.preferredName || '',
-      dateOfBirth: updatedSubmission.dateOfBirth,
-      phoneNumber: updatedSubmission.phoneNumber,
-      emailAddress: updatedSubmission.emailAddress,
-      streetAddress: updatedSubmission.streetAddress,
-      city: updatedSubmission.city,
-      provinceState: updatedSubmission.provinceState,
-      postalZipCode: updatedSubmission.postalZipCode,
-      nextOfKinName: updatedSubmission.nextOfKinName,
-      nextOfKinPhone: updatedSubmission.nextOfKinPhone,
-      relationshipToPatient: updatedSubmission.relationshipToPatient,
-      healthInformationNumber: updatedSubmission.healthInformationNumber
-    })
+    // Decrypt the updated data for response using individual field decryption
+    const decryptedData: any = {}
+    const fieldsToDecrypt = [
+      'legalFirstName', 'legalLastName', 'preferredName', 'dateOfBirth',
+      'phoneNumber', 'emailAddress', 'streetAddress', 'city', 
+      'provinceState', 'postalZipCode', 'nextOfKinName', 'nextOfKinPhone',
+      'relationshipToPatient', 'healthInformationNumber'
+    ]
+    
+    for (const field of fieldsToDecrypt) {
+      try {
+        const value = updatedSubmission[field as keyof typeof updatedSubmission]
+        if (value && typeof value === 'string' && value.trim() !== '') {
+          decryptedData[field] = decryptPHI(value)
+        } else {
+          decryptedData[field] = value || ''
+        }
+      } catch (fieldError) {
+        console.error(`Failed to decrypt field ${field} for updated submission ${submissionId}:`, fieldError)
+        // Set to a placeholder value instead of failing the entire request
+        decryptedData[field] = `[Decryption Failed: ${field}]`
+      }
+    }
 
     const fullSubmission = {
       id: updatedSubmission.id,
