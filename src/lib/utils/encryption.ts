@@ -97,6 +97,52 @@ export function hashForSearch(data: string): string {
 }
 
 /**
+ * Validate encryption configuration
+ */
+export function validateEncryptionConfig(): { isValid: boolean; errors: string[] } {
+  const errors: string[] = []
+  
+  if (!process.env.ENCRYPTION_KEY) {
+    errors.push('ENCRYPTION_KEY environment variable is not set')
+  } else if (process.env.ENCRYPTION_KEY.length !== 64) {
+    errors.push('ENCRYPTION_KEY must be 32 bytes (64 hex characters) long')
+  }
+  
+  if (!process.env.ENCRYPTION_IV) {
+    errors.push('ENCRYPTION_IV environment variable is not set')
+  } else if (process.env.ENCRYPTION_IV.length !== 32) {
+    errors.push('ENCRYPTION_IV must be 16 bytes (32 hex characters) long')
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  }
+}
+
+/**
+ * Test encryption/decryption functionality
+ */
+export function testEncryption(): { isWorking: boolean; error?: string } {
+  try {
+    const testData = 'Test encryption data'
+    const encrypted = encryptPHI(testData)
+    const decrypted = decryptPHI(encrypted)
+    
+    if (decrypted !== testData) {
+      return { isWorking: false, error: 'Decrypted data does not match original' }
+    }
+    
+    return { isWorking: true }
+  } catch (error) {
+    return { 
+      isWorking: false, 
+      error: error instanceof Error ? error.message : 'Unknown encryption error' 
+    }
+  }
+}
+
+/**
  * Encrypt an entire patient intake object
  */
 export interface EncryptedPatientData {
@@ -174,27 +220,33 @@ export function encryptPatientData(data: PlainPatientData): EncryptedPatientData
 }
 
 export function decryptPatientData(data: EncryptedPatientData): PlainPatientData {
-  return {
-    legalFirstName: decryptPHI(data.legalFirstName),
-    legalLastName: decryptPHI(data.legalLastName),
-    middleName: data.middleName ? decryptPHI(data.middleName) : undefined,
-    preferredName: data.preferredName ? decryptPHI(data.preferredName) : undefined,
-    title: data.title ? decryptPHI(data.title) : undefined,
-    dateOfBirth: decryptPHI(data.dateOfBirth),
-    gender: data.gender ? decryptPHI(data.gender) : undefined,
-    phoneNumber: decryptPHI(data.phoneNumber),
-    cellPhone: data.cellPhone ? decryptPHI(data.cellPhone) : undefined,
-    workPhone: data.workPhone ? decryptPHI(data.workPhone) : undefined,
-    emailAddress: decryptPHI(data.emailAddress),
-    streetAddress: decryptPHI(data.streetAddress),
-    city: decryptPHI(data.city),
-    provinceState: decryptPHI(data.provinceState),
-    postalZipCode: decryptPHI(data.postalZipCode),
-    nextOfKinName: decryptPHI(data.nextOfKinName),
-    nextOfKinPhone: decryptPHI(data.nextOfKinPhone),
-    relationshipToPatient: decryptPHI(data.relationshipToPatient),
-    primaryLanguage: data.primaryLanguage ? decryptPHI(data.primaryLanguage) : undefined,
-    preferredLanguage: data.preferredLanguage ? decryptPHI(data.preferredLanguage) : undefined,
-    healthInformationNumber: decryptPHI(data.healthInformationNumber),
+  try {
+    return {
+      legalFirstName: data.legalFirstName ? decryptPHI(data.legalFirstName) : '',
+      legalLastName: data.legalLastName ? decryptPHI(data.legalLastName) : '',
+      middleName: data.middleName ? decryptPHI(data.middleName) : undefined,
+      preferredName: data.preferredName ? decryptPHI(data.preferredName) : undefined,
+      title: data.title ? decryptPHI(data.title) : undefined,
+      dateOfBirth: data.dateOfBirth ? decryptPHI(data.dateOfBirth) : '',
+      gender: data.gender ? decryptPHI(data.gender) : undefined,
+      phoneNumber: data.phoneNumber ? decryptPHI(data.phoneNumber) : '',
+      cellPhone: data.cellPhone ? decryptPHI(data.cellPhone) : undefined,
+      workPhone: data.workPhone ? decryptPHI(data.workPhone) : undefined,
+      emailAddress: data.emailAddress ? decryptPHI(data.emailAddress) : '',
+      streetAddress: data.streetAddress ? decryptPHI(data.streetAddress) : '',
+      city: data.city ? decryptPHI(data.city) : '',
+      provinceState: data.provinceState ? decryptPHI(data.provinceState) : '',
+      postalZipCode: data.postalZipCode ? decryptPHI(data.postalZipCode) : '',
+      nextOfKinName: data.nextOfKinName ? decryptPHI(data.nextOfKinName) : '',
+      nextOfKinPhone: data.nextOfKinPhone ? decryptPHI(data.nextOfKinPhone) : '',
+      relationshipToPatient: data.relationshipToPatient ? decryptPHI(data.relationshipToPatient) : '',
+      primaryLanguage: data.primaryLanguage ? decryptPHI(data.primaryLanguage) : undefined,
+      preferredLanguage: data.preferredLanguage ? decryptPHI(data.preferredLanguage) : undefined,
+      healthInformationNumber: data.healthInformationNumber ? decryptPHI(data.healthInformationNumber) : '',
+    }
+  } catch (error) {
+    console.error('Error in decryptPatientData:', error)
+    console.error('Data received:', JSON.stringify(data, null, 2))
+    throw new Error(`Failed to decrypt patient data: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 } 

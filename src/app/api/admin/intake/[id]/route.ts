@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../../lib/auth/config'
 import { prisma } from '../../../../../lib/prisma'
-import { decryptPatientData } from '../../../../../lib/utils/encryption'
+import { decryptPHI } from '../../../../../lib/utils/encryption'
 import { AdminRole } from '@prisma/client'
 
 export async function GET(
@@ -67,22 +67,55 @@ export async function GET(
 
     // Decrypt all patient data for detailed view
     try {
-      const decryptedData = decryptPatientData({
-        legalFirstName: intakeSubmission.legalFirstName,
-        legalLastName: intakeSubmission.legalLastName,
-        preferredName: intakeSubmission.preferredName || '',
-        dateOfBirth: intakeSubmission.dateOfBirth,
-        phoneNumber: intakeSubmission.phoneNumber,
-        emailAddress: intakeSubmission.emailAddress,
-        streetAddress: intakeSubmission.streetAddress,
-        city: intakeSubmission.city,
-        provinceState: intakeSubmission.provinceState,
-        postalZipCode: intakeSubmission.postalZipCode,
-        nextOfKinName: intakeSubmission.nextOfKinName,
-        nextOfKinPhone: intakeSubmission.nextOfKinPhone,
-        relationshipToPatient: intakeSubmission.relationshipToPatient,
-        healthInformationNumber: intakeSubmission.healthInformationNumber
+      console.log('Attempting to decrypt patient data for submission:', submissionId)
+      console.log('Raw submission data fields:', {
+        legalFirstName: !!intakeSubmission.legalFirstName,
+        legalLastName: !!intakeSubmission.legalLastName,
+        preferredName: !!intakeSubmission.preferredName,
+        dateOfBirth: !!intakeSubmission.dateOfBirth,
+        phoneNumber: !!intakeSubmission.phoneNumber,
+        emailAddress: !!intakeSubmission.emailAddress,
+        streetAddress: !!intakeSubmission.streetAddress,
+        city: !!intakeSubmission.city,
+        provinceState: !!intakeSubmission.provinceState,
+        postalZipCode: !!intakeSubmission.postalZipCode,
+        nextOfKinName: !!intakeSubmission.nextOfKinName,
+        nextOfKinPhone: !!intakeSubmission.nextOfKinPhone,
+        relationshipToPatient: !!intakeSubmission.relationshipToPatient,
+        healthInformationNumber: !!intakeSubmission.healthInformationNumber
       })
+      
+      // Validate that we have the required encryption environment variables
+      if (!process.env.ENCRYPTION_KEY || !process.env.ENCRYPTION_IV) {
+        throw new Error('Missing encryption environment variables')
+      }
+      
+      // Decrypt each field individually with better error handling
+      const decryptedData: any = {}
+      const fieldsToDecrypt = [
+        'legalFirstName', 'legalLastName', 'preferredName', 'dateOfBirth',
+        'phoneNumber', 'emailAddress', 'streetAddress', 'city', 
+        'provinceState', 'postalZipCode', 'nextOfKinName', 'nextOfKinPhone',
+        'relationshipToPatient', 'healthInformationNumber'
+      ]
+      
+      for (const field of fieldsToDecrypt) {
+        try {
+          const value = intakeSubmission[field as keyof typeof intakeSubmission]
+          if (value && typeof value === 'string' && value.trim() !== '') {
+            decryptedData[field] = decryptPHI(value)
+          } else {
+            decryptedData[field] = value || ''
+          }
+        } catch (fieldError) {
+          console.error(`Failed to decrypt field ${field} for submission ${submissionId}:`, fieldError)
+          console.error(`Field value:`, intakeSubmission[field as keyof typeof intakeSubmission])
+          // Set to a placeholder value instead of failing the entire request
+          decryptedData[field] = `[Decryption Failed: ${field}]`
+        }
+      }
+      
+      console.log('Successfully processed patient data for submission:', submissionId)
 
       const fullSubmission = {
         id: intakeSubmission.id,
@@ -131,9 +164,27 @@ export async function GET(
       })
 
     } catch (decryptionError) {
-      console.error('Decryption error for submission:', submissionId, decryptionError)
+      console.error('Decryption error for submission:', submissionId)
+      console.error('Decryption error details:', decryptionError)
       
-      // Log decryption error
+      // Determine specific error type for better debugging
+      let errorType = 'decryption_failed'
+      let errorMessage = 'Unable to decrypt patient data. Please contact system administrator.'
+      
+      if (decryptionError instanceof Error) {
+        if (decryptionError.message.includes('Missing encryption environment variables')) {
+          errorType = 'missing_encryption_keys'
+          errorMessage = 'Server configuration error. Please contact system administrator.'
+        } else if (decryptionError.message.includes('ENCRYPTION_KEY') || decryptionError.message.includes('ENCRYPTION_IV')) {
+          errorType = 'invalid_encryption_keys'
+          errorMessage = 'Server configuration error. Please contact system administrator.'
+        } else if (decryptionError.message.includes('Decryption resulted in empty string')) {
+          errorType = 'corrupted_data'
+          errorMessage = 'Patient data appears to be corrupted. Please contact system administrator.'
+        }
+      }
+      
+      // Log detailed decryption error
       await prisma.auditLog.create({
         data: {
           userId: session.user.id,
@@ -141,8 +192,11 @@ export async function GET(
           resource: 'patient_intake',
           resourceId: submissionId,
           details: {
-            error: 'decryption_failed',
-            timestamp: new Date().toISOString()
+            error: errorType,
+            errorMessage: decryptionError instanceof Error ? decryptionError.message : 'Unknown error',
+            timestamp: new Date().toISOString(),
+            hasEncryptionKey: !!process.env.ENCRYPTION_KEY,
+            hasEncryptionIV: !!process.env.ENCRYPTION_IV
           },
           ipAddress,
           userAgent
@@ -152,7 +206,8 @@ export async function GET(
       return NextResponse.json(
         { 
           error: 'Data access error',
-          message: 'Unable to decrypt patient data. Please contact system administrator.'
+          message: errorMessage,
+          type: errorType
         },
         { status: 500 }
       )
