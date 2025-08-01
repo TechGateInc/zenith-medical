@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useAuth } from '../../../../../lib/auth/use-auth'
 import { FormSkeleton } from '@/components/UI/SkeletonLoader'
 import { Mail } from 'lucide-react'
-import { ChatDrawer, FloatingChatButton } from '@/components/Chat/ChatDrawer'
+import { ChatDrawer } from '@/components/Chat/ChatDrawer'
 
 interface FullIntakeSubmission {
   id: string
@@ -286,8 +286,8 @@ export default function IntakeDetailPage() {
                 {getStatusBadge(submission.status)}
               </div>
               
-              {/* Communication Button */}
-              {isAdmin && (
+              {/* Communication Button - Only show in development */}
+              {isAdmin && process.env.NODE_ENV === 'development' && (
                 <button
                   onClick={() => setIsChatDrawerOpen(true)}
                   className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30"
@@ -621,8 +621,8 @@ export default function IntakeDetailPage() {
 
 
 
-            {/* Chat Drawer */}
-            {isAdmin && submission && (
+            {/* Chat Drawer - Only show in development */}
+            {isAdmin && submission && process.env.NODE_ENV === 'development' && (
               <ChatDrawer
                 isOpen={isChatDrawerOpen}
                 onClose={() => setIsChatDrawerOpen(false)}

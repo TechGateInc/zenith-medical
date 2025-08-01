@@ -1,74 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { validateIntakeForm } from '../../../../lib/utils/validation'
-import { encryptPatientData, encryptPHI } from '../../../../lib/utils/encryption'
 import { headers } from 'next/headers'
-import { 
-  sendPatientConfirmationEmail, 
+import { encryptPatientData, encryptPHI } from '../../../../lib/utils/encryption'
+import {
+  sendPatientConfirmationEmail,
   sendStaffNotificationEmail,
   type PatientConfirmationData,
   type StaffNotificationData
 } from '../../../../lib/notifications/email'
 import { oscarPatientService, DuplicateScenario } from '../../../../lib/integrations/oscar-patient-service'
-import { OscarPatientMapper } from '../../../../lib/integrations/oscar-patient-mapping'
 import { OscarError, OscarErrorHandler } from '../../../../lib/integrations/oscar-errors'
 
-// Initialize Prisma client
+// Initialize Prisma client (not used in this file)
 const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {
     // Parse request body
     const body = await request.json()
-    
+
     // Get client information for audit logging
     const headersList = await headers()
-    const ipAddress = headersList.get('x-forwarded-for') || 
-                     headersList.get('x-real-ip') || 
-                     'unknown'
+    const ipAddress = headersList.get('x-forwarded-for') ||
+      headersList.get('x-real-ip') ||
+      'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
-    
+
     // Destructure form data from request body
     const { section1, section2, section3, section4, privacyPolicyAgreed } = body
-    
+
     // Basic validation for new structure
     if (!section1 || !section3 || privacyPolicyAgreed === undefined) {
       return NextResponse.json(
-        { 
-          error: 'Validation failed', 
+        {
+          error: 'Validation failed',
           message: 'Please complete all required sections of the form',
           details: { structure: 'Missing required sections' }
-        }, 
+        },
         { status: 400 }
       )
     }
-    
+
     // Validate required fields in section1
     const requiredSection1Fields = ['lastName', 'firstName', 'healthNumber', 'residenceStreetAddress', 'residenceCity', 'residencePostalCode', 'dateOfBirth', 'sex', 'emailAddress']
     const missingSection1Fields = requiredSection1Fields.filter(field => !section1[field] || section1[field].trim() === '')
-    
+
     // Validate required fields in section3
     const requiredSection3Fields = ['nextOfKinName', 'nextOfKinPhone', 'relationshipToPatient', 'patientName', 'signature', 'signatureDate', 'phoneNumber']
     const missingSection3Fields = requiredSection3Fields.filter(field => !section3[field] || section3[field].trim() === '')
-    
+
     // Email is now always required and included in requiredSection1Fields
-    
+
     if (missingSection1Fields.length > 0 || missingSection3Fields.length > 0) {
       return NextResponse.json(
-        { 
-          error: 'Validation failed', 
+        {
+          error: 'Validation failed',
           message: 'Please complete all required fields',
-          details: { 
+          details: {
             section1: missingSection1Fields,
             section3: missingSection3Fields
           }
-        }, 
+        },
         { status: 400 }
       )
     }
-    
+
     // Extract the form data from the new structure (already available from validation above)
-    
+
     // Destructure section1 data for backward compatibility
     const {
       lastName: legalLastName,
@@ -82,7 +80,7 @@ export async function POST(request: NextRequest) {
       residenceCity: city,
       residencePostalCode: postalZipCode
     } = section1
-    
+
     // Extract section3 data
     const {
       nextOfKinName,
@@ -93,7 +91,7 @@ export async function POST(request: NextRequest) {
       signatureDate,
       phoneNumber
     } = section3
-    
+
     // Set defaults for fields that don't exist in new structure
     const middleName = '' // Removed from new structure
     const preferredName = '' // Not in new structure
@@ -103,18 +101,18 @@ export async function POST(request: NextRequest) {
     const primaryLanguage = '' // Not in new structure
     const preferredLanguage = '' // Not in new structure
     const provinceState = 'ON' // Default to Ontario for Canadian form
-    
+
     // Ensure privacy policy is agreed to
     if (!privacyPolicyAgreed) {
       return NextResponse.json(
-        { 
+        {
           error: 'Privacy policy not accepted',
           message: 'You must agree to the Privacy & Data-Use Policy to submit this form'
-        }, 
+        },
         { status: 400 }
       )
     }
-    
+
     // Encrypt all PHI data
     const encryptedData = await encryptPatientData({
       legalFirstName,
@@ -139,7 +137,7 @@ export async function POST(request: NextRequest) {
       preferredLanguage: preferredLanguage || '',
       healthInformationNumber
     })
-    
+
     // Create the patient intake record
     const patientIntake = await prisma.patientIntake.create({
       data: {
@@ -170,25 +168,25 @@ export async function POST(request: NextRequest) {
         healthInformationNumber: encryptedData.healthInformationNumber
       }
     })
-    
+
     // Create audit log entry
     await prisma.auditLog.create({
       data: {
         action: 'CREATE',
         resource: 'patient_intake',
         resourceId: patientIntake.id,
-                  details: {
-            submissionMethod: 'online_form',
-            privacyPolicyAccepted: privacyPolicyAgreed,
-            hasPreferredName: false, // Not applicable in new form structure
-            submissionTimestamp: new Date().toISOString(),
-            dependentsCount: section2?.length || 0
-          },
+        details: {
+          submissionMethod: 'online_form',
+          privacyPolicyAccepted: privacyPolicyAgreed,
+          hasPreferredName: false, // Not applicable in new form structure
+          submissionTimestamp: new Date().toISOString(),
+          dependentsCount: section2?.length || 0
+        },
         ipAddress: ipAddress,
         userAgent: userAgent
       }
     })
-    
+
     // Create dependent enrollment records if any
     if (section2 && Array.isArray(section2) && section2.length > 0) {
       for (const dependent of section2) {
@@ -214,7 +212,7 @@ export async function POST(request: NextRequest) {
           console.log('Dependent table not yet migrated, skipping dependent data save:', error)
           // Continue without saving dependent data until migration is complete
         }
-        
+
         // Create audit log for each dependent
         await prisma.auditLog.create({
           data: {
@@ -232,7 +230,7 @@ export async function POST(request: NextRequest) {
         })
       }
     }
-    
+
     // OSCAR Integration - Create patient in OSCAR EMR system
     let oscarIntegrationResult = {
       attempted: false,
@@ -241,12 +239,12 @@ export async function POST(request: NextRequest) {
       duplicateScenario: null as string | null,
       error: null as string | null
     }
-    
+
     try {
       // Check if OSCAR integration is enabled
       if (process.env.OSCAR_BASE_URL && process.env.OSCAR_CONSUMER_KEY) {
         oscarIntegrationResult.attempted = true
-        
+
         // Decrypt patient data for OSCAR processing
         const decryptedIntake = {
           ...patientIntake,
@@ -272,11 +270,11 @@ export async function POST(request: NextRequest) {
           preferredLanguage: preferredLanguage || null,
           healthInformationNumber
         }
-        
+
         // Detect duplicates first
         const duplicateResult = await oscarPatientService.detectDuplicates(decryptedIntake)
         oscarIntegrationResult.duplicateScenario = duplicateResult.scenario
-        
+
         // Handle different duplicate scenarios
         switch (duplicateResult.scenario) {
           case DuplicateScenario.EXACT_MATCH:
@@ -295,7 +293,7 @@ export async function POST(request: NextRequest) {
               oscarIntegrationResult.demographicNo = existingPatient.demographicNo
             }
             break
-            
+
           case DuplicateScenario.NO_MATCH:
             // Safe to create new patient
             const creationResult = await oscarPatientService.createPatient(decryptedIntake)
@@ -314,7 +312,7 @@ export async function POST(request: NextRequest) {
               oscarIntegrationResult.error = creationResult.errors?.join(', ') || 'Unknown creation error'
             }
             break
-            
+
           case DuplicateScenario.SIMILAR_MATCH:
           case DuplicateScenario.HEALTH_NUMBER_CONFLICT:
           case DuplicateScenario.NAME_MISMATCH:
@@ -322,7 +320,7 @@ export async function POST(request: NextRequest) {
             oscarIntegrationResult.error = `Manual review required: ${duplicateResult.reasoning}`
             break
         }
-        
+
         // Log OSCAR integration attempt
         await prisma.auditLog.create({
           data: {
@@ -347,12 +345,12 @@ export async function POST(request: NextRequest) {
       }
     } catch (oscarError) {
       // Log OSCAR integration error but don't fail the submission
-      const errorMessage = oscarError instanceof OscarError 
+      const errorMessage = oscarError instanceof OscarError
         ? OscarErrorHandler.getUserMessage(oscarError)
         : (oscarError instanceof Error ? oscarError.message : 'Unknown OSCAR error')
-      
+
       oscarIntegrationResult.error = errorMessage
-      
+
       await prisma.auditLog.create({
         data: {
           action: 'OSCAR_INTEGRATION_ERROR',
@@ -368,12 +366,12 @@ export async function POST(request: NextRequest) {
         }
       })
     }
-    
+
     // Send email notifications (don't let email failures break the submission)
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.zenithmedical.ca'
       const patientName = legalFirstName
-      
+
       // Send patient confirmation email
       const patientConfirmationData: PatientConfirmationData = {
         patientName,
@@ -388,12 +386,12 @@ export async function POST(request: NextRequest) {
         }),
         appointmentBookingUrl: 'https://zenithmedical.cortico.ca/'
       }
-      
+
       const patientEmailResult = await sendPatientConfirmationEmail(
         emailAddress,
         patientConfirmationData
       )
-      
+
       // Send staff notification email
       const staffNotificationData: StaffNotificationData = {
         submissionId: patientIntake.id,
@@ -410,9 +408,9 @@ export async function POST(request: NextRequest) {
         hasPreferredName: false, // Not applicable in new form structure
         dashboardUrl: `${baseUrl}/admin/dashboard/intake/${patientIntake.id}`
       }
-      
+
       const staffEmailResult = await sendStaffNotificationEmail(staffNotificationData)
-      
+
       // Log email sending results
       await prisma.auditLog.create({
         data: {
@@ -430,10 +428,10 @@ export async function POST(request: NextRequest) {
           userAgent: userAgent
         }
       })
-      
+
     } catch (emailError) {
       console.error('Email notification error:', emailError)
-      
+
       // Log email failure but don't fail the submission
       await prisma.auditLog.create({
         data: {
@@ -450,7 +448,7 @@ export async function POST(request: NextRequest) {
         }
       })
     }
-    
+
     // Return success response with submission ID
     return NextResponse.json({
       success: true,
@@ -462,25 +460,25 @@ export async function POST(request: NextRequest) {
         attempted: oscarIntegrationResult.attempted,
         success: oscarIntegrationResult.success,
         demographicNo: oscarIntegrationResult.demographicNo,
-        status: oscarIntegrationResult.success 
+        status: oscarIntegrationResult.success
           ? 'Successfully integrated with OSCAR EMR'
-          : oscarIntegrationResult.error 
+          : oscarIntegrationResult.error
             ? 'OSCAR integration requires manual review'
             : 'OSCAR integration not configured'
       }
     }, { status: 201 })
-    
+
   } catch (error) {
     console.error('Intake submission error:', error)
-    
+
     // Log the error for audit purposes (without sensitive data)
     try {
       const headersList = await headers()
-      const ipAddress = headersList.get('x-forwarded-for') || 
-                       headersList.get('x-real-ip') || 
-                       'unknown'
+      const ipAddress = headersList.get('x-forwarded-for') ||
+        headersList.get('x-real-ip') ||
+        'unknown'
       const userAgent = headersList.get('user-agent') || 'unknown'
-      
+
       await prisma.auditLog.create({
         data: {
           action: 'ERROR',
@@ -497,14 +495,14 @@ export async function POST(request: NextRequest) {
     } catch (auditError) {
       console.error('Failed to log audit entry:', auditError)
     }
-    
+
     // Return generic error to client
     return NextResponse.json(
-      { 
+      {
         error: 'Submission failed',
         message: 'An error occurred while processing your submission. Please try again or contact support if the problem persists.',
         supportContact: '(555) 123-CARE'
-      }, 
+      },
       { status: 500 }
     )
   } finally {

@@ -140,7 +140,7 @@ export default function OscarOAuthSetupPage() {
                   required
                 />
                 <p className="mt-1 text-sm text-gray-500">
-                  Keep this secret secure - it's used to authenticate your application
+                  Keep this secret secure - it&apos;s used to authenticate your application
                 </p>
               </div>
 

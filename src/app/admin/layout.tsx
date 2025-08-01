@@ -1,6 +1,5 @@
 'use client'
 
-import type { Metadata } from 'next'
 import AdminSidebar from '@/components/Admin/AdminSidebar'
 import { SidebarProvider, useSidebar } from '@/lib/contexts/SidebarContext'
 import { usePathname } from 'next/navigation'

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { X, MessageCircle, Users, Shield } from 'lucide-react'
 import PatientChatInterface from './PatientChatInterface'
 

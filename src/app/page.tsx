@@ -1,6 +1,7 @@
 import Layout from '../components/Layout/Layout'
 import Link from 'next/link'
 import { generateMetadata as generateSEOMetadata, generateHomepageStructuredData, PAGE_METADATA } from '../lib/utils/seo'
+import Image from 'next/image'
 
 interface BlogPost {
   id: string
@@ -108,7 +109,7 @@ export default async function Home() {
               {/* Right Content - Hero Image */}
               <div className="relative">
                 <div className="w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
-                  <img 
+                  <Image 
                     src="/images/home.webp" 
                     alt="Zenith Medical Centre - Cutting-edge medical facility" 
                     className="w-full h-full object-cover"

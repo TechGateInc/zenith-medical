@@ -30,7 +30,7 @@ export default function IntakeSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
-  const [redirectCountdown, setRedirectCountdown] = useState<number | null>(
+  const [, setRedirectCountdown] = useState<number | null>(
     null
   );
   const [bookingProviders, setBookingProviders] = useState<BookingProvider[]>(
@@ -154,25 +154,6 @@ export default function IntakeSuccessPage() {
     } finally {
       setIsBooking(false);
     }
-  };
-
-  const handleAutomaticRedirect = () => {
-    setRedirectCountdown(10);
-    const interval = setInterval(() => {
-      setRedirectCountdown((prev) => {
-        if (prev === null || prev <= 1) {
-          clearInterval(interval);
-          if (bookingProviders.length > 0) {
-            setShowBookingForm(true);
-          } else {
-            // Fallback to contact page
-            window.open("/contact?booking=true", "_blank");
-          }
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 1000);
   };
 
   const renderBookingForm = () => {
@@ -506,7 +487,7 @@ export default function IntakeSuccessPage() {
             </section>
 
             {/* Prominent Chat Communication */}
-            {submissionId && (
+            {submissionId && process.env.NODE_ENV === 'development' && (
               <section className="bg-gradient-to-r from-blue-600 to-blue-700 py-12 mb-12 rounded-2xl max-w-6xl mx-auto">
                 <div className="max-w-4xl mx-auto text-center px-6">
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -729,7 +710,7 @@ export default function IntakeSuccessPage() {
                       </svg>
                       Schedule Appointment
                     </Link>
-                    {submissionId && (
+                    {submissionId && process.env.NODE_ENV === 'development' && (
                       <Link
                         href={`/messages/${submissionId}`}
                         className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
@@ -1081,7 +1062,7 @@ export default function IntakeSuccessPage() {
               No Submission Found
             </h1>
             <p className="text-lg text-slate-600 mb-8 max-w-md mx-auto">
-              We couldn't find your intake submission. You'll be redirected to
+              We couldn&apos;t find your intake submission. You&apos;ll be redirected to
               the intake form in a moment.
             </p>
             <Button onClick={() => router.push("/intake")} size="lg">

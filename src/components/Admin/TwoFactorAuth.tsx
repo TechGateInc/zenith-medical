@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Eye, EyeOff, Copy, Check, AlertCircle, Key, Smartphone, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 interface TwoFactorAuthProps {
   userEmail: string;
@@ -187,7 +188,7 @@ export default function TwoFactorAuth({ userEmail, onStatusChange }: TwoFactorAu
           {qrCode && (
             <div className="text-center">
               <div className="inline-block p-4 bg-white border-2 border-gray-200 rounded-xl">
-                <img src={qrCode} alt="2FA QR Code" className="w-48 h-48 mx-auto" />
+                <Image src={qrCode} alt="2FA QR Code" className="w-48 h-48 mx-auto" />
               </div>
             </div>
           )}

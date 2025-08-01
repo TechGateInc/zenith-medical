@@ -41,14 +41,14 @@ export default function PatientChatInterface({
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [messageCounts, setMessageCounts] = useState({ total: 0, unreadForAdmin: 0, unreadForPatient: 0 })
+  const [, setMessageCounts] = useState({ total: 0, unreadForAdmin: 0, unreadForPatient: 0 })
   const [typingIndicator, setTypingIndicator] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // WebSocket connection (with fallback to polling)
-  const { socketState, sendMessage: socketSendMessage, setTyping, markAsRead } = useSocket({
+  const { socketState, sendMessage: socketSendMessage, setTyping } = useSocket({
     submissionId,
     userType: isAdmin ? 'admin' : 'patient',
     token: undefined, // For development, we'll use a simpler auth approach

@@ -17,7 +17,6 @@ import {
   Users, 
   FileText, 
   Download,
-  Bell,
   Calendar,
   Shield,
   HelpCircle,
@@ -53,7 +52,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const { handleApiError } = useApiAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [intakeCount, setIntakeCount] = useState<number>(0);
-  const [notificationCount, setNotificationCount] = useState<number>(0);
+  const [, setNotificationCount] = useState<number>(0);
   const [loadingCount, setLoadingCount] = useState(true);
 
   // WebSocket connection for real-time count updates
@@ -63,7 +62,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
     onNewMessage: () => {
       // Handle new messages if needed
     },
-    onMessageCounts: (counts) => {
+    onMessageCounts: () => {
       // Handle message count updates if needed
     },
     onCountUpdate: (update: { type: string, count: number }) => {

@@ -14,6 +14,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Disable chat functionality in production
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json(
+      { error: 'Feature not available', message: 'Chat functionality is temporarily disabled' },
+      { status: 503 }
+    )
+  }
+
   const { id: submissionId } = await params
   
   try {
@@ -99,6 +107,14 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Disable chat functionality in production
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json(
+      { error: 'Feature not available', message: 'Chat functionality is temporarily disabled' },
+      { status: 503 }
+    )
+  }
+
   const { id: submissionId } = await params
   
   try {

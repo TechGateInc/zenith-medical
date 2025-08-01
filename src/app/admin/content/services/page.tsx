@@ -1,9 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { Plus, Trash2, Edit, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react"
+import { Trash2, Edit, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react"
 
 interface Service {
   id: string

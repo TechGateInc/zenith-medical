@@ -3,8 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Button from '../UI/Button'
 import { 
-  validatePatientIntakeField, 
-  validateIntakeForm, 
   formatPhone, 
   normalizePostalCode,
   sanitizeInput,
@@ -120,8 +118,6 @@ interface IntakeFormProps {
 }
 
 export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFormProps) {
-  const formRef = useRef<HTMLFormElement>(null)
-  const errorSummaryRef = useRef<HTMLDivElement>(null)
   
   const [formData, setFormData] = useState<PatientIntakeData>({
         section1: {
@@ -1017,7 +1013,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
               {/* Relationship */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  I am this person's *
+                  I am this person&apos;s *
               </label>
               <select
                   name={`section2.${index}.relationship`}

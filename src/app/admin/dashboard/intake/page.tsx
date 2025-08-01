@@ -175,10 +175,6 @@ export default function PatientIntakePage() {
   const endIndex = startIndex + itemsPerPage;
   const paginatedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
 
-  // Reset to first page when filters change
-  const resetToFirstPage = () => {
-    setCurrentPage(1);
-  };
 
   // Reset pagination when filtered results change
   useEffect(() => {

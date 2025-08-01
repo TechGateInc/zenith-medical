@@ -2,17 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../../lib/auth/config'
 import { appointmentBookingService } from '../../../../../lib/integrations/appointment-booking'
-import { bookingProviderValidator, type ProviderHealthCheck } from '../../../../../lib/integrations/booking-provider-validator'
+import { bookingProviderValidator } from '../../../../../lib/integrations/booking-provider-validator'
 import { auditLog } from '../../../../../lib/audit/audit-logger'
 import { prisma } from '../../../../../lib/prisma'
 import { z } from 'zod'
 
-// Validation schema for test request
-const testProviderSchema = z.object({
-  providerType: z.enum(['acuity', 'calendly', 'simplepractice', 'generic_webhook', 'embed']).optional(),
-  testConnectivity: z.boolean().default(true),
-  testConfiguration: z.boolean().default(true)
-})
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +28,7 @@ export async function POST(request: NextRequest) {
   }
 
     const body = await request.json();
-    const { providerType, includeConnectivity = true, includeConfiguration = true } = body;
+    const { providerType } = body;
 
     if (!providerType) {
       return NextResponse.json(

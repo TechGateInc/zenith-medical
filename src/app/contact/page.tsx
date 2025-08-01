@@ -54,10 +54,6 @@ export default function Contact() {
     }
   }
 
-  const officeHours = [
-    { day: 'Monday - Saturday', hours: '9:00 AM - 5:00 PM' }
-  ]
-
   const contactMethods = [
     {
       title: 'Phone',

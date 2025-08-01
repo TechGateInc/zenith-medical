@@ -22,8 +22,6 @@ import {
   Mail,
   Phone,
   Tag,
-  AlertCircle,
-  CheckCircle,
   Loader2,
   AlertTriangle
 } from 'lucide-react';

@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import { useParams } from 'next/navigation'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { Send, MessageCircle, Clock, CheckCircle2, AlertCircle, Stethoscope, Wifi, WifiOff } from 'lucide-react'
 import Link from 'next/link'
 import { useSocket } from '@/lib/websocket/useSocket'
@@ -20,8 +20,10 @@ interface ChatMessage {
 
 export default function PatientMessagesPage() {
   const params = useParams()
+  const router = useRouter()
   const submissionId = params.id as string
-  
+
+  // All hooks must be declared before any conditional logic
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [patientName, setPatientName] = useState('')
   const [newMessage, setNewMessage] = useState('')
@@ -29,7 +31,7 @@ export default function PatientMessagesPage() {
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [messageCounts, setMessageCounts] = useState({ total: 0, unreadForAdmin: 0, unreadForPatient: 0 })
+  const [, setMessageCounts] = useState({ total: 0, unreadForAdmin: 0, unreadForPatient: 0 })
   const [typingIndicator, setTypingIndicator] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -59,12 +61,20 @@ export default function PatientMessagesPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  // All useEffect hooks
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      router.push('/')
+      return
+    }
+  }, [router])
+
   useEffect(() => {
     scrollToBottom()
   }, [messages])
 
   // Fetch messages
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/messages/${submissionId}`)
@@ -84,6 +94,26 @@ export default function PatientMessagesPage() {
     } finally {
       setLoading(false)
     }
+  }, [submissionId])
+
+  // Load messages on component mount (only once)
+  useEffect(() => {
+    if (submissionId) {
+      fetchMessages()
+      // No polling needed - WebSocket handles real-time updates
+    }
+  }, [submissionId, fetchMessages])
+
+  // Don't render anything if not in development
+  if (process.env.NODE_ENV !== 'development') {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Redirecting...</p>
+        </div>
+      </div>
+    )
   }
 
   // Send message via WebSocket
@@ -141,14 +171,6 @@ export default function PatientMessagesPage() {
       sendMessage()
     }
   }
-
-  // Load messages on component mount (only once)
-  useEffect(() => {
-    if (submissionId) {
-      fetchMessages()
-      // No polling needed - WebSocket handles real-time updates
-    }
-  }, [submissionId])
 
   // Format timestamp
   const formatTime = (timestamp: string) => {
