@@ -4,11 +4,11 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zenithmedical.ca'
 
 export const metadata: Metadata = {
   title: 'Patient Intake Form - Zenith Medical Centre',
-  description: 'Complete your secure patient intake form online before your appointment at Zenith Medical Centre. HIPAA & PIPEDA compliant with 256-bit encryption.',
-  keywords: 'patient intake form, medical forms, new patient registration, Zenith Medical Centre, secure patient portal, HIPAA compliant',
+      description: 'Complete your secure patient intake form online before your appointment at Zenith Medical Centre. Privacy protected with 256-bit encryption.',
+    keywords: 'patient intake form, medical forms, new patient registration, Zenith Medical Centre, secure patient portal, privacy protected',
   openGraph: {
     title: 'Patient Intake Form - Zenith Medical Centre',
-    description: 'Complete your secure patient intake form online before your appointment at Zenith Medical Centre. HIPAA & PIPEDA compliant with 256-bit encryption.',
+    description: 'Complete your secure patient intake form online before your appointment at Zenith Medical Centre. Privacy protected with 256-bit encryption.',
     url: `${baseUrl}/intake`,
     type: 'website',
     images: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Patient Intake Form - Zenith Medical Centre',
-    description: 'Complete your secure patient intake form online before your appointment at Zenith Medical Centre. HIPAA & PIPEDA compliant with 256-bit encryption.',
+    description: 'Complete your secure patient intake form online before your appointment at Zenith Medical Centre. Privacy protected with 256-bit encryption.',
   },
   robots: {
     index: true,

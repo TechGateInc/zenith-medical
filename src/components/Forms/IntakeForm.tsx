@@ -51,8 +51,13 @@ export interface DependentData {
   residencePostalCode: string
 }
 
-// Section 3: Signature data
+// Section 3: Emergency Contact & Signature data
 export interface Section3Data {
+  // Emergency Contact Information
+  nextOfKinName: string
+  nextOfKinPhone: string
+  relationshipToPatient: string
+  // Signature Information
   signingFor: string[] // ['myself', 'children', 'dependentAdults']
   patientName: string
   signature: string
@@ -79,13 +84,7 @@ interface FormErrors {
   // Section 1 errors
   'section1.lastName'?: string
   'section1.firstName'?: string
-  'section1.secondName'?: string
   'section1.healthNumber'?: string
-  'section1.versionCode'?: string
-  'section1.mailingApartmentNumber'?: string
-  'section1.mailingStreetAddress'?: string
-  'section1.mailingCity'?: string
-  'section1.mailingPostalCode'?: string
   'section1.dateOfBirth'?: string
   'section1.sex'?: string
   'section1.emailAddress'?: string
@@ -97,12 +96,16 @@ interface FormErrors {
   // Section 2 errors (dynamic for multiple dependents)
   [key: string]: string | undefined  // To handle section2[index].fieldName pattern
   
-  // Section 3 errors
+  // Section 3 errors - Emergency Contact
+  'section3.nextOfKinName'?: string
+  'section3.nextOfKinPhone'?: string
+  'section3.relationshipToPatient'?: string
+  // Section 3 errors - Signature
   'section3.signingFor'?: string
   'section3.patientName'?: string
   'section3.signature'?: string
   'section3.signatureDate'?: string
-  'section3.homePhone'?: string
+  'section3.phoneNumber'?: string
   'section3.workPhone'?: string
   
   // Section 4 - no errors needed (static display)
@@ -135,6 +138,9 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     },
     section2: [],
     section3: {
+      nextOfKinName: '',
+      nextOfKinPhone: '',
+      relationshipToPatient: '',
       signingFor: [],
       patientName: '',
       signature: '',
@@ -259,6 +265,36 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
       const stringValue = typeof value === 'string' ? value : ''
       
       switch (field) {
+        case 'nextOfKinName':
+          if (!stringValue.trim()) {
+            return 'Next of kin name is required'
+          }
+          if (stringValue.length > 100) {
+            return 'Next of kin name must be less than 100 characters'
+          }
+          // Allow letters, spaces, hyphens, apostrophes, and periods
+          if (!/^[a-zA-Z\s'\-\.]+$/.test(stringValue)) {
+            return 'Next of kin name contains invalid characters'
+          }
+          return ''
+        case 'nextOfKinPhone':
+          if (!stringValue.trim()) {
+            return 'Next of kin phone number is required'
+          }
+          const nextOfKinPhoneValidation = validatePhone(stringValue, true)
+          return nextOfKinPhoneValidation.isValid ? '' : (nextOfKinPhoneValidation.error || 'Invalid next of kin phone number')
+        case 'relationshipToPatient':
+          if (!stringValue.trim()) {
+            return 'Relationship to patient is required'
+          }
+          if (stringValue.length > 50) {
+            return 'Relationship must be less than 50 characters'
+          }
+          // Allow letters, spaces, hyphens, apostrophes, and periods
+          if (!/^[a-zA-Z\s'\-\.]+$/.test(stringValue)) {
+            return 'Relationship contains invalid characters'
+          }
+          return ''
         case 'patientName':
           if (!stringValue.trim()) {
             return 'Patient name is required'
@@ -465,7 +501,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
     })
     
     // Required fields for Section 3
-    const section3RequiredFields = ['patientName', 'signature', 'signatureDate', 'phoneNumber']
+    const section3RequiredFields = ['nextOfKinName', 'nextOfKinPhone', 'relationshipToPatient', 'patientName', 'signature', 'signatureDate', 'phoneNumber']
     
     section3RequiredFields.forEach(field => {
       const fieldPath = `section3.${field}`
@@ -1023,13 +1059,71 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
           ))}
       </section>
 
-        {/* Section 3 - Signature */}
+        {/* Section 3 - Emergency Contact & Signature */}
         <section className="bg-white p-8 rounded-lg border border-slate-200 shadow-sm">
           <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-300 pb-3">
-            Section 3 - Signature
+            Section 3 - Emergency Contact & Signature
         </h2>
           
+          {/* Emergency Contact */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Emergency Contact Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Next of Kin Name *
+                </label>
+                <input
+                  type="text"
+                  name="section3.nextOfKinName"
+                  value={formData.section3.nextOfKinName}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClassName('section3.nextOfKinName')}
+                  required
+                />
+                <ValidationMessage fieldName="section3.nextOfKinName" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Next of Kin Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  name="section3.nextOfKinPhone"
+                  value={formData.section3.nextOfKinPhone}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClassName('section3.nextOfKinPhone')}
+                  placeholder="(416) 555-1234"
+                  required
+                />
+                <ValidationMessage fieldName="section3.nextOfKinPhone" />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Relationship to Patient *
+                </label>
+                <input
+                  type="text"
+                  name="section3.relationshipToPatient"
+                  value={formData.section3.relationshipToPatient}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={inputClassName('section3.relationshipToPatient')}
+                  placeholder="e.g., Spouse, Parent, Child, Sibling"
+                  required
+                />
+                <ValidationMessage fieldName="section3.relationshipToPatient" />
+              </div>
+            </div>
+          </div>
+          
+          {/* Signature Section */}
           <div className="mb-6">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Patient Signature</h3>
             <p className="text-sm text-slate-700 mb-4">
               I have read and agree to the Patient Commitment, the Consent to Release Personal Health Information 
               and the Cancellation Conditions on the back of this form. I acknowledge that this Enrolment is not 

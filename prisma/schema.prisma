@@ -71,8 +71,78 @@ model PatientIntake {
   
   // Relations
   appointments          Appointment[]
+  dependents            Dependent[]
+  messages              Message[]
   
   @@map("patient_intakes")
+}
+
+// Patient Communication Messages (PHI Data - Encrypted)
+model Message {
+  id                    String      @id @default(cuid())
+  
+  // Link to patient intake
+  patientIntakeId       String
+  patientIntake         PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
+  
+  // Message content (Encrypted)
+  content               String      // Encrypted message content
+  subject               String?     // Encrypted subject line (optional)
+  
+  // Sender information
+  senderType            SenderType  // PATIENT or ADMIN
+  senderName            String      // Encrypted sender name
+  senderEmail           String?     // Encrypted sender email (for reference)
+  adminUserId           String?     // If sent by admin, link to admin user
+  
+  // Message metadata
+  isRead                Boolean     @default(false)
+  readAt                DateTime?
+  
+  // Timestamps
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  
+  // Audit fields
+  ipAddress             String?     // For audit purposes
+  userAgent             String?     // For audit purposes
+  
+  @@map("messages")
+}
+
+enum SenderType {
+  PATIENT
+  ADMIN
+}
+
+// Dependent Enrollment Model (PHI Data - Encrypted)
+model Dependent {
+  id                      String   @id @default(cuid())
+  
+  // Link to main patient intake
+  patientIntakeId         String
+  patientIntake           PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
+  
+  // Personal Information (Encrypted)
+  legalFirstName          String   // Encrypted
+  legalLastName           String   // Encrypted
+  healthInformationNumber String   // Encrypted
+  dateOfBirth             String   // Encrypted (YYYY/MM/DD)
+  gender                  String   // Encrypted - M/F
+  relationship            String   // Encrypted - parent, legal guardian, attorney for personal care
+  
+  // Address Information (Encrypted) 
+  residenceAddressSameAsSection1 Boolean  // If true, use main patient's address
+  residenceApartmentNumber String   // Encrypted
+  residenceStreetAddress   String   // Encrypted
+  residenceCity           String   // Encrypted
+  residencePostalCode     String   // Encrypted
+  
+  // Audit Trail
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  @@map("dependents")
 }
 
 // Admin Users Model

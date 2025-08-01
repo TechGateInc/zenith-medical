@@ -72,7 +72,7 @@ export default function IntakePage() {
                 </div>
                 <div className="text-center">
                   <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-2">Secure</div>
-                  <div className="text-slate-600 font-medium">HIPAA Compliant</div>
+                  <div className="text-slate-600 font-medium">Privacy Protected</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-2">Fast</div>
@@ -209,7 +209,7 @@ export default function IntakePage() {
                     Not sure what information to provide? We can answer any questions about the intake process via email.
                   </p>
                   <a
-                                            href="mailto:intake@zenithmedical.ca"
+                                            href="mailto:admin@zenithmedical.ca"
                     className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,11 +241,11 @@ export default function IntakePage() {
                 </span>
                 <span className="flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  HIPAA Compliant
+                                              Privacy Protected
                 </span>
                 <span className="flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  PIPEDA Compliant
+                  Secure & Private
                 </span>
               </div>
             </div>

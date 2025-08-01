@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../../lib/auth/use-auth'
 import { FormSkeleton } from '@/components/UI/SkeletonLoader'
+import { Mail } from 'lucide-react'
+import { ChatDrawer, FloatingChatButton } from '@/components/Chat/ChatDrawer'
 
 interface FullIntakeSubmission {
   id: string
@@ -29,6 +31,22 @@ interface FullIntakeSubmission {
   updatedAt: string
   ipAddress?: string
   userAgent?: string
+  dependents?: Array<{
+    id: string
+    legalFirstName: string
+    legalLastName: string
+    middleName?: string
+    preferredName?: string
+    dateOfBirth: string
+    gender?: string
+    healthInformationNumber: string
+    relationshipToPatient: string
+    streetAddress: string
+    city: string
+    provinceState: string
+    postalZipCode: string
+    sameAddressAsPatient: boolean
+  }>
 }
 
 const statusOptions = [
@@ -47,6 +65,7 @@ export default function IntakeDetailPage() {
   const [submission, setSubmission] = useState<FullIntakeSubmission | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false)
   const [updating, setUpdating] = useState(false)
   const [newStatus, setNewStatus] = useState<string>('')
 
@@ -156,19 +175,21 @@ export default function IntakeDetailPage() {
     }
   }
 
+
+
   const getStatusBadge = (status: string) => {
     const statusConfig = statusOptions.find(s => s.value === status) || statusOptions[0]
     const colorClasses = {
-      yellow: 'bg-yellow-100 text-yellow-800',
-      blue: 'bg-blue-100 text-blue-800',
-      green: 'bg-green-100 text-green-800',
-      purple: 'bg-purple-100 text-purple-800',
-      gray: 'bg-gray-100 text-gray-800',
-      red: 'bg-red-100 text-red-800'
+      yellow: 'bg-yellow-500 text-white shadow-lg',
+      blue: 'bg-blue-500 text-white shadow-lg',
+      green: 'bg-green-500 text-white shadow-lg',
+      purple: 'bg-purple-500 text-white shadow-lg',
+      gray: 'bg-gray-500 text-white shadow-lg',
+      red: 'bg-red-500 text-white shadow-lg'
     }
 
     return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${colorClasses[statusConfig.color as keyof typeof colorClasses]}`}>
+      <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium ${colorClasses[statusConfig.color as keyof typeof colorClasses]}`}>
         {statusConfig.label}
       </span>
     )
@@ -227,34 +248,109 @@ export default function IntakeDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
+      {/* Modern Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
+          <div className="flex justify-between items-center py-8">
+            <div className="flex items-center space-x-6">
               <Link
                 href="/admin/dashboard"
-                className="text-gray-500 hover:text-gray-700"
+                className="text-blue-200 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
+                title="Back to Dashboard"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Patient Intake Details</h1>
-                <p className="text-gray-600">Submission ID: {submission.id}</p>
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">Patient Intake Details</h1>
+                  <div className="flex items-center space-x-4 mt-1">
+                    <p className="text-blue-100 text-sm font-medium">ID: {submission.id}</p>
+                    <span className="text-blue-200">•</span>
+                    <p className="text-blue-100 text-sm">
+                      {submission.legalFirstName} {submission.legalLastName}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              {getStatusBadge(submission.status)}
+            <div className="flex items-center space-x-3">
+              {/* Status Badge */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                {getStatusBadge(submission.status)}
+              </div>
+              
+              {/* Communication Button */}
+              {isAdmin && (
+                <button
+                  onClick={() => setIsChatDrawerOpen(true)}
+                  className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30"
+                  title="Open Patient Communication"
+                >
+                  <Mail className="h-5 w-5" />
+                </button>
+              )}
+              
+              {/* Print Button */}
               <button
                 onClick={() => window.print()}
-                className="text-gray-600 hover:text-gray-900 p-2 rounded-lg border border-gray-300 hover:border-gray-400"
+                className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30"
+                title="Print Details"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Status Bar */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center space-x-6 text-sm text-gray-600">
+              <div className="flex items-center space-x-2">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                </svg>
+                <span>Submitted: {new Date(submission.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>{submission.emailAddress}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <span>{submission.phoneNumber}</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              {submission.appointmentBooked && (
+                <div className="flex items-center space-x-1 text-green-600 text-sm font-medium">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Appointment Booked</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -345,6 +441,62 @@ export default function IntakeDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Dependent Information */}
+            {submission.dependents && submission.dependents.length > 0 && (
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  Dependent Enrollment Information ({submission.dependents.length})
+                </h2>
+                <div className="space-y-6">
+                  {submission.dependents.map((dependent: any, index: number) => (
+                    <div key={dependent.id} className="border-l-4 border-blue-200 pl-4">
+                      <h3 className="text-md font-medium text-gray-800 mb-3">
+                        Dependent #{index + 1}
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500">First Name</label>
+                          <p className="text-gray-900">{dependent.legalFirstName}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500">Last Name</label>
+                          <p className="text-gray-900">{dependent.legalLastName}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500">Health Number</label>
+                          <p className="text-gray-900">{dependent.healthInformationNumber}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500">Date of Birth</label>
+                          <p className="text-gray-900">{dependent.dateOfBirth}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500">Gender</label>
+                          <p className="text-gray-900">{dependent.gender}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500">Relationship</label>
+                          <p className="text-gray-900">{dependent.relationship}</p>
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-500">Address</label>
+                          {dependent.residenceAddressSameAsSection1 ? (
+                            <p className="text-gray-900">Same as main applicant</p>
+                          ) : (
+                            <div className="text-gray-900">
+                              {dependent.residenceApartmentNumber && <span>{dependent.residenceApartmentNumber} </span>}
+                              <span>{dependent.residenceStreetAddress}</span><br />
+                              <span>{dependent.residenceCity}, {dependent.residencePostalCode}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -465,6 +617,20 @@ export default function IntakeDetailPage() {
                   )}
                 </div>
               </div>
+            )}
+
+
+
+            {/* Chat Drawer */}
+            {isAdmin && submission && (
+              <ChatDrawer
+                isOpen={isChatDrawerOpen}
+                onClose={() => setIsChatDrawerOpen(false)}
+                submissionId={submission.id}
+                patientName={`${submission.legalFirstName} ${submission.legalLastName}`}
+                patientEmail={submission.emailAddress}
+                isAdmin={isAdmin}
+              />
             )}
           </div>
         </div>

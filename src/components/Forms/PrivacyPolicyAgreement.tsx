@@ -105,8 +105,8 @@ export default function PrivacyPolicyAgreement({
       id: 'compliance',
       title: 'Regulatory Compliance',
       content: [
-        'HIPAA Compliance: We fully comply with the Health Insurance Portability and Accountability Act (HIPAA) and its Privacy Rule.',
-        'PIPEDA Compliance: We adhere to Canada\'s Personal Information Protection and Electronic Documents Act (PIPEDA) requirements.',
+        'Privacy Protection: We maintain strict privacy and security standards for all personal health information.',
+        'Data Security: We implement comprehensive security measures to protect your personal information.',
         'State/Provincial Laws: We comply with applicable state and provincial privacy legislation.',
         'Regular Audits: We conduct regular compliance audits and update our policies to meet evolving regulatory requirements.',
         'Staff Training: All staff receive regular training on privacy laws and our privacy policies.'
@@ -152,7 +152,7 @@ export default function PrivacyPolicyAgreement({
             </h3>
             <p className="text-blue-700 text-sm">
               Your privacy is important to us. Please review our data collection, use, and protection practices below. 
-              This policy complies with HIPAA and PIPEDA regulations.
+              This policy complies with applicable privacy regulations.
             </p>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function PrivacyPolicyAgreement({
             <svg className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>We comply with HIPAA and PIPEDA privacy regulations</span>
+                            <span>We comply with applicable privacy regulations</span>
           </li>
           <li className="flex items-start space-x-2">
             <svg className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,7 +295,7 @@ export default function PrivacyPolicyAgreement({
                 <li>• I understand how my personal health information will be collected, used, and protected</li>
                 <li>• I consent to the collection and use of my information as described in this policy</li>
                 <li>• I understand my rights regarding my personal health information</li>
-                <li>• I acknowledge this policy complies with HIPAA and PIPEDA regulations</li>
+                <li>• I acknowledge this policy complies with applicable privacy regulations</li>
               </ul>
             </div>
           </div>
@@ -318,8 +318,8 @@ export default function PrivacyPolicyAgreement({
         <h5 className="font-medium text-slate-700 mb-2">Questions about this policy?</h5>
         <p>
           Contact our Privacy Officer at{' '}
-                          <a href="mailto:privacy@zenithmedical.ca" className="text-blue-600 hover:text-blue-700">
-                  privacy@zenithmedical.ca
+                          <a href="mailto:admin@zenithmedical.ca" className="text-blue-600 hover:text-blue-700">
+                  admin@zenithmedical.ca
           </a>{' '}
           or call{' '}
                           <a href="tel:2498060128" className="text-blue-600 hover:text-blue-700">

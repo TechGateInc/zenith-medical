@@ -499,11 +499,65 @@ export default function IntakeSuccessPage() {
                   <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
                     Thank you for completing your patient intake form. Your
                     information has been securely submitted and encrypted
-                    according to HIPAA and PIPEDA standards.
+                    using industry-standard security.
                   </p>
                 </div>
               </div>
             </section>
+
+            {/* Prominent Chat Communication */}
+            {submissionId && (
+              <section className="bg-gradient-to-r from-blue-600 to-blue-700 py-12 mb-12 rounded-2xl max-w-6xl mx-auto">
+                <div className="max-w-4xl mx-auto text-center px-6">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg
+                      className="h-8 w-8 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </div>
+                  <h2 className="text-3xl font-bold text-white mb-4">
+                    Communicate with Your Healthcare Team
+                  </h2>
+                  <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+                    Have questions about your intake? Need to provide additional information? 
+                    Chat securely with your healthcare team right now.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <Link 
+                      href={`/messages/${submissionId}`}
+                      className="inline-flex items-center justify-center bg-white text-blue-600 hover:bg-blue-50 border-0 min-w-[200px] px-6 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      <svg
+                        className="h-5 w-5 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                        />
+                      </svg>
+                      Start Secure Chat
+                    </Link>
+                    <p className="text-blue-100 text-sm">
+                      ✓ End-to-End Encrypted &nbsp;•&nbsp; ✓ Real-time Responses
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
 
             <div className="max-w-6xl mx-auto">
               {/* Submission Details */}
@@ -621,7 +675,7 @@ export default function IntakeSuccessPage() {
                         Secure Health Records
                       </h3>
                       <p className="text-sm text-slate-600">
-                        HIPAA-compliant digital records with secure patient
+                                                      Secure digital records with patient
                         portal access.
                       </p>
                     </div>
@@ -655,8 +709,10 @@ export default function IntakeSuccessPage() {
                   {/* CTA Buttons */}
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Link
-                      href="/contact"
-                      className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
+                      href="https://zenithmedical.cortico.ca/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
                     >
                       <svg
                         className="mr-2 h-5 w-5"
@@ -673,6 +729,27 @@ export default function IntakeSuccessPage() {
                       </svg>
                       Schedule Appointment
                     </Link>
+                    {submissionId && (
+                      <Link
+                        href={`/messages/${submissionId}`}
+                        className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
+                      >
+                        <svg
+                          className="mr-2 h-5 w-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                          />
+                        </svg>
+                        Message Portal
+                      </Link>
+                    )}
                     <Link
                       href="/contact"
                       className="inline-flex items-center justify-center px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-colors text-lg whitespace-nowrap"
@@ -969,7 +1046,7 @@ export default function IntakeSuccessPage() {
                     </h3>
                     <p className="text-lg font-medium text-purple-600 mb-2">
                       <a
-                        href="mailto:appointments@zenithmedical.ca"
+                        href="mailto:admin@zenithmedical.ca"
                         className="hover:text-purple-700 transition-colors"
                       >
                         admin@zenithmedical.ca

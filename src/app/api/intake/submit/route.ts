@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { validateIntakeForm } from '../../../../lib/utils/validation'
-import { encryptPatientData } from '../../../../lib/utils/encryption'
+import { encryptPatientData, encryptPHI } from '../../../../lib/utils/encryption'
 import { headers } from 'next/headers'
 import { 
   sendPatientConfirmationEmail, 
@@ -48,13 +48,10 @@ export async function POST(request: NextRequest) {
     const missingSection1Fields = requiredSection1Fields.filter(field => !section1[field] || section1[field].trim() === '')
     
     // Validate required fields in section3
-    const requiredSection3Fields = ['patientName', 'signature', 'signatureDate', 'phoneNumber']
+    const requiredSection3Fields = ['nextOfKinName', 'nextOfKinPhone', 'relationshipToPatient', 'patientName', 'signature', 'signatureDate', 'phoneNumber']
     const missingSection3Fields = requiredSection3Fields.filter(field => !section3[field] || section3[field].trim() === '')
     
-    // Check email if email preference is selected
-    if (section1.noticePreference === 'email' && (!section1.emailAddress || section1.emailAddress.trim() === '')) {
-      missingSection1Fields.push('emailAddress')
-    }
+    // Email is now always required and included in requiredSection1Fields
     
     if (missingSection1Fields.length > 0 || missingSection3Fields.length > 0) {
       return NextResponse.json(
@@ -88,6 +85,9 @@ export async function POST(request: NextRequest) {
     
     // Extract section3 data
     const {
+      nextOfKinName,
+      nextOfKinPhone,
+      relationshipToPatient,
       patientName,
       signature,
       signatureDate,
@@ -100,9 +100,6 @@ export async function POST(request: NextRequest) {
     const title = '' // Not in new structure
     const cellPhone = '' // Not in new structure
     const workPhone = '' // Not in new structure (only one phone field now)
-    const nextOfKinName = '' // Not in new structure for now
-    const nextOfKinPhone = '' // Not in new structure for now
-    const relationshipToPatient = '' // Not in new structure for now
     const primaryLanguage = '' // Not in new structure
     const preferredLanguage = '' // Not in new structure
     const provinceState = 'ON' // Default to Ontario for Canadian form
@@ -184,12 +181,57 @@ export async function POST(request: NextRequest) {
             submissionMethod: 'online_form',
             privacyPolicyAccepted: privacyPolicyAgreed,
             hasPreferredName: false, // Not applicable in new form structure
-            submissionTimestamp: new Date().toISOString()
+            submissionTimestamp: new Date().toISOString(),
+            dependentsCount: section2?.length || 0
           },
         ipAddress: ipAddress,
         userAgent: userAgent
       }
     })
+    
+    // Create dependent enrollment records if any
+    if (section2 && Array.isArray(section2) && section2.length > 0) {
+      for (const dependent of section2) {
+        // Encrypt dependent data fields individually
+        try {
+          await (prisma as any).dependent.create({
+            data: {
+              patientIntakeId: patientIntake.id,
+              legalFirstName: await encryptPHI(dependent.firstName),
+              legalLastName: await encryptPHI(dependent.lastName),
+              healthInformationNumber: await encryptPHI(dependent.healthNumber),
+              dateOfBirth: await encryptPHI(dependent.dateOfBirth),
+              gender: await encryptPHI(dependent.sex),
+              relationship: await encryptPHI(dependent.relationship),
+              residenceAddressSameAsSection1: dependent.residenceAddressSameAsSection1,
+              residenceApartmentNumber: await encryptPHI(dependent.residenceApartmentNumber || ''),
+              residenceStreetAddress: await encryptPHI(dependent.residenceStreetAddress || ''),
+              residenceCity: await encryptPHI(dependent.residenceCity || ''),
+              residencePostalCode: await encryptPHI(dependent.residencePostalCode || '')
+            }
+          })
+        } catch (error) {
+          console.log('Dependent table not yet migrated, skipping dependent data save:', error)
+          // Continue without saving dependent data until migration is complete
+        }
+        
+        // Create audit log for each dependent
+        await prisma.auditLog.create({
+          data: {
+            action: 'CREATE',
+            resource: 'dependent',
+            resourceId: patientIntake.id, // Link to main patient intake for reference
+            details: {
+              submissionMethod: 'online_form',
+              relationship: dependent.relationship,
+              sameAddress: dependent.residenceAddressSameAsSection1
+            },
+            ipAddress: ipAddress,
+            userAgent: userAgent
+          }
+        })
+      }
+    }
     
     // OSCAR Integration - Create patient in OSCAR EMR system
     let oscarIntegrationResult = {

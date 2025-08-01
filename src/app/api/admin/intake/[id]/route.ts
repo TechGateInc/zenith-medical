@@ -28,7 +28,7 @@ export async function GET(
                      'unknown'
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
-    // Fetch the specific intake submission
+    // Fetch the specific intake submission with dependents
     const intakeSubmission = await prisma.patientIntake.findUnique({
       where: { id: submissionId },
       select: {
@@ -54,7 +54,25 @@ export async function GET(
         updatedAt: true,
         ipAddress: true,
         userAgent: true,
-        healthInformationNumber: true
+        healthInformationNumber: true,
+        // dependents: {
+        //   select: {
+        //     id: true,
+        //     legalFirstName: true,
+        //     legalLastName: true,
+        //     healthInformationNumber: true,
+        //     dateOfBirth: true,
+        //     gender: true,
+        //     relationship: true,
+        //     residenceAddressSameAsSection1: true,
+        //     residenceApartmentNumber: true,
+        //     residenceStreetAddress: true,
+        //     residenceCity: true,
+        //     residencePostalCode: true,
+        //     createdAt: true,
+        //     updatedAt: true
+        //   }
+        // } // Commented out until Prisma schema is migrated
       }
     })
 
@@ -63,6 +81,34 @@ export async function GET(
         { error: 'Not found', message: 'Intake submission not found' },
         { status: 404 }
       )
+    }
+
+    // Temporarily fetch dependents separately until schema migration is complete
+    let dependents = []
+    try {
+      // This will fail until the Dependent table exists, which is expected
+      dependents = await (prisma as any).dependent.findMany({
+        where: { patientIntakeId: submissionId },
+        select: {
+          id: true,
+          legalFirstName: true,
+          legalLastName: true,
+          healthInformationNumber: true,
+          dateOfBirth: true,
+          gender: true,
+          relationship: true,
+          residenceAddressSameAsSection1: true,
+          residenceApartmentNumber: true,
+          residenceStreetAddress: true,
+          residenceCity: true,
+          residencePostalCode: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      })
+    } catch (error) {
+      console.log('Dependent table not yet migrated, skipping dependent data fetch')
+      dependents = []
     }
 
     // Decrypt all patient data for detailed view
@@ -103,7 +149,9 @@ export async function GET(
         try {
           const value = intakeSubmission[field as keyof typeof intakeSubmission]
           if (value && typeof value === 'string' && value.trim() !== '') {
-            decryptedData[field] = decryptPHI(value)
+            const decryptedValue = decryptPHI(value)
+            // Empty strings are valid decrypted values for optional fields
+            decryptedData[field] = decryptedValue
           } else {
             decryptedData[field] = value || ''
           }
@@ -116,6 +164,43 @@ export async function GET(
       }
       
       console.log('Successfully processed patient data for submission:', submissionId)
+
+      // Decrypt dependent data if any
+      const decryptedDependents = []
+      if (dependents && dependents.length > 0) {
+        for (const dependent of dependents) {
+          const dependentData: any = {}
+          const dependentFieldsToDecrypt = [
+            'legalFirstName', 'legalLastName', 'healthInformationNumber', 
+            'dateOfBirth', 'gender', 'relationship',
+            'residenceApartmentNumber', 'residenceStreetAddress', 
+            'residenceCity', 'residencePostalCode'
+          ]
+          
+          for (const field of dependentFieldsToDecrypt) {
+            try {
+              const value = dependent[field as keyof typeof dependent]
+              if (value && typeof value === 'string' && value.trim() !== '') {
+                const decryptedValue = decryptPHI(value)
+                dependentData[field] = decryptedValue
+              } else {
+                dependentData[field] = value || ''
+              }
+            } catch (fieldError) {
+              console.error(`Failed to decrypt dependent field ${field}:`, fieldError)
+              dependentData[field] = `[Decryption Failed: ${field}]`
+            }
+          }
+          
+          decryptedDependents.push({
+            id: dependent.id,
+            ...dependentData,
+            residenceAddressSameAsSection1: dependent.residenceAddressSameAsSection1,
+            createdAt: dependent.createdAt.toISOString(),
+            updatedAt: dependent.updatedAt.toISOString()
+          })
+        }
+      }
 
       const fullSubmission = {
         id: intakeSubmission.id,
@@ -140,7 +225,8 @@ export async function GET(
         updatedAt: intakeSubmission.updatedAt.toISOString(),
         ipAddress: intakeSubmission.ipAddress,
         userAgent: intakeSubmission.userAgent,
-        healthInformationNumber: decryptedData.healthInformationNumber
+        healthInformationNumber: decryptedData.healthInformationNumber,
+        dependents: decryptedDependents
       }
 
       // Log successful access
@@ -352,7 +438,9 @@ export async function PATCH(
       try {
         const value = updatedSubmission[field as keyof typeof updatedSubmission]
         if (value && typeof value === 'string' && value.trim() !== '') {
-          decryptedData[field] = decryptPHI(value)
+          const decryptedValue = decryptPHI(value)
+          // Empty strings are valid decrypted values for optional fields
+          decryptedData[field] = decryptedValue
         } else {
           decryptedData[field] = value || ''
         }

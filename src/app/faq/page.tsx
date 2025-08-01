@@ -21,7 +21,7 @@ export default function FAQ() {
     {
       id: 'apt-1',
       question: 'How do I schedule an appointment?',
-      answer: 'You can schedule an appointment by calling our office at <a href="tel:2498060128" className="text-blue-600 hover:underline">249 806 0128</a>, using our online contact form, or completing the patient intake form. We offer both routine appointments and welcome walk-in patients for urgent care needs.',
+      answer: 'You can schedule an appointment by calling our office at 249 806 0128, using our online contact form, or completing the patient intake form. We offer both routine appointments and welcome walk-in patients for urgent care needs.',
       category: 'appointments'
     },
     {
@@ -237,13 +237,13 @@ export default function FAQ() {
                     Contact Us
                   </Link>
                   <a
-                                            href="tel:2498060128"
+                    href="tel:2498060128"
                     className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                                            Call <a href="tel:2498060128" className="text-blue-600 hover:underline">249 806 0128</a>
+                    Call 249 806 0128
                   </a>
                 </div>
               </div>

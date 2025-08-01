@@ -350,7 +350,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
               <span style="color: #2563eb; font-size: 18px;">🔒</span>
               Your Privacy is Protected
             </h4>
-            <p>Your personal health information has been encrypted using AES-256 encryption and is stored securely in compliance with HIPAA and PIPEDA regulations. Only authorized medical personnel will have access to your information.</p>
+            <p>Your personal health information has been encrypted using AES-256 encryption and is stored securely. Only authorized medical personnel will have access to your information.</p>
           </div>
           
           <div class="info-section">
@@ -364,11 +364,23 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
             </ul>
           </div>
           
+          <div class="info-section" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-radius: 12px; padding: 24px; margin: 24px 0;">
+            <h3 style="color: white; margin-bottom: 16px;">💬 Secure Chat Available</h3>
+            <p style="margin-bottom: 16px;">Have questions about your intake? Chat securely with your healthcare team:</p>
+            <div style="text-align: center;">
+              <a href="${process.env.NEXTAUTH_URL}/messages/${data.submissionId}" 
+                 style="display: inline-block; background: white; color: #2563eb; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 8px;">
+                Start Secure Chat →
+              </a>
+            </div>
+            <p style="font-size: 14px; opacity: 0.9; margin-top: 12px;">✓ End-to-End Encrypted • ✓ Real-time Responses</p>
+          </div>
+          
           <div class="contact-info">
             <h3>Contact Information</h3>
             <p>
               <strong>Phone:</strong> <a href="tel:+12498060128">249 806 0128</a><br>
-              <strong>Email:</strong> <a href="mailto:intake@zenithmedical.ca">intake@zenithmedical.ca</a><br>
+              <strong>Email:</strong> <a href="mailto:admin@zenithmedical.ca">admin@zenithmedical.ca</a><br>
               <strong>Address:</strong> Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
             </p>
           </div>
@@ -415,11 +427,11 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
     - Your preferred method of payment for any co-pays
     
     🔒 YOUR PRIVACY IS PROTECTED
-    Your personal health information has been encrypted using AES-256 encryption and is stored securely in compliance with HIPAA and PIPEDA regulations. Only authorized medical personnel will have access to your information.
+    Your personal health information has been encrypted using AES-256 encryption and is stored securely. Only authorized medical personnel will have access to your information.
     
     CONTACT INFORMATION:
     Phone: 249 806 0128
-    Email: intake@zenithmedical.ca
+    Email: admin@zenithmedical.ca
     Address: Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
     
     This is an automated message from Zenith Medical Centre. Please do not reply to this email.
@@ -713,14 +725,14 @@ const generateStaffNotificationTemplate = (data: StaffNotificationData): { subje
               <span style="color: #dc2626; font-size: 18px;">🔒</span>
               Privacy Reminder
             </h4>
-            <p>This submission contains encrypted PHI (Protected Health Information). Follow HIPAA/PIPEDA compliance protocols when handling patient information. Only access what is necessary for patient care.</p>
+            <p>This submission contains encrypted PHI (Protected Health Information). Follow privacy protocols when handling patient information. Only access what is necessary for patient care.</p>
           </div>
         </div>
         
         <div class="footer">
           <p class="timestamp">Generated: ${new Date().toLocaleString()}</p>
           <p>This is an automated notification from Zenith Medical Centre Staff System.</p>
-          <p>For technical support, contact IT at <a href="mailto:support@zenithmedical.ca" style="color: #2563eb;">support@zenithmedical.ca</a></p>
+          <p>For technical support, contact IT at <a href="mailto:admin@zenithmedical.ca" style="color: #2563eb;">admin@zenithmedical.ca</a></p>
         </div>
       </div>
     </body>
@@ -754,12 +766,12 @@ const generateStaffNotificationTemplate = (data: StaffNotificationData): { subje
     5. Prepare Charts: Set up patient file and prepare for first visit
     
     🔒 PRIVACY REMINDER
-    This submission contains encrypted PHI (Protected Health Information). Follow HIPAA/PIPEDA compliance protocols when handling patient information. Only access what is necessary for patient care.
+    This submission contains encrypted PHI (Protected Health Information). Follow privacy protocols when handling patient information. Only access what is necessary for patient care.
     
     Generated: ${new Date().toLocaleString()}
     
     This is an automated notification from Zenith Medical Centre Staff System.
-    For technical support, contact IT at support@zenithmedical.ca
+    For technical support, contact IT at admin@zenithmedical.ca
   `
   
   return { subject, html, text }
@@ -838,7 +850,7 @@ const sendEmailWithSMTP = async (
       headers: {
         'X-Priority': '3',
         'X-MSMail-Priority': 'Normal',
-        'List-Unsubscribe': '<mailto:unsubscribe@zenithmedical.ca>'
+        'List-Unsubscribe': '<mailto:admin@zenithmedical.ca>'
       }
     }
     
@@ -939,7 +951,7 @@ export const sendStaffNotificationEmail = async (
     // Get staff notification emails from environment variables
     const staffEmails = process.env.STAFF_NOTIFICATION_EMAILS?.split(',') || [
       'admin@zenithmedical.ca',
-      'intake@zenithmedical.ca'
+      'admin@zenithmedical.ca'
     ]
     
     // Send to first staff email (can be extended to send to multiple)
@@ -992,6 +1004,112 @@ export const testEmailConfiguration = async (): Promise<EmailResult> => {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Test email failed'
+    }
+  }
+}
+
+/**
+ * Send a response email to a patient
+ */
+export async function sendPatientResponseEmail(data: {
+  patientEmail: string
+  patientName: string
+  subject: string
+  message: string
+  adminName: string
+  submissionId: string
+}): Promise<EmailResult> {
+  try {
+    const { patientEmail, patientName, subject, message, adminName, submissionId } = data
+    
+    const htmlTemplate = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }
+            .message-box { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 20px 0; }
+            .footer { text-align: center; color: #64748b; font-size: 14px; margin-top: 30px; }
+            .contact-info { background: #e1f5fe; padding: 15px; border-radius: 8px; margin: 20px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>📧 Response from Zenith Medical Centre</h1>
+            </div>
+            
+            <div class="content">
+              <p>Dear ${patientName},</p>
+              
+              <p>Thank you for submitting your patient intake form. We have received your information and wanted to follow up with you.</p>
+              
+              <div class="message-box">
+                <h3 style="color: #1e40af; margin-top: 0;">Message from ${adminName}:</h3>
+                <div style="white-space: pre-wrap; line-height: 1.6;">${message}</div>
+              </div>
+              
+              <div class="contact-info">
+                <h4 style="color: #1e40af; margin-top: 0;">Contact Information</h4>
+                <p><strong>Phone:</strong> 249 806 0128</p>
+                <p><strong>Email:</strong> admin@zenithmedical.ca</p>
+                <p><strong>Address:</strong> Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3</p>
+              </div>
+              
+              <p>If you have any questions or need to provide additional information, please don't hesitate to contact us using the information above.</p>
+              
+              <p>Best regards,<br>
+              <strong>Zenith Medical Centre Team</strong></p>
+              
+              <div class="footer">
+                <p>This message was sent in response to your patient intake submission (ID: ${submissionId}).</p>
+                <p>© ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+    
+    const textTemplate = `
+      Response from Zenith Medical Centre
+      
+      Dear ${patientName},
+      
+      Thank you for submitting your patient intake form. We have received your information and wanted to follow up with you.
+      
+      MESSAGE FROM ${adminName.toUpperCase()}:
+      ${message}
+      
+      CONTACT INFORMATION:
+      Phone: 249 806 0128
+      Email: admin@zenithmedical.ca
+      Address: Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
+      
+      If you have any questions or need to provide additional information, please don't hesitate to contact us using the information above.
+      
+      Best regards,
+      Zenith Medical Centre Team
+      
+      This message was sent in response to your patient intake submission (ID: ${submissionId}).
+      © ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.
+    `
+    
+    return await sendEmail(
+      patientEmail,
+      subject,
+      htmlTemplate,
+      textTemplate,
+      process.env.RESEND_FROM_NAME || 'Zenith Medical Centre',
+      process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    )
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send patient response email'
     }
   }
 }

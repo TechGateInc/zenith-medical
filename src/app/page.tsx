@@ -350,7 +350,7 @@ export default async function Home() {
                     </div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Secure Health Records</h3>
                     <p className="text-sm text-slate-600">
-                      HIPAA-compliant digital records with secure patient portal access.
+                      Secure digital records with patient portal access.
                     </p>
                   </div>
 

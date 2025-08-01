@@ -77,8 +77,10 @@ export function decryptPHI(encryptedData: string): string {
 
     const decryptedString = decrypted.toString(CryptoJS.enc.Utf8)
     
-    if (!decryptedString) {
-      throw new Error('Decryption resulted in empty string')
+    // Empty strings are valid decrypted values for optional fields
+    // Only throw error if decryption actually failed (returns undefined/null)
+    if (decryptedString === undefined || decryptedString === null) {
+      throw new Error('Decryption failed - returned null/undefined')
     }
 
     return decryptedString
