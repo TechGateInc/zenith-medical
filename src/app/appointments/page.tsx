@@ -336,7 +336,7 @@ export default function AppointmentBooking() {
                 New patients need to complete a patient intake form before booking. This helps us provide you with the best possible care.
               </p>
               <Link
-                href="/intake"
+                href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
                 className="inline-flex items-center mt-2 text-orange-600 hover:text-orange-800 font-medium text-sm"
               >
                 Complete Patient Intake First

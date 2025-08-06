@@ -437,12 +437,12 @@ export default function Blog() {
                 Schedule Consultation
               </Link>
               <Link
-                href="/intake"
-                      className="border-2 border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center"
+                href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
+                className="border-2 border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center"
               >
-                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
                 Patient Intake Form
               </Link>
                   </div>

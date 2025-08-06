@@ -12,7 +12,7 @@ export default function Footer() {
   ]
 
   const patientResources = [
-    { name: 'Patient Intake', href: '/intake' },
+    { name: 'Patient Intake', href: 'https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/' },
     { name: 'FAQs', href: '/faq' },
     { name: 'Health Blog', href: '/blog' },
     { name: 'Privacy Policy', href: '/privacy' },

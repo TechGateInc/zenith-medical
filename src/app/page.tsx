@@ -84,7 +84,7 @@ export default async function Home() {
                     Book Appointment
                   </a>
                   <Link
-                    href="/intake"
+                    href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
                     className="inline-flex items-center justify-center px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-colors text-lg whitespace-nowrap"
                   >
                     <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,6 +112,8 @@ export default async function Home() {
                   <Image 
                     src="/images/home.webp" 
                     alt="Zenith Medical Centre - Cutting-edge medical facility" 
+                    width={800}
+                    height={384}
                     className="w-full h-full object-cover"
                     loading="eager"
                   />
@@ -380,7 +382,7 @@ export default async function Home() {
                     Schedule Appointment
                   </Link>
                   <Link
-                    href="/intake"
+                    href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
                     className="inline-flex items-center justify-center px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-colors text-lg whitespace-nowrap"
                   >
                     <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -516,7 +518,7 @@ export default async function Home() {
             </div>
           </Link>
 
-          <Link href="/intake" className="block">
+          <Link href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/" className="block">
             <div className="bg-white p-6 rounded-lg shadow-lg border border-slate-200 hover:shadow-xl transition-shadow text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
