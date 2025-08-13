@@ -1,6 +1,3 @@
-// Zenith Medical Centre Database Schema
-// HIPAA/PIPEDA Compliant Database Design
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,104 +7,417 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Patient Intake Model (PHI Data - Encrypted)
 model PatientIntake {
-  id                    String   @id @default(cuid())
-  
-  // Personal Information (Encrypted)
-  legalFirstName        String   // Encrypted
-  legalLastName         String   // Encrypted
-  middleName            String?  // Encrypted - Middle name
-  preferredName         String?  // Encrypted
-  title                 String?  // Encrypted - Mr./Mrs./Dr./Ms. etc.
-  dateOfBirth           String   // Encrypted (DD-MM-YYYY)
-  gender                String?  // Encrypted - M/F/O/U (Male/Female/Other/Unspecified)
-  phoneNumber           String   // Encrypted - Primary phone
-  cellPhone             String?  // Encrypted - Cell/mobile phone
-  workPhone             String?  // Encrypted - Work phone
-  emailAddress          String   // Encrypted
-  healthInformationNumber String   // Encrypted
-  
-  // Language and Communication Preferences (Encrypted)
-  primaryLanguage       String?  // Encrypted - Primary spoken language
-  preferredLanguage     String?  // Encrypted - Preferred language for correspondence
-  
-  // Communication Preferences
-  newsletterOptIn       Boolean  @default(false) // Newsletter subscription preference
-  
-  // Address Information (Encrypted)
-  streetAddress         String   // Encrypted
-  city                  String   // Encrypted
-  provinceState         String   // Encrypted
-  postalZipCode         String   // Encrypted
-  
-  // Next of Kin (Encrypted)
-  nextOfKinName  String   // Encrypted
-  nextOfKinPhone String   // Encrypted
-  relationshipToPatient String   // Encrypted
-  
-  // Consent and Compliance
-  privacyPolicyAccepted Boolean
-  consentTimestamp      DateTime @default(now())
-  
-  // Status Tracking
-  status                IntakeStatus @default(SUBMITTED)
-  appointmentBooked     Boolean      @default(false)
-  appointmentBookedAt   DateTime?
-  
-  // OSCAR Integration
-  oscarDemographicNo    String?      // OSCAR demographic number for patient linkage
-  oscarCreatedAt        DateTime?    // When patient was created in OSCAR
-  oscarLastSyncAt       DateTime?    // Last successful sync with OSCAR
-  
-  // View Tracking
-  viewedAt              DateTime?    // When admin viewed the submission
-  
-  // Audit Trail
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  ipAddress             String?  // For audit purposes
-  userAgent             String?  // For audit purposes
-  
-  // Relations
-  appointments          Appointment[]
-  dependents            Dependent[]
-  messages              Message[]
-  
+  id                      String        @id @default(cuid())
+  legalFirstName          String
+  legalLastName           String
+  preferredName           String?
+  dateOfBirth             String
+  phoneNumber             String
+  emailAddress            String
+  healthInformationNumber String
+  streetAddress           String
+  city                    String
+  provinceState           String
+  postalZipCode           String
+  nextOfKinName           String
+  nextOfKinPhone          String
+  relationshipToPatient   String
+  privacyPolicyAccepted   Boolean
+  consentTimestamp        DateTime      @default(now())
+  status                  IntakeStatus  @default(SUBMITTED)
+  appointmentBooked       Boolean       @default(false)
+  appointmentBookedAt     DateTime?
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+  ipAddress               String?
+  userAgent               String?
+  viewedAt                DateTime?
+  oscarCreatedAt          DateTime?
+  oscarDemographicNo      String?
+  oscarLastSyncAt         DateTime?
+  cellPhone               String?
+  gender                  String?
+  middleName              String?
+  newsletterOptIn         Boolean       @default(false)
+  preferredLanguage       String?
+  primaryLanguage         String?
+  title                   String?
+  workPhone               String?
+  appointments            Appointment[]
+  dependents              Dependent[]
+  messages                Message[]
+
   @@map("patient_intakes")
 }
 
-// Patient Communication Messages (PHI Data - Encrypted)
 model Message {
-  id                    String      @id @default(cuid())
-  
-  // Link to patient intake
-  patientIntakeId       String
-  patientIntake         PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
-  
-  // Message content (Encrypted)
-  content               String      // Encrypted message content
-  subject               String?     // Encrypted subject line (optional)
-  
-  // Sender information
-  senderType            SenderType  // PATIENT or ADMIN
-  senderName            String      // Encrypted sender name
-  senderEmail           String?     // Encrypted sender email (for reference)
-  adminUserId           String?     // If sent by admin, link to admin user
-  
-  // Message metadata
-  isRead                Boolean     @default(false)
-  readAt                DateTime?
-  
-  // Timestamps
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-  
-  // Audit fields
-  ipAddress             String?     // For audit purposes
-  userAgent             String?     // For audit purposes
-  
+  id              String        @id @default(cuid())
+  patientIntakeId String
+  content         String
+  subject         String?
+  senderType      SenderType
+  senderName      String
+  senderEmail     String?
+  adminUserId     String?
+  isRead          Boolean       @default(false)
+  readAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  ipAddress       String?
+  userAgent       String?
+  patientIntake   PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
+
   @@map("messages")
+}
+
+model Dependent {
+  id                             String        @id @default(cuid())
+  patientIntakeId                String
+  legalFirstName                 String
+  legalLastName                  String
+  healthInformationNumber        String
+  dateOfBirth                    String
+  gender                         String
+  relationship                   String
+  residenceAddressSameAsSection1 Boolean
+  residenceApartmentNumber       String
+  residenceStreetAddress         String
+  residenceCity                  String
+  residencePostalCode            String
+  createdAt                      DateTime      @default(now())
+  updatedAt                      DateTime      @updatedAt
+  patientIntake                  PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
+
+  @@map("dependents")
+}
+
+model AdminUser {
+  id                   String     @id @default(cuid())
+  email                String     @unique
+  passwordHash         String
+  name                 String
+  role                 AdminRole  @default(ADMIN)
+  lastLoginAt          DateTime?
+  loginAttempts        Int        @default(0)
+  lockedUntil          DateTime?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  twoFactorBackupCodes String[]
+  twoFactorEnabled     Boolean    @default(false)
+  twoFactorSecret      String?
+  auditLogs            AuditLog[]
+
+  @@map("admin_users")
+}
+
+model BlogPost {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  content         String
+  excerpt         String?
+  featured        Boolean       @default(false)
+  published       Boolean       @default(false)
+  publishedAt     DateTime?
+  metaTitle       String?
+  metaDescription String?
+  categoryId      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String
+  tags            BlogPostTag[]
+  category        BlogCategory? @relation(fields: [categoryId], references: [id])
+
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  color       String?
+  orderIndex  Int        @default(0)
+  published   Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  blogPosts   BlogPost[]
+
+  @@map("blog_categories")
+}
+
+model BlogTag {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  slug        String        @unique
+  description String?
+  color       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  blogPosts   BlogPostTag[]
+
+  @@map("blog_tags")
+}
+
+model BlogPostTag {
+  id         String   @id @default(cuid())
+  blogPostId String
+  blogTagId  String
+  createdAt  DateTime @default(now())
+  blogPost   BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  blogTag    BlogTag  @relation(fields: [blogTagId], references: [id], onDelete: Cascade)
+
+  @@unique([blogPostId, blogTagId])
+  @@map("blog_post_tags")
+}
+
+model FAQ {
+  id         String   @id @default(cuid())
+  question   String
+  answer     String
+  category   String?
+  orderIndex Int      @default(0)
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  name        String
+  title       String
+  bio         String?
+  photoUrl    String?
+  email       String?
+  phone       String?
+  specialties String[]
+  orderIndex  Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("team_members")
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime   @default(now())
+  user       AdminUser? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Appointment {
+  id                    String         @id @default(cuid())
+  patientIntakeId       String?
+  providerType          String
+  providerAppointmentId String?
+  providerName          String?
+  patientName           String
+  patientEmail          String
+  patientPhone          String
+  appointmentDate       String
+  appointmentTime       String
+  appointmentType       String
+  duration              Int?
+  providerId            String?
+  providerStaffName     String?
+  status                String
+  notes                 String?
+  reminderSent          Boolean        @default(false)
+  confirmationSent      Boolean        @default(false)
+  bookingUrl            String?
+  metadata              Json?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  oscarAppointmentId    String?
+  oscarCreatedAt        DateTime?
+  oscarLastSyncAt       DateTime?
+  oscarProviderNo       String?
+  patientIntake         PatientIntake? @relation(fields: [patientIntakeId], references: [id])
+
+  @@map("appointments")
+}
+
+model BookingProvider {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   @unique
+  active    Boolean  @default(false)
+  isDefault Boolean  @default(false)
+  config    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("booking_providers")
+}
+
+model NotificationTemplate {
+  id           String             @id @default(cuid())
+  name         String
+  type         NotificationType
+  method       NotificationMethod
+  subject      String?
+  message      String
+  triggerHours Int
+  active       Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  createdBy    String
+
+  @@map("notification_templates")
+}
+
+model OscarJobQueue {
+  id            String            @id @default(cuid())
+  jobType       OscarJobType
+  priority      JobPriority       @default(NORMAL)
+  status        JobStatus         @default(PENDING)
+  payload       Json
+  result        Json?
+  error         Json?
+  attemptCount  Int               @default(0)
+  maxAttempts   Int               @default(3)
+  nextRetryAt   DateTime?
+  scheduledAt   DateTime          @default(now())
+  startedAt     DateTime?
+  completedAt   DateTime?
+  resourceType  String?
+  resourceId    String?
+  correlationId String?
+  createdBy     String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  jobHistory    OscarJobHistory[]
+
+  @@index([status, scheduledAt])
+  @@index([jobType, status])
+  @@index([resourceType, resourceId])
+  @@index([nextRetryAt])
+  @@map("oscar_job_queue")
+}
+
+model OscarJobHistory {
+  id            String          @id @default(cuid())
+  jobId         String
+  attemptNumber Int
+  status        JobStatus
+  startedAt     DateTime
+  completedAt   DateTime
+  duration      Int?
+  success       Boolean
+  result        Json?
+  error         Json?
+  errorType     OscarErrorType?
+  executedBy    String?
+  serverInfo    Json?
+  job           OscarJobQueue   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, attemptNumber])
+  @@index([startedAt])
+  @@map("oscar_job_history")
+}
+
+model OscarErrorLog {
+  id                 String         @id @default(cuid())
+  errorType          OscarErrorType
+  errorCode          String?
+  severity           ErrorSeverity  @default(ERROR)
+  operation          String
+  resourceType       String?
+  resourceId         String?
+  correlationId      String?
+  message            String
+  details            Json?
+  resolved           Boolean        @default(false)
+  resolvedAt         DateTime?
+  resolvedBy         String?
+  resolution         String?
+  retryable          Boolean        @default(true)
+  retryCount         Int            @default(0)
+  lastRetryAt        DateTime?
+  notificationSent   Boolean        @default(false)
+  notificationSentAt DateTime?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([errorType, severity])
+  @@index([operation, createdAt])
+  @@index([resolved, severity])
+  @@index([createdAt])
+  @@map("oscar_error_log")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  features    String[]
+  icon        String?
+  orderIndex  Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SystemSettings {
+  id                   String   @id @default(cuid())
+  primaryPhone         String
+  emergencyPhone       String?
+  faxNumber            String?
+  adminEmail           String
+  businessHours        String
+  timezone             String   @default("America/Toronto")
+  dateFormat           String   @default("MM/DD/YYYY")
+  emailNotifications   Boolean  @default(true)
+  appointmentReminders Boolean  @default(true)
+  securityAlerts       Boolean  @default(true)
+  maintenanceMode      Boolean  @default(false)
+  sessionTimeout       Int      @default(30)
+  maxLoginAttempts     Int      @default(5)
+  passwordExpiry       Int      @default(90)
+  twoFactorAuth        Boolean  @default(false)
+  ipWhitelist          String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  updatedBy            String?
+  address              String   @default("Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3")
+
+  @@map("system_settings")
+}
+
+model ContactSubmission {
+  id                      String          @id @default(cuid())
+  name                    String
+  email                   String
+  phone                   String?
+  healthInformationNumber String?
+  subject                 String
+  message                 String
+  appointmentType         String?
+  status                  ContactStatus   @default(NEW)
+  priority                ContactPriority @default(NORMAL)
+  assignedTo              String?
+  respondedAt             DateTime?
+  responseMessage         String?
+  responseAdminId         String?
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  ipAddress               String?
+  userAgent               String?
+  originalMessageId       String?
+
+  @@map("contact_submissions")
 }
 
 enum SenderType {
@@ -115,196 +425,21 @@ enum SenderType {
   ADMIN
 }
 
-// Dependent Enrollment Model (PHI Data - Encrypted)
-model Dependent {
-  id                      String   @id @default(cuid())
-  
-  // Link to main patient intake
-  patientIntakeId         String
-  patientIntake           PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
-  
-  // Personal Information (Encrypted)
-  legalFirstName          String   // Encrypted
-  legalLastName           String   // Encrypted
-  healthInformationNumber String   // Encrypted
-  dateOfBirth             String   // Encrypted (YYYY/MM/DD)
-  gender                  String   // Encrypted - M/F
-  relationship            String   // Encrypted - parent, legal guardian, attorney for personal care
-  
-  // Address Information (Encrypted) 
-  residenceAddressSameAsSection1 Boolean  // If true, use main patient's address
-  residenceApartmentNumber String   // Encrypted
-  residenceStreetAddress   String   // Encrypted
-  residenceCity           String   // Encrypted
-  residencePostalCode     String   // Encrypted
-  
-  // Audit Trail
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  
-  @@map("dependents")
+enum ContactStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+  SPAM
 }
 
-// Admin Users Model
-model AdminUser {
-  id                String    @id @default(cuid())
-  email             String    @unique
-  passwordHash      String
-  name              String
-  role              AdminRole @default(ADMIN)
-  
-  // Security
-  lastLoginAt       DateTime?
-  loginAttempts     Int       @default(0)
-  lockedUntil       DateTime?
-  
-  // Two-Factor Authentication
-  twoFactorEnabled  Boolean   @default(false)
-  twoFactorSecret   String?   // Base32 encoded secret
-  twoFactorBackupCodes String[] // Array of backup codes
-  
-  // Audit Trail
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  // Relations
-  auditLogs         AuditLog[]
-  
-  @@map("admin_users")
+enum ContactPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
 
-// Content Management Models
-model BlogPost {
-  id          String      @id @default(cuid())
-  title       String
-  slug        String      @unique
-  content     String
-  excerpt     String?
-  featured    Boolean     @default(false)
-  published   Boolean     @default(false)
-  publishedAt DateTime?
-  
-  // SEO
-  metaTitle       String?
-  metaDescription String?
-  
-  // Categories and Tags
-  categoryId      String?
-  category        BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  tags            BlogPostTag[]
-  
-  // Audit
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String
-  
-  @@map("blog_posts")
-}
-
-model BlogCategory {
-  id          String      @id @default(cuid())
-  name        String      @unique
-  slug        String      @unique
-  description String?
-  color       String?     // Hex color for UI display
-  orderIndex  Int         @default(0)
-  published   Boolean     @default(true)
-  
-  // Relations
-  blogPosts   BlogPost[]
-  
-  // Audit
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("blog_categories")
-}
-
-model BlogTag {
-  id          String      @id @default(cuid())
-  name        String      @unique
-  slug        String      @unique
-  description String?
-  color       String?     // Hex color for UI display
-  
-  // Relations
-  blogPosts   BlogPostTag[]
-  
-  // Audit
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("blog_tags")
-}
-
-// Junction table for many-to-many relationship between BlogPost and BlogTag
-model BlogPostTag {
-  id         String   @id @default(cuid())
-  blogPostId String
-  blogTagId  String
-  
-  // Relations
-  blogPost   BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  blogTag    BlogTag  @relation(fields: [blogTagId], references: [id], onDelete: Cascade)
-  
-  // Audit
-  createdAt  DateTime @default(now())
-  
-  @@unique([blogPostId, blogTagId])
-  @@map("blog_post_tags")
-}
-
-model FAQ {
-  id          String   @id @default(cuid())
-  question    String
-  answer      String
-  category    String?
-  orderIndex  Int      @default(0)
-  published   Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("faqs")
-}
-
-model TeamMember {
-  id            String   @id @default(cuid())
-  name          String
-  title         String
-  bio           String?
-  photoUrl      String?
-  email         String?
-  phone         String?
-  specialties   String[] // Array of specialties
-  orderIndex    Int      @default(0)
-  published     Boolean  @default(true)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  @@map("team_members")
-}
-
-// Audit and Compliance
-model AuditLog {
-  id          String     @id @default(cuid())
-  userId      String?
-  action      String     // CREATE, READ, UPDATE, DELETE, LOGIN, etc.
-  resource    String     // patient_intake, admin_user, etc.
-  resourceId  String?
-  details     Json?      // Additional context
-  ipAddress   String?
-  userAgent   String?
-  timestamp   DateTime   @default(now())
-  
-  // Relations
-  user        AdminUser? @relation(fields: [userId], references: [id])
-  
-  @@map("audit_logs")
-}
-
-// Enums
 enum IntakeStatus {
   SUBMITTED
   REVIEWED
@@ -320,96 +455,6 @@ enum AdminRole {
   EDITOR
 }
 
-model Appointment {
-  id                      String   @id @default(cuid())
-  
-  // Link to intake submission
-  patientIntakeId         String?
-  patientIntake           PatientIntake? @relation(fields: [patientIntakeId], references: [id], onDelete: SetNull)
-  
-  // Provider information
-  providerType            String   // 'acuity', 'calendly', etc.
-  providerAppointmentId   String?  // ID from the booking provider
-  providerName            String?  // Name of the provider service
-  
-  // Patient information
-  patientName             String
-  patientEmail            String
-  patientPhone            String
-  
-  // Appointment details
-  appointmentDate         String
-  appointmentTime         String
-  appointmentType         String
-  duration                Int?     // Duration in minutes
-  
-  // Provider/Doctor information
-  providerId              String?
-  providerStaffName       String?
-  
-  // Status and metadata
-  status                  String   // 'scheduled', 'confirmed', 'cancelled', 'completed', 'no_show'
-  notes                   String?
-  reminderSent            Boolean  @default(false)
-  confirmationSent        Boolean  @default(false)
-  
-  // Booking metadata
-  bookingUrl              String?
-  metadata                Json?    // Store provider-specific data
-  
-  // OSCAR Integration
-  oscarAppointmentId      String?      // OSCAR appointment number for EMR linkage
-  oscarProviderNo         String?      // OSCAR provider number
-  oscarCreatedAt          DateTime?    // When appointment was created in OSCAR
-  oscarLastSyncAt         DateTime?    // Last successful sync with OSCAR
-  
-  // Timestamps
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  
-  @@map("appointments")
-}
-
-model BookingProvider {
-  id                      String   @id @default(cuid())
-  
-  // Provider details
-  name                    String
-  type                    String   // 'acuity', 'calendly', 'simplepractice', 'generic_webhook', 'embed'
-  active                  Boolean  @default(false)
-  isDefault               Boolean  @default(false)
-  
-  // Configuration
-  config                  Json     // Store provider-specific configuration
-  
-  // Timestamps
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  
-  @@unique([type])
-  @@map("booking_providers")
-}
-
-// Notification Templates
-model NotificationTemplate {
-  id            String              @id @default(cuid())
-  name          String
-  type          NotificationType
-  method        NotificationMethod
-  subject       String?
-  message       String
-  triggerHours  Int                 // Hours before appointment to send
-  active        Boolean             @default(true)
-  
-  // Audit
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  createdBy     String
-  
-  @@map("notification_templates")
-}
-
-// Additional Enums for Notifications
 enum NotificationType {
   APPOINTMENT_REMINDER
   APPOINTMENT_CONFIRMATION
@@ -423,124 +468,6 @@ enum NotificationMethod {
   BOTH
 }
 
-// OSCAR Job Queue System
-model OscarJobQueue {
-  id                String          @id @default(cuid())
-  
-  // Job identification
-  jobType           OscarJobType
-  priority          JobPriority     @default(NORMAL)
-  status            JobStatus       @default(PENDING)
-  
-  // Job data
-  payload           Json            // Contains the data needed to execute the job
-  result            Json?           // Result data from successful execution
-  error             Json?           // Error details from failed execution
-  
-  // Retry logic
-  attemptCount      Int             @default(0)
-  maxAttempts       Int             @default(3)
-  nextRetryAt       DateTime?       // When to retry next (exponential backoff)
-  
-  // Timing
-  scheduledAt       DateTime        @default(now())
-  startedAt         DateTime?       // When job execution started
-  completedAt       DateTime?       // When job completed (success or final failure)
-  
-  // Metadata
-  resourceType      String?         // 'patient', 'appointment', etc.
-  resourceId        String?         // ID of the resource being processed
-  correlationId     String?         // For tracking related operations
-  
-  // Audit
-  createdBy         String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  
-  // Relations
-  jobHistory        OscarJobHistory[]
-  
-  @@index([status, scheduledAt])
-  @@index([jobType, status])
-  @@index([resourceType, resourceId])
-  @@index([nextRetryAt])
-  @@map("oscar_job_queue")
-}
-
-model OscarJobHistory {
-  id                String          @id @default(cuid())
-  
-  // Job reference
-  jobId             String
-  job               OscarJobQueue   @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  
-  // Execution details
-  attemptNumber     Int
-  status            JobStatus
-  startedAt         DateTime
-  completedAt       DateTime
-  duration          Int?            // Execution time in milliseconds
-  
-  // Results
-  success           Boolean
-  result            Json?           // Result data
-  error             Json?           // Error details
-  errorType         OscarErrorType?
-  
-  // System info
-  executedBy        String?         // Worker/process identifier
-  serverInfo        Json?           // Server details, memory usage, etc.
-  
-  @@index([jobId, attemptNumber])
-  @@index([startedAt])
-  @@map("oscar_job_history")
-}
-
-model OscarErrorLog {
-  id                String          @id @default(cuid())
-  
-  // Error classification
-  errorType         OscarErrorType
-  errorCode         String?
-  severity          ErrorSeverity   @default(ERROR)
-  
-  // Context
-  operation         String          // 'patient_create', 'appointment_book', etc.
-  resourceType      String?
-  resourceId        String?
-  correlationId     String?
-  
-  // Error details
-  message           String
-  details           Json?           // Stack trace, request/response data, etc.
-  
-  // Resolution
-  resolved          Boolean         @default(false)
-  resolvedAt        DateTime?
-  resolvedBy        String?
-  resolution        String?
-  
-  // Retry info
-  retryable         Boolean         @default(true)
-  retryCount        Int             @default(0)
-  lastRetryAt       DateTime?
-  
-  // Notification
-  notificationSent  Boolean         @default(false)
-  notificationSentAt DateTime?
-  
-  // Audit
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  
-  @@index([errorType, severity])
-  @@index([operation, createdAt])
-  @@index([resolved, severity])
-  @@index([createdAt])
-  @@map("oscar_error_log")
-}
-
-// Enums for Job Queue System
 enum OscarJobType {
   PATIENT_CREATE
   PATIENT_UPDATE
@@ -556,12 +483,12 @@ enum OscarJobType {
 }
 
 enum JobStatus {
-  PENDING       // Waiting to be processed
-  PROCESSING    // Currently being executed
-  COMPLETED     // Successfully completed
-  FAILED        // Failed after all retries
-  CANCELLED     // Manually cancelled
-  DELAYED       // Scheduled for future execution
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  DELAYED
 }
 
 enum JobPriority {
@@ -590,52 +517,4 @@ enum ErrorSeverity {
   WARNING
   ERROR
   CRITICAL
-}
-
-model Service {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  features    String[]
-  icon        String? // Store icon name or SVG string
-  orderIndex  Int      @default(0)
-  published   Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// System Settings Model
-model SystemSettings {
-  id                    String   @id @default(cuid())
-  
-  // Contact Information
-  primaryPhone          String   // Primary contact phone number
-  emergencyPhone        String?  // Emergency contact phone number
-  faxNumber             String?  // Fax number
-  adminEmail            String   // Primary admin email
-  
-  // Business Information
-  businessHours         String   // Business hours (e.g., "Mon-Fri 8AM-6PM")
-  timezone              String   @default("America/Toronto")
-  dateFormat            String   @default("MM/DD/YYYY")
-  
-  // Notification Settings
-  emailNotifications    Boolean  @default(true)
-  appointmentReminders  Boolean  @default(true)
-  securityAlerts        Boolean  @default(true)
-  maintenanceMode       Boolean  @default(false)
-  
-  // Security Settings
-  sessionTimeout        Int      @default(30) // minutes
-  maxLoginAttempts      Int      @default(5)
-  passwordExpiry        Int      @default(90) // days
-  twoFactorAuth         Boolean  @default(false)
-  ipWhitelist           String?  // Comma-separated IP addresses
-  
-  // Audit Trail
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  updatedBy             String?  // Admin user ID who last updated
-  
-  @@map("system_settings")
 }

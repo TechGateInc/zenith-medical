@@ -6,6 +6,7 @@ export interface SystemSettings {
   emergencyPhone?: string;
   faxNumber?: string;
   adminEmail: string;
+  address: string;
   businessHours: string;
   timezone: string;
   dateFormat: string;
@@ -64,6 +65,7 @@ export class SettingsManager {
             id: 'default-settings',
             primaryPhone: '249 806 0128',
             adminEmail: 'admin@zenithmedical.ca',
+            address: 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3',
             businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
             timezone: 'America/Toronto',
             dateFormat: 'MM/DD/YYYY',
@@ -92,6 +94,7 @@ export class SettingsManager {
         id: 'fallback',
         primaryPhone: '249 806 0128',
         adminEmail: 'admin@zenithmedical.ca',
+        address: 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3',
         businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
         timezone: 'America/Toronto',
         dateFormat: 'MM/DD/YYYY',

@@ -29,6 +29,7 @@ export function useSettings(): UseSettingsReturn {
             emergencyPhone: data.settings.contact.emergencyPhone,
             faxNumber: data.settings.contact.faxNumber,
             adminEmail: data.settings.contact.adminEmail,
+            address: data.settings.contact.address || 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3',
             businessHours: data.settings.contact.businessHours,
             timezone: data.settings.system.timezone,
             dateFormat: data.settings.system.dateFormat,

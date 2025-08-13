@@ -31,6 +31,7 @@ interface ContactSettings {
   emergencyPhone?: string;
   faxNumber?: string;
   adminEmail: string;
+  address: string;
   businessHours: string;
 }
 
@@ -61,6 +62,7 @@ export default function SettingsPage() {
     emergencyPhone: '',
     faxNumber: '',
     adminEmail: 'admin@zenithmedical.ca',
+    address: 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3',
     businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM'
   });
 
@@ -413,6 +415,20 @@ export default function SettingsPage() {
                     placeholder="admin@zenithmedical.ca"
                   />
                   <p className="mt-1 text-sm text-gray-500">Primary administrative contact email</p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Business Address *
+                  </label>
+                  <input
+                    type="text"
+                    value={contactSettings.address}
+                    onChange={(e) => setContactSettings(prev => ({ ...prev, address: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Business address displayed on contact page and emails</p>
                 </div>
 
                 <div className="md:col-span-2">

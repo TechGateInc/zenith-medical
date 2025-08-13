@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Layout from '../../components/Layout/Layout';
 import { usePhoneNumber } from '@/lib/hooks/useSettings';
+import { useContactInfo } from '@/lib/hooks/useContactInfo';
 import Link from 'next/link';
 
 export default function Contact() {
@@ -19,14 +20,17 @@ export default function Contact() {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { phoneNumber, loading } = usePhoneNumber();
+  const { phoneNumber, loading: phoneLoading } = usePhoneNumber();
+  const { contactInfo: dbContactInfo, loading: contactLoading } = useContactInfo();
 
   const contactInfo = {
     primary: <a href={`tel:${phoneNumber.replace(/\s/g, '')}`} className="text-blue-600 hover:underline">
-      {loading ? 'Loading...' : phoneNumber}
+      {phoneLoading ? 'Loading...' : phoneNumber}
     </a>,
-    email: <a href="mailto:admin@zenithmedical.ca" className="text-blue-600 hover:underline">admin@zenithmedical.ca</a>,
-    address: '123 Healthcare Drive, Medical District, MD 21201'
+    email: <a href={`mailto:${dbContactInfo?.adminEmail || 'admin@zenithmedical.ca'}`} className="text-blue-600 hover:underline">
+      {contactLoading ? 'Loading...' : (dbContactInfo?.adminEmail || 'admin@zenithmedical.ca')}
+    </a>,
+    address: contactLoading ? 'Loading...' : (dbContactInfo?.address || 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3')
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -233,7 +237,7 @@ export default function Contact() {
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder={loading ? 'Loading...' : phoneNumber}
+                      placeholder={phoneLoading ? 'Loading...' : phoneNumber}
                     />
                   </div>
 

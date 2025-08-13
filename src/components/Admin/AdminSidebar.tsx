@@ -27,7 +27,8 @@ import {
   LogOut,
   Home,
   Menu,
-  X
+  X,
+  Mail
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -71,6 +72,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
       href: '/admin/dashboard/intake',
       icon: Users,
       badge: intakeCount > 0 ? intakeCount : undefined,
+    },
+    {
+      name: 'Contact Forms',
+      href: '/admin/contact',
+      icon: Mail,
     },
     {
       name: 'Content Management',
