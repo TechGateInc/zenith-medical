@@ -1,6 +1,5 @@
 /**
- * Custom Next.js server with WebSocket support
- * This allows us to run Socket.IO alongside Next.js
+ * Custom Next.js server
  */
 
 const { createServer } = require('http')
@@ -28,25 +27,6 @@ app.prepare().then(() => {
     }
   })
 
-  // Initialize WebSocket server
-  const { Server: SocketIOServer } = require('socket.io')
-  const io = new SocketIOServer(server, {
-    path: '/api/socket',
-    cors: {
-      origin: dev ? 'http://localhost:3000' : false,
-      methods: ['GET', 'POST']
-    }
-  })
-
-  // Import and initialize WebSocket handlers
-  try {
-    const { initializeWebSocketHandlers } = require('./websocket-handlers.js')
-    initializeWebSocketHandlers(io)
-    console.log('✅ WebSocket server initialized with handlers')
-  } catch (error) {
-    console.warn('⚠️ WebSocket handlers not found, basic WebSocket server running:', error.message)
-  }
-
   server
     .once('error', (err) => {
       console.error(err)
@@ -54,7 +34,5 @@ app.prepare().then(() => {
     })
     .listen(port, () => {
       console.log(`🚀 Server ready at http://${hostname}:${port}`)
-      console.log('📡 WebSocket server ready at ws://localhost:3000/api/socket')
-      console.log('💬 Chat system with real-time updates enabled')
     })
 })

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useAuth } from '../../../../../lib/auth/use-auth'
 import { FormSkeleton } from '@/components/UI/SkeletonLoader'
 import { Mail } from 'lucide-react'
-import { ChatDrawer } from '@/components/Chat/ChatDrawer'
+
 
 interface FullIntakeSubmission {
   id: string
@@ -65,7 +65,7 @@ export default function IntakeDetailPage() {
   const [submission, setSubmission] = useState<FullIntakeSubmission | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false)
+
   const [updating, setUpdating] = useState(false)
   const [newStatus, setNewStatus] = useState<string>('')
 
@@ -287,15 +287,7 @@ export default function IntakeDetailPage() {
               </div>
               
               {/* Communication Button - Only show in development */}
-              {isAdmin && process.env.NODE_ENV === 'development' && (
-                <button
-                  onClick={() => setIsChatDrawerOpen(true)}
-                  className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30"
-                  title="Open Patient Communication"
-                >
-                  <Mail className="h-5 w-5" />
-                </button>
-              )}
+              
               
               {/* Print Button */}
               <button
@@ -621,17 +613,7 @@ export default function IntakeDetailPage() {
 
 
 
-            {/* Chat Drawer - Only show in development */}
-            {isAdmin && submission && process.env.NODE_ENV === 'development' && (
-              <ChatDrawer
-                isOpen={isChatDrawerOpen}
-                onClose={() => setIsChatDrawerOpen(false)}
-                submissionId={submission.id}
-                patientName={`${submission.legalFirstName} ${submission.legalLastName}`}
-                patientEmail={submission.emailAddress}
-                isAdmin={isAdmin}
-              />
-            )}
+
           </div>
         </div>
       </div>

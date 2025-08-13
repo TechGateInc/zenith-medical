@@ -364,19 +364,7 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
             </ul>
           </div>
           
-          ${process.env.NODE_ENV === 'development' ? `
-          <div class="info-section" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-radius: 12px; padding: 24px; margin: 24px 0;">
-            <h3 style="color: white; margin-bottom: 16px;">💬 Secure Chat Available (Development)</h3>
-            <p style="margin-bottom: 16px;">Have questions about your intake? Chat securely with your healthcare team:</p>
-            <div style="text-align: center;">
-              <a href="${process.env.NEXTAUTH_URL}/messages/${data.submissionId}" 
-                 style="display: inline-block; background: white; color: #2563eb; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 8px;">
-                Start Secure Chat →
-              </a>
-            </div>
-            <p style="font-size: 14px; opacity: 0.9; margin-top: 12px;">✓ End-to-End Encrypted • ✓ Real-time Responses</p>
-          </div>
-          ` : ''}
+
           
           <div class="contact-info">
             <h3>Contact Information</h3>

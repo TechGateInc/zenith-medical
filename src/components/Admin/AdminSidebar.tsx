@@ -11,7 +11,7 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useSidebar } from '@/lib/contexts/SidebarContext';
 import { useApiAuth } from '@/lib/auth/use-api-auth';
-import { useSocket } from '@/lib/websocket/useSocket';
+
 import { 
   LayoutDashboard, 
   Users, 
@@ -55,37 +55,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const [, setNotificationCount] = useState<number>(0);
   const [loadingCount, setLoadingCount] = useState(true);
 
-  // WebSocket connection for real-time count updates
-  const { socketState, socket } = useSocket({
-    submissionId: 'admin-dashboard', // Special ID for admin dashboard
-    userType: 'admin',
-    onNewMessage: () => {
-      // Handle new messages if needed
-    },
-    onMessageCounts: () => {
-      // Handle message count updates if needed
-    },
-    onCountUpdate: (update: { type: string, count: number }) => {
-      console.log('Count update received in AdminSidebar:', update);
-      if (update.type === 'intake_count') {
-        setIntakeCount(update.count);
-        setLoadingCount(false);
-      }
-      // Add more count update types as needed
-    }
-  });
-
-  // Request initial counts when socket is authenticated
+  // Fetch counts on component mount
   useEffect(() => {
-    if (socketState.connected && socketState.authenticated && socket) {
-      console.log('Requesting initial counts via WebSocket');
-      socket.emit('requestCounts');
-    } else {
-      // Fallback to REST API if WebSocket is not available
-      console.log('WebSocket not available, using REST API fallback');
-      fetchCounts();
-    }
-  }, [socketState.connected, socketState.authenticated]);
+    fetchCounts();
+  }, []);
 
   const navigation: NavigationItem[] = [
     {
@@ -232,25 +205,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
     setLoadingCount(false);
   };
 
-  // Fallback function to fetch counts via REST API (used when WebSocket is not available)
-  const fetchCountsFallback = async () => {
-    if (!socketState.connected) {
-      console.log('Using REST API fallback for counts');
-      await fetchCounts();
-    }
-  };
 
-  // Initial load - try WebSocket first, fallback to REST API
-  useEffect(() => {
-    // Small delay to allow WebSocket to connect first
-    const timer = setTimeout(() => {
-      if (!socketState.connected) {
-        fetchCountsFallback();
-      }
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const renderNavigationItem = (item: NavigationItem, isChild: boolean = false) => {
     const isActive = isCurrentPath(item.href);

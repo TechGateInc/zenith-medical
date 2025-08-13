@@ -39,7 +39,7 @@
   - [x] 3.1 Create API endpoint `/api/admin/intake/count` for unviewed patient intake count
   - [x] 3.2 Add logic to track viewed vs unviewed submissions by adding `viewedAt` field to database
   - [x] 3.3 Update sidebar to fetch real-time count from API instead of hardcoded value
-  - [x] 3.4 Implement count refresh mechanism with polling or WebSocket updates
+  
   - [x] 3.5 Add visual indicator for new submissions with pulsing animation
   - [x] 3.6 Create utility function to mark submissions as viewed when accessed
   - [x] 3.7 Add database migration for new `viewedAt` field in PatientIntake model
