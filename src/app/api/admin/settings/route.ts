@@ -7,32 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
 import { prisma } from '@/lib/prisma';
-
-// In a real application, these would be stored in a database
-// For now, we'll use in-memory storage (resets on server restart)
-const systemSettings = {
-  siteName: 'Zenith Medical Centre',
-  siteDescription: 'Comprehensive healthcare services for the community',
-  adminEmail: 'admin@zenithmedical.ca',
-  timezone: 'America/Toronto',
-  dateFormat: 'MM/DD/YYYY',
-  language: 'en'
-};
-
-const notificationSettings = {
-  emailNotifications: true,
-  appointmentReminders: true,
-  securityAlerts: true,
-  maintenanceMode: false
-};
-
-const securitySettings = {
-  sessionTimeout: 30,
-  maxLoginAttempts: 5,
-  passwordExpiry: 90,
-  twoFactorAuth: false,
-  ipWhitelist: ''
-};
+import { settingsManager } from '@/lib/utils/settings';
+import type { SystemSettings } from '@/lib/utils/settings';
 
 export async function GET() {
   try {
@@ -52,12 +28,36 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get settings from database
+    const settings = await settingsManager.getSettings();
+
     return NextResponse.json({
       success: true,
       settings: {
-        system: systemSettings,
-        notifications: notificationSettings,
-        security: securitySettings
+        contact: {
+          primaryPhone: settings.primaryPhone,
+          emergencyPhone: settings.emergencyPhone,
+          faxNumber: settings.faxNumber,
+          adminEmail: settings.adminEmail,
+          businessHours: settings.businessHours
+        },
+        system: {
+          timezone: settings.timezone,
+          dateFormat: settings.dateFormat
+        },
+        notifications: {
+          emailNotifications: settings.emailNotifications,
+          appointmentReminders: settings.appointmentReminders,
+          securityAlerts: settings.securityAlerts,
+          maintenanceMode: settings.maintenanceMode
+        },
+        security: {
+          sessionTimeout: settings.sessionTimeout,
+          maxLoginAttempts: settings.maxLoginAttempts,
+          passwordExpiry: settings.passwordExpiry,
+          twoFactorAuth: settings.twoFactorAuth,
+          ipWhitelist: settings.ipWhitelist
+        }
       }
     });
 
@@ -81,7 +81,7 @@ export async function PUT(request: NextRequest) {
     // Get user from database to verify current role
     const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
-      select: { role: true }
+      select: { role: true, id: true }
     });
 
     if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
@@ -89,73 +89,143 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { system, notifications, security } = body;
+    const { contact, system, notifications, security } = body;
 
-    // Validate and update system settings
-    if (system) {
-      if (system.siteName) systemSettings.siteName = system.siteName;
-      if (system.siteDescription) systemSettings.siteDescription = system.siteDescription;
-      if (system.adminEmail) {
+    const updates: Partial<SystemSettings> = {};
+
+    // Validate and prepare contact settings updates
+    if (contact) {
+      if (contact.primaryPhone) {
+        // Basic phone validation
+        const phoneRegex = /^[\d\s\-\(\)\+]+$/;
+        if (!phoneRegex.test(contact.primaryPhone)) {
+          return NextResponse.json(
+            { error: 'Invalid primary phone number format' },
+            { status: 400 }
+          );
+        }
+        updates.primaryPhone = contact.primaryPhone;
+      }
+
+      if (contact.emergencyPhone !== undefined) {
+        if (contact.emergencyPhone) {
+          const phoneRegex = /^[\d\s\-\(\)\+]+$/;
+          if (!phoneRegex.test(contact.emergencyPhone)) {
+            return NextResponse.json(
+              { error: 'Invalid emergency phone number format' },
+              { status: 400 }
+            );
+          }
+        }
+        updates.emergencyPhone = contact.emergencyPhone || null;
+      }
+
+      if (contact.faxNumber !== undefined) {
+        if (contact.faxNumber) {
+          const phoneRegex = /^[\d\s\-\(\)\+]+$/;
+          if (!phoneRegex.test(contact.faxNumber)) {
+            return NextResponse.json(
+              { error: 'Invalid fax number format' },
+              { status: 400 }
+            );
+          }
+        }
+        updates.faxNumber = contact.faxNumber || null;
+      }
+
+      if (contact.adminEmail) {
         // Basic email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(system.adminEmail)) {
+        if (!emailRegex.test(contact.adminEmail)) {
           return NextResponse.json(
             { error: 'Invalid email address' },
             { status: 400 }
           );
         }
-        systemSettings.adminEmail = system.adminEmail;
+        updates.adminEmail = contact.adminEmail;
       }
-      if (system.timezone) systemSettings.timezone = system.timezone;
-      if (system.dateFormat) systemSettings.dateFormat = system.dateFormat;
-      if (system.language) systemSettings.language = system.language;
+
+      if (contact.businessHours) {
+        updates.businessHours = contact.businessHours;
+      }
     }
 
-    // Update notification settings
+    // Validate and prepare system settings updates
+    if (system) {
+      if (system.timezone) {
+        updates.timezone = system.timezone;
+      }
+      if (system.dateFormat) {
+        updates.dateFormat = system.dateFormat;
+      }
+    }
+
+    // Validate and prepare notification settings updates
     if (notifications) {
       if (typeof notifications.emailNotifications === 'boolean') {
-        notificationSettings.emailNotifications = notifications.emailNotifications;
+        updates.emailNotifications = notifications.emailNotifications;
       }
       if (typeof notifications.appointmentReminders === 'boolean') {
-        notificationSettings.appointmentReminders = notifications.appointmentReminders;
+        updates.appointmentReminders = notifications.appointmentReminders;
       }
       if (typeof notifications.securityAlerts === 'boolean') {
-        notificationSettings.securityAlerts = notifications.securityAlerts;
+        updates.securityAlerts = notifications.securityAlerts;
       }
       if (typeof notifications.maintenanceMode === 'boolean') {
-        notificationSettings.maintenanceMode = notifications.maintenanceMode;
+        updates.maintenanceMode = notifications.maintenanceMode;
       }
     }
 
-    // Update security settings
+    // Validate and prepare security settings updates
     if (security) {
       if (typeof security.sessionTimeout === 'number' && security.sessionTimeout > 0) {
-        securitySettings.sessionTimeout = security.sessionTimeout;
+        updates.sessionTimeout = security.sessionTimeout;
       }
       if (typeof security.maxLoginAttempts === 'number' && security.maxLoginAttempts > 0) {
-        securitySettings.maxLoginAttempts = security.maxLoginAttempts;
+        updates.maxLoginAttempts = security.maxLoginAttempts;
       }
       if (typeof security.passwordExpiry === 'number' && security.passwordExpiry > 0) {
-        securitySettings.passwordExpiry = security.passwordExpiry;
+        updates.passwordExpiry = security.passwordExpiry;
       }
       if (typeof security.twoFactorAuth === 'boolean') {
-        securitySettings.twoFactorAuth = security.twoFactorAuth;
+        updates.twoFactorAuth = security.twoFactorAuth;
       }
       if (typeof security.ipWhitelist === 'string') {
-        securitySettings.ipWhitelist = security.ipWhitelist;
+        updates.ipWhitelist = security.ipWhitelist;
       }
     }
 
-    // In a real application, you would save these to a database here
-    // await prisma.settings.upsert({...})
+    // Update settings in database
+    const updatedSettings = await settingsManager.updateSettings(updates, user.id);
 
     return NextResponse.json({
       success: true,
       message: 'Settings updated successfully',
       settings: {
-        system: systemSettings,
-        notifications: notificationSettings,
-        security: securitySettings
+        contact: {
+          primaryPhone: updatedSettings.primaryPhone,
+          emergencyPhone: updatedSettings.emergencyPhone,
+          faxNumber: updatedSettings.faxNumber,
+          adminEmail: updatedSettings.adminEmail,
+          businessHours: updatedSettings.businessHours
+        },
+        system: {
+          timezone: updatedSettings.timezone,
+          dateFormat: updatedSettings.dateFormat
+        },
+        notifications: {
+          emailNotifications: updatedSettings.emailNotifications,
+          appointmentReminders: updatedSettings.appointmentReminders,
+          securityAlerts: updatedSettings.securityAlerts,
+          maintenanceMode: updatedSettings.maintenanceMode
+        },
+        security: {
+          sessionTimeout: updatedSettings.sessionTimeout,
+          maxLoginAttempts: updatedSettings.maxLoginAttempts,
+          passwordExpiry: updatedSettings.passwordExpiry,
+          twoFactorAuth: updatedSettings.twoFactorAuth,
+          ipWhitelist: updatedSettings.ipWhitelist
+        }
       }
     });
 

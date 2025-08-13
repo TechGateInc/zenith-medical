@@ -1,0 +1,214 @@
+import { prisma } from '@/lib/prisma';
+
+export interface SystemSettings {
+  id: string;
+  primaryPhone: string;
+  emergencyPhone?: string;
+  faxNumber?: string;
+  adminEmail: string;
+  businessHours: string;
+  timezone: string;
+  dateFormat: string;
+  emailNotifications: boolean;
+  appointmentReminders: boolean;
+  securityAlerts: boolean;
+  maintenanceMode: boolean;
+  sessionTimeout: number;
+  maxLoginAttempts: number;
+  passwordExpiry: number;
+  twoFactorAuth: boolean;
+  ipWhitelist?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  updatedBy?: string;
+}
+
+// Cache for settings to avoid repeated database calls
+let settingsCache: SystemSettings | null = null;
+let cacheExpiry: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+export class SettingsManager {
+  private static instance: SettingsManager;
+
+  private constructor() {}
+
+  public static getInstance(): SettingsManager {
+    if (!SettingsManager.instance) {
+      SettingsManager.instance = new SettingsManager();
+    }
+    return SettingsManager.instance;
+  }
+
+  /**
+   * Get system settings with caching
+   */
+  async getSettings(): Promise<SystemSettings> {
+    const now = Date.now();
+    
+    // Return cached settings if still valid
+    if (settingsCache && now < cacheExpiry) {
+      return settingsCache;
+    }
+
+    try {
+      // Get settings from database
+      let settings = await prisma.systemSettings.findFirst({
+        where: { id: 'default-settings' }
+      });
+
+      // If no settings exist, create default ones
+      if (!settings) {
+        settings = await prisma.systemSettings.create({
+          data: {
+            id: 'default-settings',
+            primaryPhone: '249 806 0128',
+            adminEmail: 'admin@zenithmedical.ca',
+            businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
+            timezone: 'America/Toronto',
+            dateFormat: 'MM/DD/YYYY',
+            emailNotifications: true,
+            appointmentReminders: true,
+            securityAlerts: true,
+            maintenanceMode: false,
+            sessionTimeout: 30,
+            maxLoginAttempts: 5,
+            passwordExpiry: 90,
+            twoFactorAuth: false
+          }
+        });
+      }
+
+      // Update cache
+      settingsCache = settings as SystemSettings;
+      cacheExpiry = now + CACHE_DURATION;
+
+      return settingsCache;
+    } catch (error) {
+      console.error('Error fetching system settings:', error);
+      
+      // Return fallback settings if database fails
+      return {
+        id: 'fallback',
+        primaryPhone: '249 806 0128',
+        adminEmail: 'admin@zenithmedical.ca',
+        businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
+        timezone: 'America/Toronto',
+        dateFormat: 'MM/DD/YYYY',
+        emailNotifications: true,
+        appointmentReminders: true,
+        securityAlerts: true,
+        maintenanceMode: false,
+        sessionTimeout: 30,
+        maxLoginAttempts: 5,
+        passwordExpiry: 90,
+        twoFactorAuth: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+    }
+  }
+
+  /**
+   * Update system settings
+   */
+  async updateSettings(updates: Partial<SystemSettings>, updatedBy?: string): Promise<SystemSettings> {
+    try {
+      const settings = await prisma.systemSettings.upsert({
+        where: { id: 'default-settings' },
+        update: {
+          ...updates,
+          updatedBy,
+          updatedAt: new Date()
+        },
+        create: {
+          id: 'default-settings',
+          primaryPhone: '249 806 0128',
+          adminEmail: 'admin@zenithmedical.ca',
+          businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
+          timezone: 'America/Toronto',
+          dateFormat: 'MM/DD/YYYY',
+          emailNotifications: true,
+          appointmentReminders: true,
+          securityAlerts: true,
+          maintenanceMode: false,
+          sessionTimeout: 30,
+          maxLoginAttempts: 5,
+          passwordExpiry: 90,
+          twoFactorAuth: false,
+          updatedBy,
+          ...updates
+        }
+      });
+
+      // Clear cache to force refresh
+      settingsCache = null;
+      cacheExpiry = 0;
+
+      return settings as SystemSettings;
+    } catch (error) {
+      console.error('Error updating system settings:', error);
+      throw new Error('Failed to update system settings');
+    }
+  }
+
+  /**
+   * Clear settings cache
+   */
+  clearCache(): void {
+    settingsCache = null;
+    cacheExpiry = 0;
+  }
+
+  /**
+   * Get primary phone number
+   */
+  async getPrimaryPhone(): Promise<string> {
+    const settings = await this.getSettings();
+    return settings.primaryPhone;
+  }
+
+  /**
+   * Get emergency phone number
+   */
+  async getEmergencyPhone(): Promise<string | undefined> {
+    const settings = await this.getSettings();
+    return settings.emergencyPhone;
+  }
+
+  /**
+   * Get admin email
+   */
+  async getAdminEmail(): Promise<string> {
+    const settings = await this.getSettings();
+    return settings.adminEmail;
+  }
+
+  /**
+   * Check if maintenance mode is enabled
+   */
+  async isMaintenanceMode(): Promise<boolean> {
+    const settings = await this.getSettings();
+    return settings.maintenanceMode;
+  }
+}
+
+// Export singleton instance
+export const settingsManager = SettingsManager.getInstance();
+
+// Convenience functions for common settings
+export async function getPrimaryPhone(): Promise<string> {
+  return settingsManager.getPrimaryPhone();
+}
+
+export async function getEmergencyPhone(): Promise<string | undefined> {
+  return settingsManager.getEmergencyPhone();
+}
+
+export async function getAdminEmail(): Promise<string> {
+  return settingsManager.getAdminEmail();
+}
+
+export async function isMaintenanceMode(): Promise<boolean> {
+  return settingsManager.isMaintenanceMode();
+}

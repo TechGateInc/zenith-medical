@@ -17,19 +17,26 @@ import {
   RefreshCw,
   ArrowLeft,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Phone,
+  Mail,
+  Clock
 } from 'lucide-react';
 import { SettingsSkeleton } from '@/components/UI/SkeletonLoader';
 import TwoFactorAuth from '@/components/Admin/TwoFactorAuth';
 import { useAuth } from '@/lib/auth/use-auth';
 
-interface SystemSettings {
-  siteName: string;
-  siteDescription: string;
+interface ContactSettings {
+  primaryPhone: string;
+  emergencyPhone?: string;
+  faxNumber?: string;
   adminEmail: string;
+  businessHours: string;
+}
+
+interface SystemSettings {
   timezone: string;
   dateFormat: string;
-  language: string;
 }
 
 interface NotificationSettings {
@@ -49,13 +56,17 @@ interface SecuritySettings {
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const [systemSettings, setSystemSettings] = useState<SystemSettings>({
-    siteName: 'Zenith Medical Centre',
-    siteDescription: 'Comprehensive healthcare services for the community',
+  const [contactSettings, setContactSettings] = useState<ContactSettings>({
+    primaryPhone: '249 806 0128',
+    emergencyPhone: '',
+    faxNumber: '',
     adminEmail: 'admin@zenithmedical.ca',
+    businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM'
+  });
+
+  const [systemSettings, setSystemSettings] = useState<SystemSettings>({
     timezone: 'America/Toronto',
-    dateFormat: 'MM/DD/YYYY',
-    language: 'en'
+    dateFormat: 'MM/DD/YYYY'
   });
 
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
@@ -73,7 +84,7 @@ export default function SettingsPage() {
     ipWhitelist: ''
   });
 
-  const [activeTab, setActiveTab] = useState<'system' | 'notifications' | 'security' | 'database'>('system');
+  const [activeTab, setActiveTab] = useState<'contact' | 'system' | 'notifications' | 'security' | 'database'>('contact');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
@@ -85,8 +96,8 @@ export default function SettingsPage() {
     // Check URL for tab parameter
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
-    if (tabParam && ['system', 'notifications', 'security', 'database'].includes(tabParam)) {
-      setActiveTab(tabParam as 'system' | 'notifications' | 'security' | 'database');
+    if (tabParam && ['contact', 'system', 'notifications', 'security', 'database'].includes(tabParam)) {
+      setActiveTab(tabParam as 'contact' | 'system' | 'notifications' | 'security' | 'database');
     }
   }, []);
 
@@ -97,6 +108,7 @@ export default function SettingsPage() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
+          setContactSettings(data.settings.contact);
           setSystemSettings(data.settings.system);
           setNotificationSettings(data.settings.notifications);
           setSecuritySettings(data.settings.security);
@@ -117,6 +129,7 @@ export default function SettingsPage() {
       setMessage(null);
       
       const settingsData = {
+        contact: contactSettings,
         system: systemSettings,
         notifications: notificationSettings,
         security: securitySettings
@@ -136,6 +149,7 @@ export default function SettingsPage() {
           setMessage({ type: 'success', text: data.message || 'Settings saved successfully!' });
           // Update local state with returned settings
           if (data.settings) {
+            setContactSettings(data.settings.contact);
             setSystemSettings(data.settings.system);
             setNotificationSettings(data.settings.notifications);
             setSecuritySettings(data.settings.security);
@@ -179,115 +193,94 @@ export default function SettingsPage() {
       console.error('Database test error:', error);
       setMessage({ 
         type: 'error', 
-        text: error instanceof Error ? error.message : 'Database connection failed. Please check your configuration.' 
+        text: error instanceof Error ? error.message : 'Database connection test failed' 
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const createDatabaseBackup = async () => {
+  const createBackup = async () => {
     try {
       setBackupLoading(true);
       setMessage(null);
       
-      const response = await fetch('/api/admin/backup/manual', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
+      const response = await fetch('/api/admin/backup/database');
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
           setMessage({ 
             type: 'success', 
-            text: `Database backup created successfully! Backup ID: ${data.backup?.backupId || 'N/A'}` 
+            text: `Database backup created successfully! File: ${data.filename}` 
           });
         } else {
-          throw new Error(data.error || 'Database backup failed');
+          throw new Error(data.error || 'Backup creation failed');
         }
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Database backup failed');
+        throw new Error(errorData.error || 'Backup creation failed');
       }
     } catch (error) {
-      console.error('Database backup error:', error);
+      console.error('Backup error:', error);
       setMessage({ 
         type: 'error', 
-        text: error instanceof Error ? error.message : 'Database backup failed. Please try again.' 
+        text: error instanceof Error ? error.message : 'Backup creation failed' 
       });
     } finally {
       setBackupLoading(false);
     }
   };
 
-  const tabs = [
-    { id: 'system', label: 'System', icon: Globe },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'database', label: 'Database', icon: Database }
-  ];
-
   if (loading) {
-    return <SettingsSkeleton />
+    return <SettingsSkeleton />;
   }
 
   return (
-    <div className="p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center mb-4">
-          <Link
-            href="/admin/dashboard"
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 mr-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Link>
-        </div>
-        
-        <div className="inline-flex items-center bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-          <Settings className="h-4 w-4 mr-2" />
-          System Settings
-        </div>
-        
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Settings</h1>
-            <p className="text-gray-600">Configure system settings and preferences</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <Link
+              href="/admin/dashboard"
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 mr-4"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Link>
           </div>
           
-          <div className="flex items-center space-x-3 mt-4 lg:mt-0">
-            <button
-              onClick={fetchSettings}
-              disabled={loading}
-              className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white rounded-xl font-medium transition-colors"
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            <button
-              onClick={saveSettings}
-              disabled={saving}
-              className="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-medium transition-colors"
-            >
-              <Save className={`h-4 w-4 mr-2 ${saving ? 'animate-pulse' : ''}`} />
-              {saving ? 'Saving...' : 'Save Settings'}
-            </button>
+          <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+            <Settings className="h-4 w-4 mr-2" />
+            System Configuration
+          </div>
+          
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">System Settings</h1>
+              <p className="text-gray-600">Configure system settings and contact information</p>
+            </div>
+            
+            <div className="flex items-center space-x-3 mt-4 lg:mt-0">
+              <button
+                onClick={fetchSettings}
+                disabled={loading}
+                className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Success/Error Message */}
-      {message && (
-        <div className={`mb-6 p-4 rounded-xl border ${
-          message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-800' 
-            : 'bg-red-50 border-red-200 text-red-800'
-        }`}>
-          <div className="flex items-center">
+        {/* Message Display */}
+        {message && (
+          <div className={`mb-6 p-4 rounded-lg flex items-center ${
+            message.type === 'success' 
+              ? 'bg-green-50 border border-green-200 text-green-800' 
+              : 'bg-red-50 border border-red-200 text-red-800'
+          }`}>
             {message.type === 'success' ? (
               <CheckCircle className="h-5 w-5 mr-2" />
             ) : (
@@ -295,76 +288,170 @@ export default function SettingsPage() {
             )}
             {message.text}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Settings Panel */}
-      <div className="bg-white rounded-2xl border border-gray-200">
-        {/* Tabs */}
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
-            {tabs.map((tab) => {
-              const IconComponent = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <IconComponent className="h-4 w-4 mr-2" />
-                  {tab.label}
-                </button>
-              );
-            })}
+        {/* Tab Navigation */}
+        <div className="mb-8">
+          <nav className="flex space-x-8 border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('contact')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'contact'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Phone className="h-4 w-4 inline mr-2" />
+              Contact Information
+            </button>
+            <button
+              onClick={() => setActiveTab('system')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'system'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Globe className="h-4 w-4 inline mr-2" />
+              System
+            </button>
+            <button
+              onClick={() => setActiveTab('notifications')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'notifications'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Bell className="h-4 w-4 inline mr-2" />
+              Notifications
+            </button>
+            <button
+              onClick={() => setActiveTab('security')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'security'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Shield className="h-4 w-4 inline mr-2" />
+              Security
+            </button>
+            <button
+              onClick={() => setActiveTab('database')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'database'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Database className="h-4 w-4 inline mr-2" />
+              Database
+            </button>
           </nav>
         </div>
 
-        <div className="p-6">
-          {/* System Settings Tab */}
-          {activeTab === 'system' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Tab Content */}
+        <div className="bg-white rounded-lg shadow">
+          {/* Contact Information Tab */}
+          {activeTab === 'contact' && (
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Contact Information</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Site Name
+                    Primary Phone Number *
                   </label>
                   <input
                     type="text"
-                    value={systemSettings.siteName}
-                    onChange={(e) => setSystemSettings({...systemSettings, siteName: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    value={contactSettings.primaryPhone}
+                    onChange={(e) => setContactSettings(prev => ({ ...prev, primaryPhone: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="249 806 0128"
                   />
+                  <p className="mt-1 text-sm text-gray-500">Main contact number displayed throughout the site</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Admin Email
+                    Emergency Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    value={contactSettings.emergencyPhone || ''}
+                    onChange={(e) => setContactSettings(prev => ({ ...prev, emergencyPhone: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="911"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Emergency contact number (optional)</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fax Number
+                  </label>
+                  <input
+                    type="text"
+                    value={contactSettings.faxNumber || ''}
+                    onChange={(e) => setContactSettings(prev => ({ ...prev, faxNumber: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="249 806 0129"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Fax number (optional)</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Admin Email *
                   </label>
                   <input
                     type="email"
-                    value={systemSettings.adminEmail}
-                    onChange={(e) => setSystemSettings({...systemSettings, adminEmail: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    value={contactSettings.adminEmail}
+                    onChange={(e) => setContactSettings(prev => ({ ...prev, adminEmail: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="admin@zenithmedical.ca"
                   />
+                  <p className="mt-1 text-sm text-gray-500">Primary administrative contact email</p>
                 </div>
 
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Business Hours *
+                  </label>
+                  <input
+                    type="text"
+                    value={contactSettings.businessHours}
+                    onChange={(e) => setContactSettings(prev => ({ ...prev, businessHours: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Mon-Fri 8AM-6PM, Sat 9AM-2PM"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Business hours displayed to patients</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* System Tab */}
+          {activeTab === 'system' && (
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">System Configuration</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Timezone
                   </label>
                   <select
                     value={systemSettings.timezone}
-                    onChange={(e) => setSystemSettings({...systemSettings, timezone: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    onChange={(e) => setSystemSettings(prev => ({ ...prev, timezone: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="America/Toronto">Eastern Time (Toronto)</option>
-                    <option value="America/Vancouver">Pacific Time (Vancouver)</option>
-                    <option value="America/Calgary">Mountain Time (Calgary)</option>
-                    <option value="America/Winnipeg">Central Time (Winnipeg)</option>
+                    <option value="America/Toronto">Eastern Time (America/Toronto)</option>
+                    <option value="America/Vancouver">Pacific Time (America/Vancouver)</option>
+                    <option value="America/Edmonton">Mountain Time (America/Edmonton)</option>
+                    <option value="America/Winnipeg">Central Time (America/Winnipeg)</option>
+                    <option value="America/Halifax">Atlantic Time (America/Halifax)</option>
                   </select>
                 </div>
 
@@ -374,8 +461,8 @@ export default function SettingsPage() {
                   </label>
                   <select
                     value={systemSettings.dateFormat}
-                    onChange={(e) => setSystemSettings({...systemSettings, dateFormat: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    onChange={(e) => setSystemSettings(prev => ({ ...prev, dateFormat: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                     <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -383,87 +470,81 @@ export default function SettingsPage() {
                   </select>
                 </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Site Description
-                </label>
-                <textarea
-                  value={systemSettings.siteDescription}
-                  onChange={(e) => setSystemSettings({...systemSettings, siteDescription: e.target.value})}
-                  rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
             </div>
           )}
 
           {/* Notifications Tab */}
           {activeTab === 'notifications' && (
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Notification Settings</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-gray-900">Email Notifications</h4>
-                    <p className="text-sm text-gray-600">Receive system notifications via email</p>
+                    <h3 className="text-sm font-medium text-gray-900">Email Notifications</h3>
+                    <p className="text-sm text-gray-500">Enable system notifications via email</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notificationSettings.emailNotifications}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, emailNotifications: e.target.checked})}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
+                  <button
+                    onClick={() => setNotificationSettings(prev => ({ ...prev, emailNotifications: !prev.emailNotifications }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      notificationSettings.emailNotifications ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      notificationSettings.emailNotifications ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-gray-900">Appointment Reminders</h4>
-                    <p className="text-sm text-gray-600">Send automated appointment reminders</p>
+                    <h3 className="text-sm font-medium text-gray-900">Appointment Reminders</h3>
+                    <p className="text-sm text-gray-500">Automated appointment reminder system</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notificationSettings.appointmentReminders}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, appointmentReminders: e.target.checked})}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
+                  <button
+                    onClick={() => setNotificationSettings(prev => ({ ...prev, appointmentReminders: !prev.appointmentReminders }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      notificationSettings.appointmentReminders ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      notificationSettings.appointmentReminders ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-gray-900">Security Alerts</h4>
-                    <p className="text-sm text-gray-600">Receive notifications for security events</p>
+                    <h3 className="text-sm font-medium text-gray-900">Security Alerts</h3>
+                    <p className="text-sm text-gray-500">Real-time security event notifications</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notificationSettings.securityAlerts}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, securityAlerts: e.target.checked})}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
+                  <button
+                    onClick={() => setNotificationSettings(prev => ({ ...prev, securityAlerts: !prev.securityAlerts }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      notificationSettings.securityAlerts ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      notificationSettings.securityAlerts ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-200">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-red-900">Maintenance Mode</h4>
-                    <p className="text-sm text-red-600">Temporarily disable public access to the site</p>
+                    <h3 className="text-sm font-medium text-gray-900">Maintenance Mode</h3>
+                    <p className="text-sm text-gray-500">Emergency setting to disable public access</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notificationSettings.maintenanceMode}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, maintenanceMode: e.target.checked})}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                  </label>
+                  <button
+                    onClick={() => setNotificationSettings(prev => ({ ...prev, maintenanceMode: !prev.maintenanceMode }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      notificationSettings.maintenanceMode ? 'bg-red-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      notificationSettings.maintenanceMode ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -471,130 +552,140 @@ export default function SettingsPage() {
 
           {/* Security Tab */}
           {activeTab === 'security' && (
-            <div className="space-y-6">
-              {/* Two-Factor Authentication */}
-              {user?.email && (
-                <TwoFactorAuth 
-                  userEmail={user.email} 
-                  onStatusChange={(enabled) => {
-                    setSecuritySettings({...securitySettings, twoFactorAuth: enabled});
-                  }}
-                />
-              )}
-
-              {/* Basic Security Settings */}
-              <div className="bg-white rounded-2xl border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Security Settings</h3>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Session Timeout (minutes)
-                    </label>
-                    <input
-                      type="number"
-                      value={securitySettings.sessionTimeout}
-                      onChange={(e) => setSecuritySettings({...securitySettings, sessionTimeout: parseInt(e.target.value)})}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Max Login Attempts
-                    </label>
-                    <input
-                      type="number"
-                      value={securitySettings.maxLoginAttempts}
-                      onChange={(e) => setSecuritySettings({...securitySettings, maxLoginAttempts: parseInt(e.target.value)})}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Password Expiry (days)
-                    </label>
-                    <input
-                      type="number"
-                      value={securitySettings.passwordExpiry}
-                      onChange={(e) => setSecuritySettings({...securitySettings, passwordExpiry: parseInt(e.target.value)})}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-6">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Security Settings</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    IP Whitelist (one per line)
+                    Session Timeout (minutes)
                   </label>
-                  <textarea
-                    value={securitySettings.ipWhitelist}
-                    onChange={(e) => setSecuritySettings({...securitySettings, ipWhitelist: e.target.value})}
-                    rows={4}
-                    placeholder="192.168.1.0/24&#10;10.0.0.0/8"
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
+                  <input
+                    type="number"
+                    value={securitySettings.sessionTimeout}
+                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, sessionTimeout: parseInt(e.target.value) || 30 }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="5"
+                    max="480"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Max Login Attempts
+                  </label>
+                  <input
+                    type="number"
+                    value={securitySettings.maxLoginAttempts}
+                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, maxLoginAttempts: parseInt(e.target.value) || 5 }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="3"
+                    max="10"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Password Expiry (days)
+                  </label>
+                  <input
+                    type="number"
+                    value={securitySettings.passwordExpiry}
+                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, passwordExpiry: parseInt(e.target.value) || 90 }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="30"
+                    max="365"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    IP Whitelist
+                  </label>
+                  <input
+                    type="text"
+                    value={securitySettings.ipWhitelist}
+                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, ipWhitelist: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="192.168.1.1, 10.0.0.1"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Comma-separated IP addresses (optional)</p>
+                </div>
               </div>
+
+              <div className="mt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
+                    <p className="text-sm text-gray-500">Require 2FA for admin access</p>
+                  </div>
+                  <button
+                    onClick={() => setSecuritySettings(prev => ({ ...prev, twoFactorAuth: !prev.twoFactorAuth }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      securitySettings.twoFactorAuth ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      securitySettings.twoFactorAuth ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
+                </div>
+              </div>
+
+                             {securitySettings.twoFactorAuth && user?.email && (
+                 <div className="mt-6">
+                   <TwoFactorAuth userEmail={user.email} />
+                 </div>
+               )}
             </div>
           )}
 
           {/* Database Tab */}
           {activeTab === 'database' && (
-            <div className="space-y-6">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                <div className="flex items-center">
-                  <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
-                  <p className="text-yellow-800 text-sm font-medium">
-                    Database operations can affect system performance. Use with caution.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-gray-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Connection Status</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Database Type:</span>
-                      <span className="text-sm font-medium text-gray-900">PostgreSQL</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Status:</span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Connected
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Last Backup:</span>
-                      <span className="text-sm font-medium text-gray-900">2 hours ago</span>
-                    </div>
-                  </div>
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Database Management</h2>
+              
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-gray-900 mb-2">Database Connection Test</h3>
+                  <p className="text-sm text-gray-500 mb-4">Test the connection to the database</p>
                   <button
                     onClick={testDatabaseConnection}
                     disabled={loading}
-                    className="w-full mt-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
+                    <Database className="h-4 w-4 mr-2" />
                     Test Connection
                   </button>
                 </div>
 
-                <div className="bg-gray-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Maintenance</h3>
-                  <div className="space-y-3">
-                    <button 
-                      onClick={createDatabaseBackup}
-                      disabled={backupLoading}
-                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                    >
-                      {backupLoading ? 'Creating Backup...' : 'Create Backup'}
-                    </button>
-                  </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-gray-900 mb-2">Database Backup</h3>
+                  <p className="text-sm text-gray-500 mb-4">Create a backup of the database</p>
+                  <button
+                    onClick={createBackup}
+                    disabled={backupLoading}
+                    className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Database className="h-4 w-4 mr-2" />
+                    {backupLoading ? 'Creating Backup...' : 'Create Backup'}
+                  </button>
                 </div>
               </div>
             </div>
           )}
+        </div>
+
+        {/* Save Button */}
+        <div className="mt-8 flex justify-end">
+          <button
+            onClick={saveSettings}
+            disabled={saving}
+            className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            {saving ? 'Saving...' : 'Save Settings'}
+          </button>
         </div>
       </div>
     </div>

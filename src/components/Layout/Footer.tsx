@@ -1,8 +1,12 @@
-import Link from 'next/link'
+'use client';
+
+import Link from 'next/link';
 import Image from 'next/image'
+import { usePhoneNumber } from '@/lib/hooks/useSettings';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const { phoneNumber, loading } = usePhoneNumber();
 
   const quickLinks = [
     { name: 'Home', href: '/' },
@@ -17,6 +21,20 @@ export default function Footer() {
     { name: 'Health Blog', href: '/blog' },
     { name: 'Privacy Policy', href: '/privacy' },
   ]
+
+  const services = [
+    { name: 'Family Medicine', href: '/services' },
+    { name: 'Preventive Care', href: '/services' },
+    { name: 'Chronic Disease Management', href: '/services' },
+    { name: 'Mental Health Care', href: '/services' }
+  ];
+
+  const company = [
+    { name: 'About Us', href: '/about' },
+    { name: 'Our Team', href: '/about' },
+    { name: 'Privacy Policy', href: '/privacy' },
+    { name: 'Terms of Service', href: '/terms' }
+  ];
 
   return (
     <footer className="bg-slate-900 text-white">
@@ -59,7 +77,9 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
                 <div>
-                  <div className="text-white"><a href="tel:2498060128" className="hover:underline">249 806 0128</a></div>
+                  <div className="text-white"><a href={`tel:${phoneNumber.replace(/\s/g, '')}`} className="hover:underline">
+                    {loading ? 'Loading...' : phoneNumber}
+                  </a></div>
                   <div className="text-gray-300 text-sm">Clinic Line</div>
                 </div>
               </div>
@@ -114,6 +134,34 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-2">Office Hours</h4>
               <div>Monday - Saturday: 9:00 AM - 5:00 PM</div>
             </div>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Services</h3>
+            <ul className="space-y-2">
+              {services.map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-gray-300 hover:text-white transition-colors duration-200">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Company</h3>
+            <ul className="space-y-2">
+              {company.map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-gray-300 hover:text-white transition-colors duration-200">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

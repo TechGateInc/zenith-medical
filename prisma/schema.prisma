@@ -603,3 +603,39 @@ model Service {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// System Settings Model
+model SystemSettings {
+  id                    String   @id @default(cuid())
+  
+  // Contact Information
+  primaryPhone          String   // Primary contact phone number
+  emergencyPhone        String?  // Emergency contact phone number
+  faxNumber             String?  // Fax number
+  adminEmail            String   // Primary admin email
+  
+  // Business Information
+  businessHours         String   // Business hours (e.g., "Mon-Fri 8AM-6PM")
+  timezone              String   @default("America/Toronto")
+  dateFormat            String   @default("MM/DD/YYYY")
+  
+  // Notification Settings
+  emailNotifications    Boolean  @default(true)
+  appointmentReminders  Boolean  @default(true)
+  securityAlerts        Boolean  @default(true)
+  maintenanceMode       Boolean  @default(false)
+  
+  // Security Settings
+  sessionTimeout        Int      @default(30) // minutes
+  maxLoginAttempts      Int      @default(5)
+  passwordExpiry        Int      @default(90) // days
+  twoFactorAuth         Boolean  @default(false)
+  ipWhitelist           String?  // Comma-separated IP addresses
+  
+  // Audit Trail
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  updatedBy             String?  // Admin user ID who last updated
+  
+  @@map("system_settings")
+}
