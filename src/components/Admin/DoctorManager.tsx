@@ -191,7 +191,27 @@ export default function DoctorManager() {
   });
   const [availableTeamMembers, setAvailableTeamMembers] = useState<TeamMember[]>([]);
 
-  const { apiCall } = useApiAuth();
+  const { handleApiError } = useApiAuth();
+
+  // Lightweight API helper that reuses our auth error handling
+  const apiCall = useCallback(async (url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: unknown) => {
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const error = new Error(errorData.error || `HTTP ${response.status}`);
+      if (handleApiError(error, response)) {
+        throw error;
+      }
+      throw error;
+    }
+
+    return response.json();
+  }, [handleApiError]);
 
   // Fetch doctors and available team members
   const fetchDoctors = useCallback(async () => {
@@ -526,7 +546,7 @@ export default function DoctorManager() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title={editingDoctor ? 'Edit Doctor Profile' : 'Create Doctor Profile'}
-        size="4xl"
+        size="xl"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Team Member Selection */}

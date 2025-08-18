@@ -2,18 +2,15 @@ import Layout from '../../../components/Layout/Layout'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { generateMetadata as generateSEOMetadata, generateDoctorStructuredData } from '../../../lib/utils/seo'
+import { generateDoctorStructuredData } from '../../../lib/utils/seo'
 import { prisma } from '../../../lib/prisma'
 
-interface DoctorPageProps {
-  params: {
-    slug: string
-  }
-}
+// Note: In Next.js 15, params is a Promise in server components
 
 // Generate metadata for the doctor page
-export async function generateMetadata({ params }: DoctorPageProps) {
-  const doctorName = params.slug.replace(/-/g, ' ')
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const doctorName = slug.replace(/-/g, ' ')
   
   const doctor = await prisma.teamMember.findFirst({
     where: {
@@ -90,8 +87,9 @@ async function getDoctor(slug: string) {
   }
 }
 
-export default async function DoctorProfile({ params }: DoctorPageProps) {
-  const doctor = await getDoctor(params.slug)
+export default async function DoctorProfile({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const doctor = await getDoctor(slug)
 
   if (!doctor) {
     notFound()
@@ -248,17 +246,17 @@ export default async function DoctorProfile({ params }: DoctorPageProps) {
                 </div>
               )}
               
-              {doctor.doctor.residency && (
+              {doctor.doctor?.residency && (
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-slate-800 mb-3">Residency</h3>
-                  <p className="text-slate-600">{doctor.doctor.residency}</p>
+                  <p className="text-slate-600">{doctor.doctor?.residency}</p>
                 </div>
               )}
               
-              {doctor.doctor.fellowship && (
+              {doctor.doctor?.fellowship && (
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-slate-800 mb-3">Fellowship</h3>
-                  <p className="text-slate-600">{doctor.doctor.fellowship}</p>
+                  <p className="text-slate-600">{doctor.doctor?.fellowship}</p>
                 </div>
               )}
             </div>
@@ -267,7 +265,7 @@ export default async function DoctorProfile({ params }: DoctorPageProps) {
       )}
 
       {/* Certifications & Memberships */}
-      {(doctor.doctor?.boardCertifications?.length > 0 || doctor.doctor?.memberships?.length > 0) && (
+      {(doctor.doctor && ((doctor.doctor.boardCertifications && doctor.doctor.boardCertifications.length > 0) || (doctor.doctor.memberships && doctor.doctor.memberships.length > 0))) && (
         <section className="py-16 lg:py-24 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -278,7 +276,7 @@ export default async function DoctorProfile({ params }: DoctorPageProps) {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {doctor.doctor.boardCertifications && doctor.doctor.boardCertifications.length > 0 && (
+              {doctor.doctor?.boardCertifications && doctor.doctor.boardCertifications.length > 0 && (
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-4">Board Certifications</h3>
                   <div className="space-y-2">
@@ -294,7 +292,7 @@ export default async function DoctorProfile({ params }: DoctorPageProps) {
                 </div>
               )}
               
-              {doctor.doctor.memberships && doctor.doctor.memberships.length > 0 && (
+              {doctor.doctor?.memberships && doctor.doctor.memberships.length > 0 && (
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-4">Professional Memberships</h3>
                   <div className="space-y-2">
