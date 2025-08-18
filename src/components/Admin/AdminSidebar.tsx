@@ -103,6 +103,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
           href: '/admin/content/services',
           icon: BookOpen,
         },
+        {
+          name: 'Doctor Profiles',
+          href: '/admin/content/doctors',
+          icon: Users,
+        },
       ],
     },
     {

@@ -285,6 +285,47 @@ export default async function About() {
           </div>
         </section>
 
+        {/* Our Doctors */}
+        {teamMembers.filter((m: any) => m.isDoctor).length > 0 && (
+          <section className="mb-20 lg:mb-32">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-6">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                OUR DOCTORS
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+                Meet Our Doctors
+              </h2>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                Learn more about our physicians and their areas of expertise.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {teamMembers
+                .filter((member: any) => member.isDoctor)
+                .map((member) => (
+                  <Link
+                    key={member.id}
+                    href={`/doctors/${member.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="block"
+                  >
+                    <TeamMemberCard
+                      member={member}
+                      variant="default"
+                      showEmail={false}
+                      showPhone={false}
+                      showSpecialties={true}
+                      showBio={true}
+                    />
+                  </Link>
+                ))}
+            </div>
+          </section>
+        )}
+
         {/* Meet Our Team */}
         <section className="mb-20 lg:mb-32">
           <div className="text-center mb-16">
@@ -302,10 +343,12 @@ export default async function About() {
             </p>
           </div>
 
-          {teamMembers.length > 0 ? (
+          {teamMembers.filter((m: any) => !m.isDoctor).length > 0 ? (
             // Display database team members using TeamMemberCard component
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers.map((member) => (
+              {teamMembers
+                .filter((member: any) => !member.isDoctor)
+                .map((member) => (
                 <TeamMemberCard
                   key={member.id}
                   member={member}

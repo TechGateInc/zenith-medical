@@ -394,4 +394,9 @@ export const PAGE_METADATA = {
     description: 'Expert medical insights, health tips, and wellness guidance from the healthcare professionals at Zenith Medical Centre.',
     keywords: [...KEYWORDS.medical, 'health blog', 'medical articles', 'health tips', 'wellness'],
   },
+  doctors: {
+    title: 'Our Medical Team & Doctors',
+    description: 'Meet our experienced physicians and healthcare professionals at Zenith Medical Centre. Learn about our doctors\' specialties, credentials, and commitment to patient care.',
+    keywords: [...KEYWORDS.medical, 'doctors', 'physicians', 'medical team', 'healthcare professionals', 'specialists'],
+  },
 } 
