@@ -638,7 +638,7 @@ export default function IntakeSuccessPage() {
                   {/* CTA Buttons */}
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Link
-                      href="https://zenithmedical.cortico.ca/"
+                      href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"

@@ -37,6 +37,7 @@ export function useSettings(): UseSettingsReturn {
             appointmentReminders: true,
             securityAlerts: true,
             maintenanceMode: data.settings.maintenanceMode,
+            contactFormEnabled: data.settings.contactFormEnabled || true, // Default to true if not set
             sessionTimeout: 30,
             maxLoginAttempts: 5,
             passwordExpiry: 90,
@@ -92,6 +93,16 @@ export function useAdminEmail(): { adminEmail: string; loading: boolean } {
   
   return {
     adminEmail: settings?.adminEmail || 'admin@zenithmedical.ca', // Fallback
+    loading
+  };
+}
+
+// Convenience hook for checking if contact form is enabled
+export function useContactFormEnabled(): { contactFormEnabled: boolean; loading: boolean } {
+  const { settings, loading } = useSettings();
+  
+  return {
+    contactFormEnabled: settings?.contactFormEnabled ?? true, // Default to true if not set
     loading
   };
 }

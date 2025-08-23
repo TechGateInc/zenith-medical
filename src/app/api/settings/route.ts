@@ -26,7 +26,8 @@ export async function GET() {
           timezone: settings.timezone,
           dateFormat: settings.dateFormat
         },
-        maintenanceMode: settings.maintenanceMode
+        maintenanceMode: settings.maintenanceMode,
+        contactFormEnabled: settings.contactFormEnabled
       }
     });
 

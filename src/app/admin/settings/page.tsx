@@ -45,6 +45,7 @@ interface NotificationSettings {
   appointmentReminders: boolean;
   securityAlerts: boolean;
   maintenanceMode: boolean;
+  contactFormEnabled: boolean;
 }
 
 interface SecuritySettings {
@@ -75,7 +76,8 @@ export default function SettingsPage() {
     emailNotifications: true,
     appointmentReminders: true,
     securityAlerts: true,
-    maintenanceMode: false
+    maintenanceMode: false,
+    contactFormEnabled: true
   });
 
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
@@ -559,6 +561,23 @@ export default function SettingsPage() {
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                       notificationSettings.maintenanceMode ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-900">Contact Form</h3>
+                    <p className="text-sm text-gray-500">Enable or disable the contact us form</p>
+                  </div>
+                  <button
+                    onClick={() => setNotificationSettings(prev => ({ ...prev, contactFormEnabled: !prev.contactFormEnabled }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      notificationSettings.contactFormEnabled ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      notificationSettings.contactFormEnabled ? 'translate-x-6' : 'translate-x-1'
                     }`} />
                   </button>
                 </div>

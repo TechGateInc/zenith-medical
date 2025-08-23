@@ -84,7 +84,7 @@ export default async function Home() {
                     Book Appointment
                   </a>
                   <Link
-                    href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
+                    href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
                     className="inline-flex items-center justify-center px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-colors text-lg whitespace-nowrap"
                   >
                     <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -382,7 +382,7 @@ export default async function Home() {
                     Schedule Appointment
                   </Link>
                   <Link
-                    href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
+                    href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
                     className="inline-flex items-center justify-center px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-colors text-lg whitespace-nowrap"
                   >
                     <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -518,7 +518,7 @@ export default async function Home() {
             </div>
           </Link>
 
-          <Link href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/" className="block">
+          <Link href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227" className="block">
             <div className="bg-white p-6 rounded-lg shadow-lg border border-slate-200 hover:shadow-xl transition-shadow text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

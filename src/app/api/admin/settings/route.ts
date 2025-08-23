@@ -49,7 +49,8 @@ export async function GET() {
           emailNotifications: settings.emailNotifications,
           appointmentReminders: settings.appointmentReminders,
           securityAlerts: settings.securityAlerts,
-          maintenanceMode: settings.maintenanceMode
+          maintenanceMode: settings.maintenanceMode,
+          contactFormEnabled: settings.contactFormEnabled
         },
         security: {
           sessionTimeout: settings.sessionTimeout,
@@ -174,6 +175,9 @@ export async function PUT(request: NextRequest) {
       if (typeof notifications.maintenanceMode === 'boolean') {
         updates.maintenanceMode = notifications.maintenanceMode;
       }
+      if (typeof notifications.contactFormEnabled === 'boolean') {
+        updates.contactFormEnabled = notifications.contactFormEnabled;
+      }
     }
 
     // Validate and prepare security settings updates
@@ -217,7 +221,8 @@ export async function PUT(request: NextRequest) {
           emailNotifications: updatedSettings.emailNotifications,
           appointmentReminders: updatedSettings.appointmentReminders,
           securityAlerts: updatedSettings.securityAlerts,
-          maintenanceMode: updatedSettings.maintenanceMode
+          maintenanceMode: updatedSettings.maintenanceMode,
+          contactFormEnabled: updatedSettings.contactFormEnabled
         },
         security: {
           sessionTimeout: updatedSettings.sessionTimeout,

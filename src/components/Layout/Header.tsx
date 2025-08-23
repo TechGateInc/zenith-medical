@@ -64,7 +64,7 @@ export default function Header() {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
-              href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
+              href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
             >
               Patient Intake
@@ -121,7 +121,7 @@ export default function Header() {
             ))}
             <div className="border-t border-gray-200 pt-3 mt-3">
               <Link
-                href="https://zenithmedical.cortico.ca/patient/auth/?next=/patient/forms/Patient%2BEnrolment%2Band%2BConsent%2Bto%2BRelease%2BPersonal%2BHealth%2BInformation/"
+                href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
                 className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >

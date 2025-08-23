@@ -14,6 +14,7 @@ export interface SystemSettings {
   appointmentReminders: boolean;
   securityAlerts: boolean;
   maintenanceMode: boolean;
+  contactFormEnabled: boolean;
   sessionTimeout: number;
   maxLoginAttempts: number;
   passwordExpiry: number;
@@ -73,6 +74,7 @@ export class SettingsManager {
             appointmentReminders: true,
             securityAlerts: true,
             maintenanceMode: false,
+            contactFormEnabled: true,
             sessionTimeout: 30,
             maxLoginAttempts: 5,
             passwordExpiry: 90,
@@ -102,6 +104,7 @@ export class SettingsManager {
         appointmentReminders: true,
         securityAlerts: true,
         maintenanceMode: false,
+        contactFormEnabled: true,
         sessionTimeout: 30,
         maxLoginAttempts: 5,
         passwordExpiry: 90,
@@ -135,6 +138,7 @@ export class SettingsManager {
           appointmentReminders: true,
           securityAlerts: true,
           maintenanceMode: false,
+          contactFormEnabled: true,
           sessionTimeout: 30,
           maxLoginAttempts: 5,
           passwordExpiry: 90,
@@ -194,6 +198,14 @@ export class SettingsManager {
     const settings = await this.getSettings();
     return settings.maintenanceMode;
   }
+
+  /**
+   * Check if contact form is enabled
+   */
+  async isContactFormEnabled(): Promise<boolean> {
+    const settings = await this.getSettings();
+    return settings.contactFormEnabled;
+  }
 }
 
 // Export singleton instance
@@ -214,4 +226,8 @@ export async function getAdminEmail(): Promise<string> {
 
 export async function isMaintenanceMode(): Promise<boolean> {
   return settingsManager.isMaintenanceMode();
+}
+
+export async function isContactFormEnabled(): Promise<boolean> {
+  return settingsManager.isContactFormEnabled();
 }

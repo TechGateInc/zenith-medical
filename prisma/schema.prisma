@@ -415,6 +415,7 @@ model SystemSettings {
   appointmentReminders Boolean  @default(true)
   securityAlerts       Boolean  @default(true)
   maintenanceMode      Boolean  @default(false)
+  contactFormEnabled   Boolean  @default(true)
   sessionTimeout       Int      @default(30)
   maxLoginAttempts     Int      @default(5)
   passwordExpiry       Int      @default(90)

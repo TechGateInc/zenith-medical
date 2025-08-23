@@ -10,20 +10,14 @@ import Image from 'next/image';
 import { 
   Plus, 
   Search, 
-  Filter, 
   Edit2, 
   Trash2, 
   Eye, 
   EyeOff, 
-  Save, 
   X, 
-  GripVertical,
   User,
-  Mail,
-  Phone,
-  Tag,
+
   Loader2,
-  AlertTriangle,
   Stethoscope,
   GraduationCap,
   Award,
@@ -190,6 +184,7 @@ export default function DoctorManager() {
     emergencyContact: ''
   });
   const [availableTeamMembers, setAvailableTeamMembers] = useState<TeamMember[]>([]);
+  const [photoChanged, setPhotoChanged] = useState(false);
 
   const { handleApiError } = useApiAuth();
 
@@ -244,10 +239,15 @@ export default function DoctorManager() {
     }
   }, [apiCall]);
 
-  useEffect(() => {
-    fetchDoctors();
-    fetchAvailableTeamMembers();
+  // Refresh function for manual updates
+  const refreshData = useCallback(async () => {
+    await Promise.all([fetchDoctors(), fetchAvailableTeamMembers()]);
   }, [fetchDoctors, fetchAvailableTeamMembers]);
+
+  // Only fetch data once on component mount
+  useEffect(() => {
+    refreshData();
+  }, []); // Empty dependency array to run only once
 
   // Filter doctors based on search and filter criteria
   const filteredDoctors = doctors.filter(doctor => {
@@ -281,11 +281,13 @@ export default function DoctorManager() {
       availability: '',
       emergencyContact: ''
     });
+    setPhotoChanged(false);
     setShowModal(true);
   };
 
   const handleEditDoctor = (doctor: TeamMember) => {
     setEditingDoctor(doctor);
+    setPhotoChanged(false);
     if (doctor.doctor) {
       setFormData({
         teamMemberId: doctor.id,
@@ -316,9 +318,26 @@ export default function DoctorManager() {
         // Update existing doctor
         const response = await apiCall(`/api/admin/content/doctors/${editingDoctor.id}`, 'PUT', formData);
         if (response.success) {
+          // If there's a photo change, also update the team member
+          if (photoChanged && editingDoctor.photoUrl !== undefined) {
+            try {
+              await apiCall(`/api/admin/content/team/${editingDoctor.id}`, 'PUT', {
+                photoUrl: editingDoctor.photoUrl
+              });
+            } catch (photoError) {
+              console.error('Failed to update photo:', photoError);
+              // Don't fail the entire operation if photo update fails
+            }
+          }
+          
           toast.success('Doctor profile updated successfully');
           setShowModal(false);
-          fetchDoctors();
+          setPhotoChanged(false);
+          // Fetch fresh data directly
+          const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+          if (freshResponse.success) {
+            setDoctors(freshResponse.data);
+          }
         }
       } else {
         // Create new doctor
@@ -326,7 +345,11 @@ export default function DoctorManager() {
         if (response.success) {
           toast.success('Doctor profile created successfully');
           setShowModal(false);
-          fetchDoctors();
+          // Fetch fresh data directly
+          const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+          if (freshResponse.success) {
+            setDoctors(freshResponse.data);
+          }
         }
       }
     } catch (error) {
@@ -344,7 +367,11 @@ export default function DoctorManager() {
       const response = await apiCall(`/api/admin/content/doctors/${doctorId}`, 'DELETE');
       if (response.success) {
         toast.success('Doctor profile deleted successfully');
-        fetchDoctors();
+        // Fetch fresh data directly
+        const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+        if (freshResponse.success) {
+          setDoctors(freshResponse.data);
+        }
       }
     } catch (error) {
       console.error('Failed to delete doctor profile:', error);
@@ -359,7 +386,11 @@ export default function DoctorManager() {
       });
       if (response.success) {
         toast.success(`Doctor profile ${!currentPublished ? 'published' : 'unpublished'} successfully`);
-        fetchDoctors();
+        // Fetch fresh data directly
+        const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+        if (freshResponse.success) {
+          setDoctors(freshResponse.data);
+        }
       }
     } catch (error) {
       console.error('Failed to toggle published status:', error);
@@ -372,47 +403,61 @@ export default function DoctorManager() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Doctor Profiles</h1>
           <p className="text-gray-600">Manage doctor profiles and professional information</p>
         </div>
-        <button
-          onClick={handleCreateDoctor}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Doctor Profile
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={refreshData}
+            className="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+            title="Refresh data"
+          >
+            <Loader2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleCreateDoctor}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Doctor Profile
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search doctors by name, title, or specialties..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+      <div className="bg-white rounded-xl shadow p-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search doctors by name, title, or specialties..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <select
+            value={filterPublished}
+            onChange={(e) => setFilterPublished(e.target.value as 'all' | 'published' | 'unpublished')}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Status</option>
+            <option value="published">Published Only</option>
+            <option value="unpublished">Unpublished Only</option>
+          </select>
         </div>
-        <select
-          value={filterPublished}
-          onChange={(e) => setFilterPublished(e.target.value as 'all' | 'published' | 'unpublished')}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="all">All Status</option>
-          <option value="published">Published Only</option>
-          <option value="unpublished">Unpublished Only</option>
-        </select>
       </div>
 
       {/* Doctors Table */}
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+      <div className="bg-white rounded-xl shadow overflow-hidden">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">All Doctors</h2>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -529,7 +574,7 @@ export default function DoctorManager() {
         </div>
         
         {filteredDoctors.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 px-6">
             <Stethoscope className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No doctors found</h3>
             <p className="mt-1 text-sm text-gray-500">
@@ -567,6 +612,49 @@ export default function DoctorManager() {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Photo Upload - Moved to top for prominence */}
+          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Doctor Photo <span className="text-red-500">*</span>
+            </label>
+            <p className="text-sm text-gray-500 mb-4">
+              Upload a professional photo for the doctor. This photo will be displayed on their profile page and in the doctors listing. 
+              {!editingDoctor && ' For new doctor profiles, a photo is highly recommended.'}
+            </p>
+            <div className="bg-white p-4 rounded-lg border border-gray-300">
+              <ImageUpload
+                uploadType="team-member"
+                entityId={editingDoctor?.id || formData.teamMemberId}
+                currentImageUrl={editingDoctor?.photoUrl}
+                onUploadSuccess={(uploadResult) => {
+                  // Update the team member's photo URL
+                  if (editingDoctor) {
+                    // Update the local state to reflect the new photo
+                    setEditingDoctor({
+                      ...editingDoctor,
+                      photoUrl: uploadResult.secure_url
+                    });
+                    setPhotoChanged(true);
+                  }
+                  toast.success('Photo uploaded successfully');
+                }}
+                onUploadError={(error) => {
+                  toast.error(`Failed to upload photo: ${error}`);
+                }}
+                onImageRemove={() => {
+                  if (editingDoctor) {
+                    setEditingDoctor({
+                      ...editingDoctor,
+                      photoUrl: undefined
+                    });
+                    setPhotoChanged(true);
+                  }
+                  toast.success('Photo removed');
+                }}
+              />
+            </div>
           </div>
 
           {/* Professional Bio */}

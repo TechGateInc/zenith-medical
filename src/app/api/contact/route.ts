@@ -54,8 +54,17 @@ export async function POST(request: NextRequest) {
                      'unknown'
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
-    // Get admin email from database settings
+    // Get settings from database
     const settings = await settingsManager.getSettings()
+    
+    // Check if contact form is enabled
+    if (!settings.contactFormEnabled) {
+      return NextResponse.json(
+        { success: false, error: 'Contact form is currently disabled.' },
+        { status: 403 }
+      )
+    }
+
     const adminEmail = settings.adminEmail
 
     // Generate a predictable ID for Message-ID consistency
