@@ -40,7 +40,6 @@ interface TeamMember {
   photoUrl?: string;
   email?: string;
   phone?: string;
-  specialties: string[];
   orderIndex: number;
   published: boolean;
   createdAt: string;
@@ -54,7 +53,6 @@ interface TeamMemberFormData {
   photoUrl?: string;
   email?: string;
   phone?: string;
-  specialties: string[];
   published: boolean;
 }
 
@@ -132,7 +130,6 @@ const TeamManager: React.FC = () => {
     photoUrl: '',
     email: '',
     phone: '',
-    specialties: [],
     published: true
   });
   const [formLoading, setFormLoading] = useState(false);
@@ -334,7 +331,6 @@ const TeamManager: React.FC = () => {
       photoUrl: member.photoUrl || '',
       email: member.email || '',
       phone: member.phone || '',
-      specialties: member.specialties || [],
       published: member.published
     });
     setShowForm(true);
@@ -349,7 +345,6 @@ const TeamManager: React.FC = () => {
       photoUrl: '',
       email: '',
       phone: '',
-      specialties: [],
       published: true
     });
     setEditingMember(null);
@@ -629,25 +624,6 @@ const TeamManager: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Specialties */}
-                  <div className="col-span-6 md:col-span-2 hidden xl:flex items-start">
-                    <div className="flex flex-wrap gap-1.5 min-w-0 flex-1">
-                      {member.specialties.slice(0, 2).map((specialty, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 text-blue-800 text-xs rounded-full flex-shrink-0 shadow-sm group-hover:bg-blue-200 group-hover:shadow-md transition-all duration-200"
-                        >
-                          <Tag size={10} />
-                          <span className="truncate max-w-[70px] leading-tight">{specialty}</span>
-                        </span>
-                      ))}
-                      {member.specialties.length > 2 && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-full flex-shrink-0 shadow-sm group-hover:bg-gray-200 group-hover:shadow-md transition-all duration-200">
-                          +{member.specialties.length - 2} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
 
                   {/* Status */}
                   <div className="col-span-6 md:col-span-1 hidden lg:flex items-start justify-center">
@@ -841,20 +817,7 @@ const TeamManager: React.FC = () => {
                 />
               </div>
 
-              {/* Specialties */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Specialties
-                </label>
-                <TagInput
-                  value={formData.specialties}
-                  onChange={specialties => setFormData(prev => ({ ...prev, specialties }))}
-                  placeholder="Add specialty and press Enter"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Press Enter or comma to add. Click × to remove.
-                </p>
-              </div>
+
 
               {/* Published Status */}
               <div className="flex items-center gap-2">

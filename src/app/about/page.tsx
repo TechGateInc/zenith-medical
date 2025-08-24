@@ -44,11 +44,10 @@ export default async function About() {
 
   // Generate structured data for team members
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const doctorStructuredData = teamMembers.map((member: any) => 
+        const doctorStructuredData = teamMembers.map((member: any) => 
     generateDoctorStructuredData({
       name: member.name,
       title: member.title || member.role,
-      specialties: member.specialties || [],
       experience: member.bio || `Experienced healthcare professional`
     })
   )
@@ -276,7 +275,6 @@ export default async function About() {
                       variant="default"
                       showEmail={false}
                       showPhone={false}
-                      showSpecialties={true}
                       showBio={true}
                     />
                   </Link>

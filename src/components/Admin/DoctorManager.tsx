@@ -3,31 +3,30 @@
  * Admin interface for managing doctor profiles with CRUD operations
  */
 
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
-import { 
-  Plus, 
-  Search, 
-  Edit2, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
-  X, 
+import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  Eye,
+  EyeOff,
+  X,
   User,
-
   Loader2,
   Stethoscope,
   GraduationCap,
   Award,
-  Building
-} from 'lucide-react';
-import ImageUpload from './ImageUpload';
-import Modal from '../UI/Modal';
-import toast from 'react-hot-toast';
-import { useApiAuth } from '@/lib/auth/use-api-auth';
-import { TableSkeleton } from '@/components/UI/SkeletonLoader';
+  Building,
+} from "lucide-react";
+import ImageUpload from "./ImageUpload";
+import Modal from "../UI/Modal";
+import toast from "react-hot-toast";
+import { useApiAuth } from "@/lib/auth/use-api-auth";
+import { TableSkeleton } from "@/components/UI/SkeletonLoader";
 
 // Types
 interface DoctorProfile {
@@ -59,7 +58,7 @@ interface TeamMember {
   photoUrl?: string;
   email?: string;
   phone?: string;
-  specialties: string[];
+
   orderIndex: number;
   published: boolean;
   isDoctor: boolean;
@@ -92,31 +91,31 @@ interface DoctorFormData {
 }
 
 // TagInput component for managing arrays of strings
-function TagInput({ 
-  value, 
-  onChange, 
-  placeholder, 
-  icon: Icon 
-}: { 
-  value: string[]; 
-  onChange: (tags: string[]) => void; 
+function TagInput({
+  value,
+  onChange,
+  placeholder,
+  icon: Icon,
+}: {
+  value: string[];
+  onChange: (tags: string[]) => void;
   placeholder?: string;
   icon?: React.ComponentType<{ className?: string }>;
 }) {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === 'Enter' || e.key === ',') && input.trim()) {
+    if ((e.key === "Enter" || e.key === ",") && input.trim()) {
       e.preventDefault();
       if (!value.includes(input.trim())) {
         onChange([...value, input.trim()]);
       }
-      setInput('');
-    } else if (e.key === 'Backspace' && !input && value.length > 0) {
+      setInput("");
+    } else if (e.key === "Backspace" && !input && value.length > 0) {
       onChange(value.slice(0, -1));
     }
   };
@@ -129,7 +128,10 @@ function TagInput({
     <div className="flex flex-wrap items-center gap-2 border border-gray-300 rounded-lg px-2 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-500">
       {Icon && <Icon className="w-4 h-4 text-gray-400" />}
       {value.map((tag, idx) => (
-        <span key={idx} className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+        <span
+          key={idx}
+          className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium"
+        >
           {tag}
           <button
             type="button"
@@ -155,63 +157,74 @@ function TagInput({
 export default function DoctorManager() {
   const [doctors, setDoctors] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterPublished, setFilterPublished] = useState<'all' | 'published' | 'unpublished'>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterPublished, setFilterPublished] = useState<
+    "all" | "published" | "unpublished"
+  >("all");
   const [showModal, setShowModal] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState<TeamMember | null>(null);
   const [formData, setFormData] = useState<DoctorFormData>({
-    teamMemberId: '',
-    professionalBio: '',
-    medicalSchool: '',
+    teamMemberId: "",
+    professionalBio: "",
+    medicalSchool: "",
     graduationYear: undefined,
-    residency: '',
-    fellowship: '',
+    residency: "",
+    fellowship: "",
     boardCertifications: [],
     hospitalAffiliations: [],
     researchInterests: [],
     publications: [],
     awards: [],
     memberships: [],
-    consultationFee: '',
-    availability: '',
-    emergencyContact: ''
+    consultationFee: "",
+    availability: "",
+    emergencyContact: "",
   });
-  const [availableTeamMembers, setAvailableTeamMembers] = useState<TeamMember[]>([]);
+  const [availableTeamMembers, setAvailableTeamMembers] = useState<
+    TeamMember[]
+  >([]);
   const [photoChanged, setPhotoChanged] = useState(false);
 
   const { handleApiError } = useApiAuth();
 
   // Lightweight API helper that reuses our auth error handling
-  const apiCall = useCallback(async (url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: unknown) => {
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+  const apiCall = useCallback(
+    async (
+      url: string,
+      method: "GET" | "POST" | "PUT" | "DELETE",
+      body?: unknown
+    ) => {
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: body ? JSON.stringify(body) : undefined,
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const error = new Error(errorData.error || `HTTP ${response.status}`);
-      if (handleApiError(error, response)) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}`);
+        if (handleApiError(error, response)) {
+          throw error;
+        }
         throw error;
       }
-      throw error;
-    }
 
-    return response.json();
-  }, [handleApiError]);
+      return response.json();
+    },
+    [handleApiError]
+  );
 
   // Fetch doctors and available team members
   const fetchDoctors = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiCall('/api/admin/content/doctors', 'GET');
+      const response = await apiCall("/api/admin/content/doctors", "GET");
       if (response.success) {
         setDoctors(response.data);
       }
     } catch (error) {
-      console.error('Failed to fetch doctors:', error);
-      toast.error('Failed to fetch doctors');
+      console.error("Failed to fetch doctors:", error);
+      toast.error("Failed to fetch doctors");
     } finally {
       setLoading(false);
     }
@@ -219,16 +232,16 @@ export default function DoctorManager() {
 
   const fetchAvailableTeamMembers = useCallback(async () => {
     try {
-      const response = await apiCall('/api/admin/content/team', 'GET');
+      const response = await apiCall("/api/admin/content/team", "GET");
       if (response.success) {
         // Filter for team members who are doctors or can be made doctors
-        const available = response.data.filter((member: TeamMember) => 
-          member.isDoctor || !member.doctor
+        const available = response.data.filter(
+          (member: TeamMember) => member.isDoctor || !member.doctor
         );
         setAvailableTeamMembers(available);
       }
     } catch (error) {
-      console.error('Failed to fetch team members:', error);
+      console.error("Failed to fetch team members:", error);
     }
   }, [apiCall]);
 
@@ -243,36 +256,37 @@ export default function DoctorManager() {
   }, []); // Empty dependency array to run only once
 
   // Filter doctors based on search and filter criteria
-  const filteredDoctors = doctors.filter(doctor => {
-    const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doctor.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doctor.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesFilter = filterPublished === 'all' || 
-                         (filterPublished === 'published' && doctor.published) ||
-                         (filterPublished === 'unpublished' && !doctor.published);
-    
+  const filteredDoctors = doctors.filter((doctor) => {
+    const matchesSearch =
+      doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.title.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFilter =
+      filterPublished === "all" ||
+      (filterPublished === "published" && doctor.published) ||
+      (filterPublished === "unpublished" && !doctor.published);
+
     return matchesSearch && matchesFilter;
   });
 
   const handleCreateDoctor = () => {
     setEditingDoctor(null);
     setFormData({
-      teamMemberId: '',
-      professionalBio: '',
-      medicalSchool: '',
+      teamMemberId: "",
+      professionalBio: "",
+      medicalSchool: "",
       graduationYear: undefined,
-      residency: '',
-      fellowship: '',
+      residency: "",
+      fellowship: "",
       boardCertifications: [],
       hospitalAffiliations: [],
       researchInterests: [],
       publications: [],
       awards: [],
       memberships: [],
-      consultationFee: '',
-      availability: '',
-      emergencyContact: ''
+      consultationFee: "",
+      availability: "",
+      emergencyContact: "",
     });
     setPhotoChanged(false);
     setShowModal(true);
@@ -285,19 +299,19 @@ export default function DoctorManager() {
       setFormData({
         teamMemberId: doctor.id,
         professionalBio: doctor.doctor.professionalBio,
-        medicalSchool: doctor.doctor.medicalSchool || '',
+        medicalSchool: doctor.doctor.medicalSchool || "",
         graduationYear: doctor.doctor.graduationYear,
-        residency: doctor.doctor.residency || '',
-        fellowship: doctor.doctor.fellowship || '',
+        residency: doctor.doctor.residency || "",
+        fellowship: doctor.doctor.fellowship || "",
         boardCertifications: doctor.doctor.boardCertifications,
         hospitalAffiliations: doctor.doctor.hospitalAffiliations,
         researchInterests: doctor.doctor.researchInterests,
         publications: doctor.doctor.publications,
         awards: doctor.doctor.awards,
         memberships: doctor.doctor.memberships,
-        consultationFee: doctor.doctor.consultationFee || '',
-        availability: doctor.doctor.availability || '',
-        emergencyContact: doctor.doctor.emergencyContact || ''
+        consultationFee: doctor.doctor.consultationFee || "",
+        availability: doctor.doctor.availability || "",
+        emergencyContact: doctor.doctor.emergencyContact || "",
       });
     }
     setShowModal(true);
@@ -305,89 +319,129 @@ export default function DoctorManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       if (editingDoctor) {
         // Update existing doctor
-        const response = await apiCall(`/api/admin/content/doctors/${editingDoctor.id}`, 'PUT', formData);
+        const response = await apiCall(
+          `/api/admin/content/doctors/${editingDoctor.id}`,
+          "PUT",
+          formData
+        );
         if (response.success) {
           // If there's a photo change, also update the team member
           if (photoChanged && editingDoctor.photoUrl !== undefined) {
             try {
-              await apiCall(`/api/admin/content/team/${editingDoctor.id}`, 'PUT', {
-                photoUrl: editingDoctor.photoUrl
-              });
+              await apiCall(
+                `/api/admin/content/team/${editingDoctor.id}`,
+                "PUT",
+                {
+                  photoUrl: editingDoctor.photoUrl,
+                }
+              );
             } catch (photoError) {
-              console.error('Failed to update photo:', photoError);
+              console.error("Failed to update photo:", photoError);
               // Don't fail the entire operation if photo update fails
             }
           }
-          
-          toast.success('Doctor profile updated successfully');
+
+          toast.success("Doctor profile updated successfully");
           setShowModal(false);
           setPhotoChanged(false);
           // Fetch fresh data directly
-          const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+          const freshResponse = await apiCall(
+            "/api/admin/content/doctors",
+            "GET"
+          );
           if (freshResponse.success) {
             setDoctors(freshResponse.data);
           }
         }
       } else {
         // Create new doctor
-        const response = await apiCall('/api/admin/content/doctors', 'POST', formData);
+        const response = await apiCall(
+          "/api/admin/content/doctors",
+          "POST",
+          formData
+        );
         if (response.success) {
-          toast.success('Doctor profile created successfully');
+          toast.success("Doctor profile created successfully");
           setShowModal(false);
           // Fetch fresh data directly
-          const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+          const freshResponse = await apiCall(
+            "/api/admin/content/doctors",
+            "GET"
+          );
           if (freshResponse.success) {
             setDoctors(freshResponse.data);
           }
         }
       }
     } catch (error) {
-      console.error('Failed to save doctor profile:', error);
-      toast.error('Failed to save doctor profile');
+      console.error("Failed to save doctor profile:", error);
+      toast.error("Failed to save doctor profile");
     }
   };
 
   const handleDeleteDoctor = async (doctorId: string) => {
-    if (!confirm('Are you sure you want to delete this doctor profile? This action cannot be undone.')) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this doctor profile? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     try {
-      const response = await apiCall(`/api/admin/content/doctors/${doctorId}`, 'DELETE');
+      const response = await apiCall(
+        `/api/admin/content/doctors/${doctorId}`,
+        "DELETE"
+      );
       if (response.success) {
-        toast.success('Doctor profile deleted successfully');
+        toast.success("Doctor profile deleted successfully");
         // Fetch fresh data directly
-        const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+        const freshResponse = await apiCall(
+          "/api/admin/content/doctors",
+          "GET"
+        );
         if (freshResponse.success) {
           setDoctors(freshResponse.data);
         }
       }
     } catch (error) {
-      console.error('Failed to delete doctor profile:', error);
-      toast.error('Failed to delete doctor profile');
+      console.error("Failed to delete doctor profile:", error);
+      toast.error("Failed to delete doctor profile");
     }
   };
 
-  const handleTogglePublished = async (doctorId: string, currentPublished: boolean) => {
+  const handleTogglePublished = async (
+    doctorId: string,
+    currentPublished: boolean
+  ) => {
     try {
-      const response = await apiCall(`/api/admin/content/doctors/${doctorId}/toggle-published`, 'PUT', {
-        published: !currentPublished
-      });
+      const response = await apiCall(
+        `/api/admin/content/doctors/${doctorId}/toggle-published`,
+        "PUT",
+        {
+          published: !currentPublished,
+        }
+      );
       if (response.success) {
-        toast.success(`Doctor profile ${!currentPublished ? 'published' : 'unpublished'} successfully`);
+        toast.success(
+          `Doctor profile ${!currentPublished ? "published" : "unpublished"} successfully`
+        );
         // Fetch fresh data directly
-        const freshResponse = await apiCall('/api/admin/content/doctors', 'GET');
+        const freshResponse = await apiCall(
+          "/api/admin/content/doctors",
+          "GET"
+        );
         if (freshResponse.success) {
           setDoctors(freshResponse.data);
         }
       }
     } catch (error) {
-      console.error('Failed to toggle published status:', error);
-      toast.error('Failed to update published status');
+      console.error("Failed to toggle published status:", error);
+      toast.error("Failed to update published status");
     }
   };
 
@@ -401,7 +455,9 @@ export default function DoctorManager() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Doctor Profiles</h1>
-          <p className="text-gray-600">Manage doctor profiles and professional information</p>
+          <p className="text-gray-600">
+            Manage doctor profiles and professional information
+          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -428,7 +484,7 @@ export default function DoctorManager() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search doctors by name, title, or specialties..."
+              placeholder="Search doctors by name or title..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -436,7 +492,11 @@ export default function DoctorManager() {
           </div>
           <select
             value={filterPublished}
-            onChange={(e) => setFilterPublished(e.target.value as 'all' | 'published' | 'unpublished')}
+            onChange={(e) =>
+              setFilterPublished(
+                e.target.value as "all" | "published" | "unpublished"
+              )
+            }
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="all">All Status</option>
@@ -461,9 +521,7 @@ export default function DoctorManager() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Credentials
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Specialties
-                </th>
+
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
@@ -496,36 +554,33 @@ export default function DoctorManager() {
                         )}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{doctor.name}</div>
-                        <div className="text-sm text-gray-500">{doctor.title}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {doctor.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {doctor.title}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{doctor.credentials || 'N/A'}</div>
-                    <div className="text-sm text-gray-500">{doctor.experience || 'N/A'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-wrap gap-1">
-                      {doctor.specialties.slice(0, 3).map((specialty, index) => (
-                        <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {specialty}
-                        </span>
-                      ))}
-                      {doctor.specialties.length > 3 && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          +{doctor.specialties.length - 3} more
-                        </span>
-                      )}
+                    <div className="text-sm text-gray-900">
+                      {doctor.credentials || "N/A"}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {doctor.experience || "N/A"}
                     </div>
                   </td>
+
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      doctor.published 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {doctor.published ? 'Published' : 'Draft'}
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        doctor.published
+                          ? "bg-green-100 text-green-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {doctor.published ? "Published" : "Draft"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -534,15 +589,21 @@ export default function DoctorManager() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
                       <button
-                        onClick={() => handleTogglePublished(doctor.id, doctor.published)}
+                        onClick={() =>
+                          handleTogglePublished(doctor.id, doctor.published)
+                        }
                         className={`p-2 rounded-lg transition-colors ${
-                          doctor.published 
-                            ? 'text-yellow-600 hover:bg-yellow-50' 
-                            : 'text-green-600 hover:bg-green-50'
+                          doctor.published
+                            ? "text-yellow-600 hover:bg-yellow-50"
+                            : "text-green-600 hover:bg-green-50"
                         }`}
-                        title={doctor.published ? 'Unpublish' : 'Publish'}
+                        title={doctor.published ? "Unpublish" : "Publish"}
                       >
-                        {doctor.published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {doctor.published ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
                       </button>
                       <button
                         onClick={() => handleEditDoctor(doctor)}
@@ -565,15 +626,17 @@ export default function DoctorManager() {
             </tbody>
           </table>
         </div>
-        
+
         {filteredDoctors.length === 0 && (
           <div className="text-center py-12 px-6">
             <Stethoscope className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No doctors found</h3>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              No doctors found
+            </h3>
             <p className="mt-1 text-sm text-gray-500">
-              {searchTerm || filterPublished !== 'all' 
-                ? 'Try adjusting your search or filter criteria.' 
-                : 'Get started by creating your first doctor profile.'}
+              {searchTerm || filterPublished !== "all"
+                ? "Try adjusting your search or filter criteria."
+                : "Get started by creating your first doctor profile."}
             </p>
           </div>
         )}
@@ -583,7 +646,7 @@ export default function DoctorManager() {
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={editingDoctor ? 'Edit Doctor Profile' : 'Create Doctor Profile'}
+        title={editingDoctor ? "Edit Doctor Profile" : "Create Doctor Profile"}
         size="xl"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -594,7 +657,9 @@ export default function DoctorManager() {
             </label>
             <select
               value={formData.teamMemberId}
-              onChange={(e) => setFormData({ ...formData, teamMemberId: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, teamMemberId: e.target.value })
+              }
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
@@ -613,8 +678,10 @@ export default function DoctorManager() {
               Doctor Photo <span className="text-red-500">*</span>
             </label>
             <p className="text-sm text-gray-500 mb-4">
-              Upload a professional photo for the doctor. This photo will be displayed on their profile page and in the doctors listing. 
-              {!editingDoctor && ' For new doctor profiles, a photo is highly recommended.'}
+              Upload a professional photo for the doctor. This photo will be
+              displayed on their profile page and in the doctors listing.
+              {!editingDoctor &&
+                " For new doctor profiles, a photo is highly recommended."}
             </p>
             <div className="bg-white p-4 rounded-lg border border-gray-300">
               <ImageUpload
@@ -627,11 +694,11 @@ export default function DoctorManager() {
                     // Update the local state to reflect the new photo
                     setEditingDoctor({
                       ...editingDoctor,
-                      photoUrl: uploadResult.secure_url
+                      photoUrl: uploadResult.secure_url,
                     });
                     setPhotoChanged(true);
                   }
-                  toast.success('Photo uploaded successfully');
+                  toast.success("Photo uploaded successfully");
                 }}
                 onUploadError={(error) => {
                   toast.error(`Failed to upload photo: ${error}`);
@@ -640,11 +707,11 @@ export default function DoctorManager() {
                   if (editingDoctor) {
                     setEditingDoctor({
                       ...editingDoctor,
-                      photoUrl: undefined
+                      photoUrl: undefined,
                     });
                     setPhotoChanged(true);
                   }
-                  toast.success('Photo removed');
+                  toast.success("Photo removed");
                 }}
               />
             </div>
@@ -657,7 +724,9 @@ export default function DoctorManager() {
             </label>
             <textarea
               value={formData.professionalBio}
-              onChange={(e) => setFormData({ ...formData, professionalBio: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, professionalBio: e.target.value })
+              }
               required
               rows={6}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -674,7 +743,9 @@ export default function DoctorManager() {
               <input
                 type="text"
                 value={formData.medicalSchool}
-                onChange={(e) => setFormData({ ...formData, medicalSchool: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, medicalSchool: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., University of Oxford"
               />
@@ -685,8 +756,15 @@ export default function DoctorManager() {
               </label>
               <input
                 type="number"
-                value={formData.graduationYear || ''}
-                onChange={(e) => setFormData({ ...formData, graduationYear: e.target.value ? parseInt(e.target.value) : undefined })}
+                value={formData.graduationYear || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    graduationYear: e.target.value
+                      ? parseInt(e.target.value)
+                      : undefined,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., 2010"
                 min="1950"
@@ -703,7 +781,9 @@ export default function DoctorManager() {
               <input
                 type="text"
                 value={formData.residency}
-                onChange={(e) => setFormData({ ...formData, residency: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, residency: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., Family Medicine, University of Toronto"
               />
@@ -715,7 +795,9 @@ export default function DoctorManager() {
               <input
                 type="text"
                 value={formData.fellowship}
-                onChange={(e) => setFormData({ ...formData, fellowship: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, fellowship: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., Sports Medicine"
               />
@@ -730,7 +812,9 @@ export default function DoctorManager() {
               </label>
               <TagInput
                 value={formData.boardCertifications}
-                onChange={(value) => setFormData({ ...formData, boardCertifications: value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, boardCertifications: value })
+                }
                 placeholder="Add certification..."
                 icon={Award}
               />
@@ -741,7 +825,9 @@ export default function DoctorManager() {
               </label>
               <TagInput
                 value={formData.hospitalAffiliations}
-                onChange={(value) => setFormData({ ...formData, hospitalAffiliations: value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, hospitalAffiliations: value })
+                }
                 placeholder="Add hospital..."
                 icon={Building}
               />
@@ -756,7 +842,9 @@ export default function DoctorManager() {
               </label>
               <TagInput
                 value={formData.researchInterests}
-                onChange={(value) => setFormData({ ...formData, researchInterests: value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, researchInterests: value })
+                }
                 placeholder="Add research interest..."
                 icon={GraduationCap}
               />
@@ -767,7 +855,9 @@ export default function DoctorManager() {
               </label>
               <TagInput
                 value={formData.publications}
-                onChange={(value) => setFormData({ ...formData, publications: value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, publications: value })
+                }
                 placeholder="Add publication..."
                 icon={GraduationCap}
               />
@@ -782,7 +872,9 @@ export default function DoctorManager() {
               </label>
               <TagInput
                 value={formData.awards}
-                onChange={(value) => setFormData({ ...formData, awards: value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, awards: value })
+                }
                 placeholder="Add award..."
                 icon={Award}
               />
@@ -793,7 +885,9 @@ export default function DoctorManager() {
               </label>
               <TagInput
                 value={formData.memberships}
-                onChange={(value) => setFormData({ ...formData, memberships: value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, memberships: value })
+                }
                 placeholder="Add membership..."
                 icon={User}
               />
@@ -809,7 +903,9 @@ export default function DoctorManager() {
               <input
                 type="text"
                 value={formData.consultationFee}
-                onChange={(e) => setFormData({ ...formData, consultationFee: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, consultationFee: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., $150"
               />
@@ -821,7 +917,9 @@ export default function DoctorManager() {
               <input
                 type="text"
                 value={formData.availability}
-                onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, availability: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., Mon-Fri 9AM-5PM"
               />
@@ -833,7 +931,9 @@ export default function DoctorManager() {
               <input
                 type="text"
                 value={formData.emergencyContact}
-                onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, emergencyContact: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Emergency contact info"
               />
@@ -853,7 +953,7 @@ export default function DoctorManager() {
               type="submit"
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
             >
-              {editingDoctor ? 'Update Profile' : 'Create Profile'}
+              {editingDoctor ? "Update Profile" : "Create Profile"}
             </button>
           </div>
         </form>

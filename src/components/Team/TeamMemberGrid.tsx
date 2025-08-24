@@ -60,10 +60,7 @@ const TeamMemberGrid: React.FC<TeamMemberGridProps> = ({
       filtered = filtered.filter(member =>
         member.name.toLowerCase().includes(search) ||
         member.title.toLowerCase().includes(search) ||
-        member.bio?.toLowerCase().includes(search) ||
-        member.specialties.some(specialty => 
-          specialty.toLowerCase().includes(search)
-        )
+        member.bio?.toLowerCase().includes(search)
       );
     }
 
@@ -125,7 +122,7 @@ const TeamMemberGrid: React.FC<TeamMemberGridProps> = ({
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  aria-label="Search team members by name, title, bio, or specialties"
+                  aria-label="Search team members by name, title, or bio"
                 />
               </div>
             )}

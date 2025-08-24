@@ -161,27 +161,6 @@ const TeamMemberProfile: React.FC<TeamMemberProfileProps> = ({
           </div>
         </div>
 
-        {/* Specialties Section */}
-        {member.specialties.length > 0 && (
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Award className="text-blue-600" size={20} />
-              Specialties & Expertise
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {member.specialties.map((specialty, index) => (
-                <span 
-                  key={index}
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200"
-                >
-                  <Tag size={14} />
-                  {specialty}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Bio Section */}
         {showFullBio && member.bio && (
           <div className="mb-8">

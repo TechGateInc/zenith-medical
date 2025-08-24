@@ -11,7 +11,6 @@ import {
   Mail, 
   Phone, 
   User, 
-  Tag,
   ChevronRight
 } from 'lucide-react';
 import type { TeamMember } from './TeamMemberCard';
@@ -20,7 +19,7 @@ interface TeamMemberListProps {
   members: TeamMember[];
   showEmail?: boolean;
   showPhone?: boolean;
-  showSpecialties?: boolean;
+
   showBio?: boolean;
   showAvatar?: boolean;
   onMemberClick?: (member: TeamMember) => void;
@@ -33,7 +32,7 @@ const TeamMemberList: React.FC<TeamMemberListProps> = ({
   members,
   showEmail = false,
   showPhone = false,
-  showSpecialties = true,
+
   showBio = true,
   showAvatar = true,
   onMemberClick,
@@ -131,25 +130,7 @@ const TeamMemberList: React.FC<TeamMemberListProps> = ({
                 </p>
               )}
 
-              {/* Specialties */}
-              {showSpecialties && member.specialties.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-3">
-                  {member.specialties.slice(0, 4).map((specialty, index) => (
-                    <span 
-                      key={index}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
-                    >
-                      <Tag size={8} />
-                      {specialty}
-                    </span>
-                  ))}
-                  {member.specialties.length > 4 && (
-                    <span className="text-xs text-gray-500 px-2 py-1">
-                      +{member.specialties.length - 4} more
-                    </span>
-                  )}
-                </div>
-              )}
+
 
               {/* Contact Information */}
               {(showEmail || showPhone) && (member.email || member.phone) && (

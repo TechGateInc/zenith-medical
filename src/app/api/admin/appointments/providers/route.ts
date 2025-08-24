@@ -3,54 +3,53 @@
  * Manages healthcare providers who accept appointments
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/config';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/config";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user from database to verify current role
     const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
-      select: { role: true }
+      select: { role: true },
     });
 
-    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get current date for today's appointments
     const now = new Date();
     const startOfToday = new Date(now);
     startOfToday.setHours(0, 0, 0, 0);
-    
+
     const endOfToday = new Date(now);
     endOfToday.setHours(23, 59, 59, 999);
 
     // Get all active team members (treating them as potential providers)
     const providers = await prisma.teamMember.findMany({
       where: {
-        published: true
+        published: true,
       },
       select: {
         id: true,
         name: true,
         title: true,
-        specialties: true,
         published: true,
         email: true,
-        phone: true
+        phone: true,
       },
       orderBy: {
-        name: 'asc'
-      }
+        name: "asc",
+      },
     });
 
     // For each provider, get today's appointment count
@@ -61,37 +60,35 @@ export async function GET() {
         // we'll use a placeholder count based on intake submissions
         const todayAppointments = await prisma.patientIntake.count({
           where: {
-            status: 'APPOINTMENT_SCHEDULED',
+            status: "APPOINTMENT_SCHEDULED",
             updatedAt: {
               gte: startOfToday,
-              lte: endOfToday
-            }
+              lte: endOfToday,
+            },
             // TODO: Add provider assignment when that field exists
-          }
+          },
         });
 
         return {
           id: provider.id,
           name: provider.name,
           title: provider.title,
-          specialties: provider.specialties || [],
-          status: provider.published ? 'active' : 'inactive',
+          status: provider.published ? "active" : "inactive",
           email: provider.email,
           phone: provider.phone,
-          todayAppointments: Math.floor(todayAppointments / providers.length) // Distribute evenly for now
+          todayAppointments: Math.floor(todayAppointments / providers.length), // Distribute evenly for now
         };
       })
     );
 
     return NextResponse.json({
       success: true,
-      providers: providersWithStats
+      providers: providersWithStats,
     });
-
   } catch (error) {
-    console.error('Error fetching providers:', error);
+    console.error("Error fetching providers:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -102,26 +99,33 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user from database to verify current role
     const user = await prisma.adminUser.findUnique({
       where: { email: session.user.email },
-      select: { role: true }
+      select: { role: true },
     });
 
-    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const { name, title, specialties = [], email, phone, published = true } = body;
+    const {
+      name,
+      title,
+      specialties = [],
+      email,
+      phone,
+      published = true,
+    } = body;
 
     // Validate required fields
     if (!name || !title) {
       return NextResponse.json(
-        { error: 'Name and title are required' },
+        { error: "Name and title are required" },
         { status: 400 }
       );
     }
@@ -131,35 +135,35 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         title,
-        specialties: Array.isArray(specialties) ? specialties : [specialties].filter(Boolean),
         email: email || null,
         phone: phone || null,
         published,
         bio: `${title} at Zenith Medical Centre`,
         photoUrl: null, // Will be set later if needed
-        orderIndex: 0
-      }
+        orderIndex: 0,
+      },
     });
 
-    return NextResponse.json({
-      success: true,
-      provider: {
-        id: provider.id,
-        name: provider.name,
-        title: provider.title,
-        specialties: provider.specialties,
-        status: provider.published ? 'active' : 'inactive',
-        email: provider.email,
-        phone: provider.phone,
-        todayAppointments: 0
-      }
-    }, { status: 201 });
-
-  } catch (error) {
-    console.error('Error creating provider:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        success: true,
+        provider: {
+          id: provider.id,
+          name: provider.name,
+          title: provider.title,
+          status: provider.published ? "active" : "inactive",
+          email: provider.email,
+          phone: provider.phone,
+          todayAppointments: 0,
+        },
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating provider:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
-} 
+}

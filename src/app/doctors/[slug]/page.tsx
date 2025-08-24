@@ -99,7 +99,7 @@ export default async function DoctorProfile({ params }: { params: Promise<{ slug
   const doctorStructuredData = generateDoctorStructuredData({
     name: doctor.name,
     title: doctor.title,
-    specialties: doctor.specialties || [],
+
     experience: doctor.doctor?.professionalBio || doctor.bio || `Experienced healthcare professional`
   })
 
@@ -162,19 +162,7 @@ export default async function DoctorProfile({ params }: { params: Promise<{ slug
                 <p className="text-lg text-slate-600 mb-6">{doctor.experience}</p>
               )}
 
-              {/* Specialties */}
-              {doctor.specialties && doctor.specialties.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Specialties</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {doctor.specialties.map((specialty, index) => (
-                      <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {specialty}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">

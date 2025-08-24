@@ -193,7 +193,6 @@ model TeamMember {
   photoUrl    String?
   email       String?
   phone       String?
-  specialties String[]
   orderIndex  Int      @default(0)
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())

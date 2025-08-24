@@ -19,7 +19,7 @@ const TeamMemberUpdateSchema = z.object({
   photoUrl: z.string().url().optional().or(z.literal('')),
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().optional(),
-  specialties: z.array(z.string()).optional(),
+  
   orderIndex: z.number().int().min(0).optional(),
   published: z.boolean().optional()
 });

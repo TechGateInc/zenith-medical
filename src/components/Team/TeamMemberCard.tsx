@@ -11,7 +11,6 @@ import {
   Mail, 
   Phone, 
   User, 
-  Tag,
   ExternalLink
 } from 'lucide-react';
 
@@ -24,7 +23,6 @@ export interface TeamMember {
   photoUrl?: string;
   email?: string;
   phone?: string;
-  specialties: string[];
   orderIndex: number;
   published: boolean;
   createdAt: string;
@@ -36,7 +34,6 @@ interface TeamMemberCardProps {
   variant?: 'default' | 'compact' | 'detailed';
   showEmail?: boolean;
   showPhone?: boolean;
-  showSpecialties?: boolean;
   showBio?: boolean;
   onClick?: (member: TeamMember) => void;
   className?: string;
@@ -48,7 +45,6 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   variant = 'default',
   showEmail = true,
   showPhone = true,
-  showSpecialties = true,
   showBio = true,
   onClick,
   className = '',
@@ -126,24 +122,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
                 {member.title}
               </p>
               
-              {showSpecialties && member.specialties.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {member.specialties.slice(0, 2).map((specialty, index) => (
-                    <span 
-                      key={index}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
-                    >
-                      <Tag size={10} />
-                      {specialty}
-                    </span>
-                  ))}
-                  {member.specialties.length > 2 && (
-                    <span className="text-xs text-gray-500">
-                      +{member.specialties.length - 2} more
-                    </span>
-                  )}
-                </div>
-              )}
+
             </div>
 
             {onClick && (
@@ -184,15 +163,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
           </div>
         )}
         
-        {/* Specialties Badge */}
-        {showSpecialties && member.specialties.length > 0 && (
-          <div className="absolute top-3 left-3">
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-white bg-opacity-90 text-blue-700 text-xs rounded-full font-medium">
-              <Tag size={10} />
-              {member.specialties.length} {member.specialties.length === 1 ? 'Specialty' : 'Specialties'}
-            </span>
-          </div>
-        )}
+
 
         {/* Click indicator */}
         {onClick && (
@@ -228,27 +199,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
           </div>
         )}
 
-        {/* Specialties */}
-        {showSpecialties && member.specialties.length > 0 && (
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-2">
-              {(variant === 'detailed' ? member.specialties : member.specialties.slice(0, 3)).map((specialty, index) => (
-                <span 
-                  key={index}
-                  className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
-                >
-                  <Tag size={10} />
-                  {specialty}
-                </span>
-              ))}
-              {variant !== 'detailed' && member.specialties.length > 3 && (
-                <span className="text-xs text-gray-500 px-2 py-1">
-                  +{member.specialties.length - 3} more
-                </span>
-              )}
-            </div>
-          </div>
-        )}
+
 
         {/* Contact Information */}
         {(showEmail || showPhone) && (member.email || member.phone) && (

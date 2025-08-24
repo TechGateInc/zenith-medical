@@ -247,7 +247,7 @@ export function generateBlogStructuredData(post: {
 export function generateDoctorStructuredData(doctor: {
   name: string
   title: string
-  specialties: string[]
+  specialties?: string[]
   education?: string[]
   experience?: string
 }) {
@@ -260,7 +260,7 @@ export function generateDoctorStructuredData(doctor: {
       '@type': 'MedicalOrganization',
       name: siteName,
     },
-    medicalSpecialty: doctor.specialties,
+    ...(doctor.specialties && { medicalSpecialty: doctor.specialties }),
     ...(doctor.education && {
       alumniOf: doctor.education.map(edu => ({
         '@type': 'EducationalOrganization',

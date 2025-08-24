@@ -18,7 +18,7 @@ const TeamMemberSchema = z.object({
   photoUrl: z.string().url().optional().or(z.literal('')),
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().optional(),
-  specialties: z.array(z.string()).default([]),
+  
   orderIndex: z.number().int().min(0).default(0),
   published: z.boolean().default(true)
 });
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         { name: { contains: search, mode: 'insensitive' } },
         { title: { contains: search, mode: 'insensitive' } },
         { bio: { contains: search, mode: 'insensitive' } },
-        { specialties: { hasSome: [search] } }
+
       ];
     }
 
