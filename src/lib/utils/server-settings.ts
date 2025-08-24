@@ -41,11 +41,22 @@ export async function getAdminEmail(): Promise<string> {
  */
 export async function getBusinessHours(): Promise<string> {
   try {
-    const settings = await settingsManager.getSettings();
-    return settings.businessHours;
+    return await settingsManager.getBusinessHours();
   } catch (error) {
     console.error('Error getting business hours:', error);
     return 'Mon-Fri 8AM-6PM, Sat 9AM-2PM'; // Fallback
+  }
+}
+
+/**
+ * Get business address (server-side)
+ */
+export async function getAddress(): Promise<string> {
+  try {
+    return await settingsManager.getAddress();
+  } catch (error) {
+    console.error('Error getting address:', error);
+    return 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3'; // Fallback
   }
 }
 

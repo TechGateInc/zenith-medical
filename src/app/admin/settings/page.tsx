@@ -18,9 +18,7 @@ import {
   ArrowLeft,
   CheckCircle,
   AlertCircle,
-  Phone,
-  Mail,
-  Clock
+  Phone
 } from 'lucide-react';
 import { SettingsSkeleton } from '@/components/UI/SkeletonLoader';
 import TwoFactorAuth from '@/components/Admin/TwoFactorAuth';
@@ -59,12 +57,12 @@ interface SecuritySettings {
 export default function SettingsPage() {
   const { user } = useAuth();
   const [contactSettings, setContactSettings] = useState<ContactSettings>({
-    primaryPhone: '249 806 0128',
+    primaryPhone: '',
     emergencyPhone: '',
     faxNumber: '',
-    adminEmail: 'admin@zenithmedical.ca',
-    address: 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3',
-    businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM'
+    adminEmail: '',
+    address: '',
+    businessHours: ''
   });
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
@@ -112,10 +110,32 @@ export default function SettingsPage() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setContactSettings(data.settings.contact);
-          setSystemSettings(data.settings.system);
-          setNotificationSettings(data.settings.notifications);
-          setSecuritySettings(data.settings.security);
+          setContactSettings({
+            primaryPhone: data.settings.contact.primaryPhone || '',
+            emergencyPhone: data.settings.contact.emergencyPhone || '',
+            faxNumber: data.settings.contact.faxNumber || '',
+            adminEmail: data.settings.contact.adminEmail || '',
+            address: data.settings.contact.address || '',
+            businessHours: data.settings.contact.businessHours || ''
+          });
+          setSystemSettings({
+            timezone: data.settings.system.timezone || 'America/Toronto',
+            dateFormat: data.settings.system.dateFormat || 'MM/DD/YYYY'
+          });
+          setNotificationSettings({
+            emailNotifications: data.settings.notifications.emailNotifications ?? true,
+            appointmentReminders: data.settings.notifications.appointmentReminders ?? true,
+            securityAlerts: data.settings.notifications.securityAlerts ?? true,
+            maintenanceMode: data.settings.notifications.maintenanceMode ?? false,
+            contactFormEnabled: data.settings.notifications.contactFormEnabled ?? true
+          });
+          setSecuritySettings({
+            sessionTimeout: data.settings.security.sessionTimeout || 30,
+            maxLoginAttempts: data.settings.security.maxLoginAttempts || 5,
+            passwordExpiry: data.settings.security.passwordExpiry || 90,
+            twoFactorAuth: data.settings.security.twoFactorAuth ?? false,
+            ipWhitelist: data.settings.security.ipWhitelist || ''
+          });
         }
       } else {
         console.error('Failed to fetch settings:', response.statusText);
@@ -153,10 +173,32 @@ export default function SettingsPage() {
           setMessage({ type: 'success', text: data.message || 'Settings saved successfully!' });
           // Update local state with returned settings
           if (data.settings) {
-            setContactSettings(data.settings.contact);
-            setSystemSettings(data.settings.system);
-            setNotificationSettings(data.settings.notifications);
-            setSecuritySettings(data.settings.security);
+            setContactSettings({
+              primaryPhone: data.settings.contact.primaryPhone || '',
+              emergencyPhone: data.settings.contact.emergencyPhone || '',
+              faxNumber: data.settings.contact.faxNumber || '',
+              adminEmail: data.settings.contact.adminEmail || '',
+              address: data.settings.contact.address || '',
+              businessHours: data.settings.contact.businessHours || ''
+            });
+            setSystemSettings({
+              timezone: data.settings.system.timezone || 'America/Toronto',
+              dateFormat: data.settings.system.dateFormat || 'MM/DD/YYYY'
+            });
+            setNotificationSettings({
+              emailNotifications: data.settings.notifications.emailNotifications ?? true,
+              appointmentReminders: data.settings.notifications.appointmentReminders ?? true,
+              securityAlerts: data.settings.notifications.securityAlerts ?? true,
+              maintenanceMode: data.settings.notifications.maintenanceMode ?? false,
+              contactFormEnabled: data.settings.notifications.contactFormEnabled ?? true
+            });
+            setSecuritySettings({
+              sessionTimeout: data.settings.security.sessionTimeout || 30,
+              maxLoginAttempts: data.settings.security.maxLoginAttempts || 5,
+              passwordExpiry: data.settings.security.passwordExpiry || 90,
+              twoFactorAuth: data.settings.security.twoFactorAuth ?? false,
+              ipWhitelist: data.settings.security.ipWhitelist || ''
+            });
           }
         } else {
           throw new Error(data.error || 'Failed to save settings');

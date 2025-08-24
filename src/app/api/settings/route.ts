@@ -20,6 +20,7 @@ export async function GET() {
           emergencyPhone: settings.emergencyPhone,
           faxNumber: settings.faxNumber,
           adminEmail: settings.adminEmail,
+          address: settings.address,
           businessHours: settings.businessHours
         },
         system: {

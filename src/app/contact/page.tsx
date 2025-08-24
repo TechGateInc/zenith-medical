@@ -1,22 +1,22 @@
 'use client';
 
 import Layout from '../../components/Layout/Layout';
-import { usePhoneNumber } from '@/lib/hooks/useSettings';
-import { useContactInfo } from '@/lib/hooks/useContactInfo';
+import { useCachedPrimaryPhone, useCachedAddressOnly, useCachedAdminEmail } from '@/lib/hooks/useCachedAddress';
 import Link from 'next/link';
 
 export default function Contact() {
-  const { phoneNumber, loading: phoneLoading } = usePhoneNumber();
-  const { contactInfo: dbContactInfo, loading: contactLoading } = useContactInfo();
+  const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone();
+  const { address, loading: addressLoading } = useCachedAddressOnly();
+  const { adminEmail, loading: emailLoading } = useCachedAdminEmail();
 
   const contactInfo = {
-    primary: <a href={`tel:${phoneNumber.replace(/\s/g, '')}`} className="text-blue-600 hover:underline">
-      {phoneLoading ? 'Loading...' : phoneNumber}
+    primary: <a href={`tel:${primaryPhone.replace(/\s/g, '')}`} className="text-blue-600 hover:underline">
+      {phoneLoading ? 'Loading...' : primaryPhone}
     </a>,
-    email: <a href={`mailto:${dbContactInfo?.adminEmail || 'admin@zenithmedical.ca'}`} className="text-blue-600 hover:underline">
-      {contactLoading ? 'Loading...' : (dbContactInfo?.adminEmail || 'admin@zenithmedical.ca')}
+    email: <a href={`mailto:${adminEmail}`} className="text-blue-600 hover:underline">
+      {emailLoading ? 'Loading...' : adminEmail}
     </a>,
-    address: contactLoading ? 'Loading...' : (dbContactInfo?.address || 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3')
+    address: addressLoading ? 'Loading...' : address
   };
 
 
@@ -128,8 +128,8 @@ export default function Contact() {
                       </svg>
                       <div>
                         <p className="font-medium text-slate-800">Phone</p>
-                        <a href={`tel:${phoneNumber.replace(/\s/g, '')}`} className="text-blue-600 hover:underline font-medium">
-                          {phoneLoading ? 'Loading...' : phoneNumber}
+                        <a href={`tel:${primaryPhone.replace(/\s/g, '')}`} className="text-blue-600 hover:underline font-medium">
+                          {phoneLoading ? 'Loading...' : primaryPhone}
                         </a>
                       </div>
                     </div>
@@ -140,8 +140,8 @@ export default function Contact() {
                       </svg>
                       <div>
                         <p className="font-medium text-slate-800">Email</p>
-                        <a href={`mailto:${dbContactInfo?.adminEmail || 'admin@zenithmedical.ca'}`} className="text-blue-600 hover:underline font-medium">
-                          {contactLoading ? 'Loading...' : (dbContactInfo?.adminEmail || 'admin@zenithmedical.ca')}
+                        <a href={`mailto:${adminEmail}`} className="text-blue-600 hover:underline font-medium">
+                          {emailLoading ? 'Loading...' : adminEmail}
                         </a>
                       </div>
                     </div>

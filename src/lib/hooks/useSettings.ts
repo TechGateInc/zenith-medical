@@ -97,6 +97,26 @@ export function useAdminEmail(): { adminEmail: string; loading: boolean } {
   };
 }
 
+// Convenience hook for getting address
+export function useAddress(): { address: string; loading: boolean } {
+  const { settings, loading } = useSettings();
+  
+  return {
+    address: settings?.address || 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3', // Fallback
+    loading
+  };
+}
+
+// Convenience hook for getting business hours
+export function useBusinessHours(): { businessHours: string; loading: boolean } {
+  const { settings, loading } = useSettings();
+  
+  return {
+    businessHours: settings?.businessHours || 'Mon-Fri 8AM-6PM, Sat 9AM-2PM', // Fallback
+    loading
+  };
+}
+
 // Convenience hook for checking if contact form is enabled
 export function useContactFormEnabled(): { contactFormEnabled: boolean; loading: boolean } {
   const { settings, loading } = useSettings();

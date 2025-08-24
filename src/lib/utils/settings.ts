@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { clearAddressCache } from './address-cache';
 
 export interface SystemSettings {
   id: string;
@@ -151,6 +152,9 @@ export class SettingsManager {
       // Clear cache to force refresh
       settingsCache = null;
       cacheExpiry = 0;
+      
+      // Clear address cache as well
+      clearAddressCache();
 
       return settings as SystemSettings;
     } catch (error) {
@@ -206,6 +210,22 @@ export class SettingsManager {
     const settings = await this.getSettings();
     return settings.contactFormEnabled;
   }
+
+  /**
+   * Get business address
+   */
+  async getAddress(): Promise<string> {
+    const settings = await this.getSettings();
+    return settings.address;
+  }
+
+  /**
+   * Get business hours
+   */
+  async getBusinessHours(): Promise<string> {
+    const settings = await this.getSettings();
+    return settings.businessHours;
+  }
 }
 
 // Export singleton instance
@@ -230,4 +250,12 @@ export async function isMaintenanceMode(): Promise<boolean> {
 
 export async function isContactFormEnabled(): Promise<boolean> {
   return settingsManager.isContactFormEnabled();
+}
+
+export async function getAddress(): Promise<string> {
+  return settingsManager.getAddress();
+}
+
+export async function getBusinessHours(): Promise<string> {
+  return settingsManager.getBusinessHours();
 }

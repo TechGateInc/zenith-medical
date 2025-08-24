@@ -76,3 +76,11 @@ export function useBusinessHours(): { hours: string; loading: boolean } {
     loading
   }
 }
+
+export function useAddress(): { address: string; loading: boolean } {
+  const { contactInfo, loading } = useContactInfo()
+  return {
+    address: contactInfo?.address || 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3', // Fallback
+    loading
+  }
+}
