@@ -1,4 +1,5 @@
 import { type Metadata } from 'next'
+import { getCachedContactInfo } from './address-cache'
 
 interface SEOData {
   title: string
@@ -18,7 +19,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.zenithmedical.c
 const siteName = 'Zenith Medical Centre'
 const defaultImage = `${baseUrl}/api/og`
 
-export function generateMetadata(data: SEOData): Metadata {
+export async function generateMetadata(data: SEOData): Promise<Metadata> {
   const {
     title,
     description,
@@ -35,6 +36,9 @@ export function generateMetadata(data: SEOData): Metadata {
 
   const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`
   const url = canonical ? `${baseUrl}${canonical}` : baseUrl
+
+  // Get cached contact information
+  const contactInfo = await getCachedContactInfo();
 
   const metadata: Metadata = {
     title: fullTitle,
@@ -85,11 +89,11 @@ export function generateMetadata(data: SEOData): Metadata {
       images: [ogImage],
     },
     other: {
-      'business:contact_data:locality': 'Medical District',
-      'business:contact_data:region': 'MD',
-      'business:contact_data:postal_code': '21201',
-      'business:contact_data:country_name': 'United States',
-      'business:contact_data:phone_number': '+15551234567',
+      'business:contact_data:locality': 'Gloucester',
+      'business:contact_data:region': 'ON',
+      'business:contact_data:postal_code': 'K1J 9L3',
+      'business:contact_data:country_name': 'Canada',
+      'business:contact_data:phone_number': contactInfo.primaryPhone,
       'business:contact_data:website': baseUrl,
     },
   }
@@ -97,7 +101,10 @@ export function generateMetadata(data: SEOData): Metadata {
   return metadata
 }
 
-export function generateHomepageStructuredData() {
+export async function generateHomepageStructuredData() {
+  // Get cached contact information
+  const contactInfo = await getCachedContactInfo();
+  
   return {
     '@context': 'https://schema.org',
     '@type': 'MedicalOrganization',
@@ -106,20 +113,20 @@ export function generateHomepageStructuredData() {
     url: baseUrl,
     logo: `${baseUrl}/images/zenith-medical-logo new 1.png`,
     image: `${baseUrl}/images/zenith-medical-center.jpg`,
-    telephone: '+1-555-123-2273',
-    email: 'admin@zenithmedical.ca',
+    telephone: contactInfo.primaryPhone,
+    email: contactInfo.adminEmail,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '123 Healthcare Drive',
-      addressLocality: 'Medical District',
-      addressRegion: 'MD',
-      postalCode: '21201',
-      addressCountry: 'US',
+      streetAddress: contactInfo.address,
+      addressLocality: 'Gloucester',
+      addressRegion: 'ON',
+      postalCode: 'K1J 9L3',
+      addressCountry: 'CA',
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: '39.2904',
-      longitude: '-76.6122',
+      latitude: '45.4215',
+      longitude: '-75.6972',
     },
     openingHours: [
       'Mo-Fr 08:00-18:00',
@@ -153,17 +160,17 @@ export function generateHomepageStructuredData() {
     contactPoint: [
       {
         '@type': 'ContactPoint',
-        telephone: '+1-555-123-2273',
+        telephone: contactInfo.primaryPhone,
         contactType: 'customer service',
         availableLanguage: ['English'],
-        areaServed: 'MD',
+        areaServed: 'ON',
       },
       {
         '@type': 'ContactPoint',
-        telephone: '+1-911',
+        telephone: contactInfo.emergencyPhone || '+1-911',
         contactType: 'emergency',
         availableLanguage: ['English'],
-        areaServed: 'US',
+        areaServed: 'CA',
       },
     ],
     aggregateRating: {

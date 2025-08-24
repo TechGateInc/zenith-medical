@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCachedAddressInfo } from '@/lib/utils/address-cache'
+import { getCachedContactInfo } from '@/lib/utils/address-cache'
 import { settingsManager } from '@/lib/utils/settings'
 
 export async function GET(request: NextRequest) {
   try {
-    // Use cached address info for better performance
-    const cachedInfo = await getCachedAddressInfo()
+    // Use cached contact info for better performance
+    const cachedInfo = await getCachedContactInfo()
     const settings = await settingsManager.getSettings()
     
     return NextResponse.json({
       success: true,
       contactInfo: {
         primaryPhone: cachedInfo.primaryPhone,
-        emergencyPhone: settings.emergencyPhone,
-        faxNumber: settings.faxNumber,
+        emergencyPhone: cachedInfo.emergencyPhone,
+        faxNumber: cachedInfo.faxNumber,
         adminEmail: cachedInfo.adminEmail,
         businessHours: cachedInfo.businessHours,
         timezone: settings.timezone,

@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image'
-import { usePhoneNumber } from '@/lib/hooks/useSettings';
+import { useCachedPrimaryPhone, useCachedAddressOnly, useCachedBusinessHours } from '@/lib/hooks/useCachedAddress';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
-  const { phoneNumber, loading } = usePhoneNumber();
+  const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone();
+  const { address, loading: addressLoading } = useCachedAddressOnly();
+  const { businessHours, loading: hoursLoading } = useCachedBusinessHours();
 
   const quickLinks = [
     { name: 'Home', href: '/' },
@@ -67,8 +69,7 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <div>
-                  <div className="text-white">Unit 216, 1980 Ogilvie Road</div>
-                  <div className="text-gray-300 text-sm">Gloucester, Ottawa, K1J 9L3</div>
+                  <div className="text-white">{addressLoading ? 'Loading...' : address}</div>
                 </div>
               </div>
 
@@ -77,8 +78,8 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
                 <div>
-                  <div className="text-white"><a href={`tel:${phoneNumber.replace(/\s/g, '')}`} className="hover:underline">
-                    {loading ? 'Loading...' : phoneNumber}
+                  <div className="text-white"><a href={`tel:${primaryPhone.replace(/\s/g, '')}`} className="hover:underline">
+                    {phoneLoading ? 'Loading...' : primaryPhone}
                   </a></div>
                   <div className="text-gray-300 text-sm">Clinic Line</div>
                 </div>
@@ -132,7 +133,7 @@ export default function Footer() {
             {/* Office Hours */}
             <div className="mt-6">
               <h4 className="text-lg font-semibold mb-2">Office Hours</h4>
-              <div>Monday - Saturday: 9:00 AM - 5:00 PM</div>
+              <div>{hoursLoading ? 'Loading...' : businessHours}</div>
             </div>
           </div>
 

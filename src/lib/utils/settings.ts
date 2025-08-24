@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { clearAddressCache } from './address-cache';
+import { clearContactCache } from './address-cache';
 
 export interface SystemSettings {
   id: string;
@@ -153,8 +153,8 @@ export class SettingsManager {
       settingsCache = null;
       cacheExpiry = 0;
       
-      // Clear address cache as well
-      clearAddressCache();
+      // Clear contact cache as well
+      clearContactCache();
 
       return settings as SystemSettings;
     } catch (error) {

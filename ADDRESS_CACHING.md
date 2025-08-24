@@ -153,8 +153,22 @@ import { useCachedPrimaryPhone } from '@/lib/hooks/useCachedAddress';
 import { useContactInfo } from '@/lib/hooks/useContactInfo';
 
 // New way
-import { useCachedAddress } from '@/lib/hooks/useCachedAddress';
+import { useCachedContact } from '@/lib/hooks/useCachedAddress';
 ```
+
+### Updated Components
+The following components have been updated to use cached contact information:
+
+1. **Footer Component** (`src/components/Layout/Footer.tsx`)
+   - Now uses `useCachedPrimaryPhone`, `useCachedAddressOnly`, and `useCachedBusinessHours`
+   - Displays dynamic address, phone, and business hours
+
+2. **Contact Page** (`src/app/contact/page.tsx`)
+   - Already updated to use cached hooks
+
+3. **SEO Utilities** (`src/lib/utils/seo.ts`)
+   - `generateMetadata()` and `generateHomepageStructuredData()` now use cached contact info
+   - Updated to reflect Canadian location (Gloucester, ON)
 
 ## Testing
 
