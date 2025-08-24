@@ -33,9 +33,7 @@ model PatientIntake {
   ipAddress               String?
   userAgent               String?
   viewedAt                DateTime?
-  oscarCreatedAt          DateTime?
-  oscarDemographicNo      String?
-  oscarLastSyncAt         DateTime?
+
   cellPhone               String?
   gender                  String?
   middleName              String?
@@ -271,10 +269,7 @@ model Appointment {
   metadata              Json?
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
-  oscarAppointmentId    String?
-  oscarCreatedAt        DateTime?
-  oscarLastSyncAt       DateTime?
-  oscarProviderNo       String?
+
   patientIntake         PatientIntake? @relation(fields: [patientIntakeId], references: [id])
 
   @@map("appointments")
@@ -309,85 +304,11 @@ model NotificationTemplate {
   @@map("notification_templates")
 }
 
-model OscarJobQueue {
-  id            String            @id @default(cuid())
-  jobType       OscarJobType
-  priority      JobPriority       @default(NORMAL)
-  status        JobStatus         @default(PENDING)
-  payload       Json
-  result        Json?
-  error         Json?
-  attemptCount  Int               @default(0)
-  maxAttempts   Int               @default(3)
-  nextRetryAt   DateTime?
-  scheduledAt   DateTime          @default(now())
-  startedAt     DateTime?
-  completedAt   DateTime?
-  resourceType  String?
-  resourceId    String?
-  correlationId String?
-  createdBy     String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  jobHistory    OscarJobHistory[]
 
-  @@index([status, scheduledAt])
-  @@index([jobType, status])
-  @@index([resourceType, resourceId])
-  @@index([nextRetryAt])
-  @@map("oscar_job_queue")
-}
 
-model OscarJobHistory {
-  id            String          @id @default(cuid())
-  jobId         String
-  attemptNumber Int
-  status        JobStatus
-  startedAt     DateTime
-  completedAt   DateTime
-  duration      Int?
-  success       Boolean
-  result        Json?
-  error         Json?
-  errorType     OscarErrorType?
-  executedBy    String?
-  serverInfo    Json?
-  job           OscarJobQueue   @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
-  @@index([jobId, attemptNumber])
-  @@index([startedAt])
-  @@map("oscar_job_history")
-}
 
-model OscarErrorLog {
-  id                 String         @id @default(cuid())
-  errorType          OscarErrorType
-  errorCode          String?
-  severity           ErrorSeverity  @default(ERROR)
-  operation          String
-  resourceType       String?
-  resourceId         String?
-  correlationId      String?
-  message            String
-  details            Json?
-  resolved           Boolean        @default(false)
-  resolvedAt         DateTime?
-  resolvedBy         String?
-  resolution         String?
-  retryable          Boolean        @default(true)
-  retryCount         Int            @default(0)
-  lastRetryAt        DateTime?
-  notificationSent   Boolean        @default(false)
-  notificationSentAt DateTime?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
 
-  @@index([errorType, severity])
-  @@index([operation, createdAt])
-  @@index([resolved, severity])
-  @@index([createdAt])
-  @@map("oscar_error_log")
-}
 
 model Service {
   id          String   @id @default(cuid())
@@ -500,19 +421,7 @@ enum NotificationMethod {
   BOTH
 }
 
-enum OscarJobType {
-  PATIENT_CREATE
-  PATIENT_UPDATE
-  PATIENT_SEARCH
-  APPOINTMENT_CREATE
-  APPOINTMENT_UPDATE
-  APPOINTMENT_CANCEL
-  APPOINTMENT_SYNC
-  PROVIDER_SYNC
-  BULK_SYNC
-  HEALTH_CHECK
-  DATA_INTEGRITY_CHECK
-}
+
 
 enum JobStatus {
   PENDING
@@ -530,19 +439,7 @@ enum JobPriority {
   URGENT
 }
 
-enum OscarErrorType {
-  NETWORK_ERROR
-  AUTHENTICATION_ERROR
-  AUTHORIZATION_ERROR
-  VALIDATION_ERROR
-  RATE_LIMIT_ERROR
-  TIMEOUT_ERROR
-  SERVER_ERROR
-  CLIENT_ERROR
-  DATA_ERROR
-  CONFIGURATION_ERROR
-  UNKNOWN_ERROR
-}
+
 
 enum ErrorSeverity {
   INFO

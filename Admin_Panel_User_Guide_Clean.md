@@ -424,7 +424,7 @@ Common categories include:
      - Booking restrictions
 
 2. **Integration Settings**
-   - OSCAR EMR integration (if applicable)
+   
    - External booking system connections
    - Calendar synchronization
 
