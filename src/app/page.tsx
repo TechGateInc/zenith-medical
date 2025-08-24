@@ -3,34 +3,6 @@ import Link from 'next/link'
 import { generateMetadata as generateSEOMetadata, generateHomepageStructuredData, PAGE_METADATA } from '../lib/utils/seo'
 import Image from 'next/image'
 
-interface BlogPost {
-  id: string
-  title: string
-  slug: string
-  excerpt: string
-  publishedAt: string
-  author: string
-}
-
-async function getBlogPosts(): Promise<BlogPost[]> {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/blog?limit=2`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
-    })
-    
-    if (!response.ok) {
-      console.error('Failed to fetch blog posts')
-      return []
-    }
-    
-    const data = await response.json()
-    return data.posts || []
-  } catch (error) {
-    console.error('Error fetching blog posts:', error)
-    return []
-  }
-}
-
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.home,
   canonical: '/',
@@ -38,7 +10,6 @@ export const metadata = generateSEOMetadata({
 
 export default async function Home() {
   const structuredData = generateHomepageStructuredData()
-  const blogPosts = await getBlogPosts()
 
   return (
     <Layout className="bg-slate-50">
@@ -393,83 +364,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* News and Insights Blog Section */}
-        <section className="mb-16">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6">
-              <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
-                Health Insights
-              </span>
-            </div>
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">Latest Health Insights</h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Stay informed with the latest health tips, medical insights, and updates from our healthcare professionals.
-            </p>
-          </div>
 
-          {blogPosts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {blogPosts.map((post) => (
-                <Link 
-                  key={post.id} 
-                  href={`/blog/${post.slug}`}
-                  className="group block bg-white rounded-lg shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 overflow-hidden"
-                >
-                  <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <svg className="h-16 w-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-slate-600 mb-4 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center text-sm text-slate-500">
-                      <span className="font-medium">{post.author}</span>
-                      <span className="mx-2">•</span>
-                      <span>
-                        {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-slate-800 mb-2">Health insights coming soon</h3>
-              <p className="text-slate-600">Check back for the latest health tips and medical insights from our team.</p>
-            </div>
-          )}
-
-          {blogPosts.length > 0 && (
-            <div className="text-center">
-              <Link
-                href="/blog"
-                className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold rounded-lg transition-colors"
-              >
-                View All Articles
-                <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-          )}
-        </section>
 
         {/* Quick Access Cards */}
         <section className="mb-16">

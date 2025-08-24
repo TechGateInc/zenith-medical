@@ -20,7 +20,6 @@ export default function Footer() {
   const patientResources = [
     { name: 'Patient Intake', href: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227' },
     { name: 'FAQs', href: '/faq' },
-    { name: 'Health Blog', href: '/blog' },
   ]
 
   const services = [

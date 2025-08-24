@@ -54,18 +54,7 @@ export default async function Services() {
                 Comprehensive healthcare services in our efficient medical facility, designed to keep you and your family healthy throughout every stage of life.
               </p>
 
-              {/* Stats or Key Features */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">{services.length}</div>
-                  <div className="text-slate-600 font-medium">Primary Care Areas</div>
-                </div>
 
-                <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Clinic</div>
-                  <div className="text-slate-600 font-medium">Care Available</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
