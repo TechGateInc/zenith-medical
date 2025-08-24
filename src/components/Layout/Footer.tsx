@@ -21,7 +21,6 @@ export default function Footer() {
     { name: 'Patient Intake', href: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227' },
     { name: 'FAQs', href: '/faq' },
     { name: 'Health Blog', href: '/blog' },
-    { name: 'Privacy Policy', href: '/privacy' },
   ]
 
   const services = [
@@ -34,8 +33,6 @@ export default function Footer() {
   const company = [
     { name: 'About Us', href: '/about' },
     { name: 'Our Team', href: '/about' },
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms of Service', href: '/terms' }
   ];
 
   return (
@@ -186,17 +183,7 @@ export default function Footer() {
           <div className="text-gray-400 text-sm">
             © {currentYear} Zenith Medical Centre. All rights reserved.
           </div>
-          <div className="flex space-x-6 mt-4 sm:mt-0">
-            <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
-              Terms of Service
-            </Link>
-            <Link href="/accessibility" className="text-gray-400 hover:text-white text-sm transition-colors">
-              Accessibility
-            </Link>
-          </div>
+
         </div>
       </div>
     </footer>

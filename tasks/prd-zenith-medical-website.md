@@ -44,7 +44,7 @@ The primary problem this website solves is the need for an efficient, user-frien
 5. **FR-P5:** The system must include a Blog/News section for health-related articles and clinic updates
 6. **FR-P6:** The system must feature an FAQ section addressing common patient questions
 7. **FR-P7:** The system must implement a professional color scheme using silver, grey, and blue palette
-8. **FR-P8:** The system must display multiple prominent "Book Appointment" CTAs throughout all pages
+8. **FR-P8:** The system must display multiple prominent "Request Appointment" CTAs throughout all pages
 
 ### Patient Intake System
 9. **FR-I1:** The system must provide a patient intake form with the following required fields:

@@ -347,7 +347,7 @@ export default function IntakeSuccessPage() {
                 className="flex-1"
                 size="lg"
               >
-                {isBooking ? "Booking..." : "Book Appointment"}
+                {isBooking ? "Booking..." : "Request Appointment"}
               </Button>
               <Button
                 onClick={() => setShowBookingForm(false)}
@@ -543,7 +543,7 @@ export default function IntakeSuccessPage() {
                 </div>
               </div>
 
-              {/* Primary CTA - Book Appointment */}
+              {/* Primary CTA - Request Appointment */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
                 {/* Left Content */}
                 <div>

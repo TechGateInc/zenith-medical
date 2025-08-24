@@ -75,7 +75,7 @@ export default function Header() {
               rel="noopener noreferrer"
               className="bg-blue-600 hover:bg-blue-700 text-white hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Book Appointment
+              Request Appointment
             </a>
           </div>
 
@@ -134,7 +134,7 @@ export default function Header() {
                 className="block px-3 py-2 mt-1 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 hover:text-white transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Book Appointment
+                Request Appointment
               </a>
             </div>
           </div>

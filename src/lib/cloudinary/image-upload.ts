@@ -72,13 +72,27 @@ export function validateImage(file: File): ValidationError[] {
   return errors;
 }
 
-// Convert file to base64 data URL
+// Convert file to base64 data URL (browser environment)
 export function fileToDataURL(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = () => reject(new Error('Failed to read file'));
     reader.readAsDataURL(file);
+  });
+}
+
+// Convert file to base64 data URL (server environment)
+export function fileToDataURLServer(file: File): Promise<string> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      const mimeType = file.type || 'image/jpeg';
+      resolve(`data:${mimeType};base64,${base64}`);
+    } catch (error) {
+      reject(new Error('Failed to read file'));
+    }
   });
 }
 
@@ -107,8 +121,8 @@ export async function uploadTeamMemberPhoto(
   }
 
   try {
-    // Convert file to data URL
-    const dataURL = await fileToDataURL(file);
+    // Convert file to data URL (server-side)
+    const dataURL = await fileToDataURLServer(file);
 
     // Generate unique public ID
     const publicId = generatePublicId('team_member', `${memberId}_${file.name}`);
@@ -155,8 +169,8 @@ export async function uploadBlogImage(
   }
 
   try {
-    // Convert file to data URL
-    const dataURL = await fileToDataURL(file);
+    // Convert file to data URL (server-side)
+    const dataURL = await fileToDataURLServer(file);
 
     // Generate unique public ID
     const publicId = generatePublicId('blog_image', `${blogId}_${imageType}_${file.name}`);
@@ -204,8 +218,8 @@ export async function uploadGeneralImage(
   }
 
   try {
-    // Convert file to data URL
-    const dataURL = await fileToDataURL(file);
+    // Convert file to data URL (server-side)
+    const dataURL = await fileToDataURLServer(file);
 
     // Generate unique public ID
     const publicId = generatePublicId('general', `${category}_${file.name}`);
