@@ -224,24 +224,6 @@ model AuditLog {
   @@map("audit_logs")
 }
 
-
-
-model NotificationTemplate {
-  id           String             @id @default(cuid())
-  name         String
-  type         NotificationType
-  method       NotificationMethod
-  subject      String?
-  message      String
-  triggerHours Int
-  active       Boolean            @default(true)
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  createdBy    String
-
-  @@map("notification_templates")
-}
-
 model Service {
   id          String   @id @default(cuid())
   title       String
@@ -263,11 +245,7 @@ model SystemSettings {
   businessHours        String
   timezone             String   @default("America/Toronto")
   dateFormat           String   @default("MM/DD/YYYY")
-  emailNotifications   Boolean  @default(true)
-  appointmentReminders Boolean  @default(true)
-  securityAlerts       Boolean  @default(true)
-  maintenanceMode      Boolean  @default(false)
-  contactFormEnabled   Boolean  @default(true)
+
   sessionTimeout       Int      @default(30)
   maxLoginAttempts     Int      @default(5)
   passwordExpiry       Int      @default(90)
@@ -305,8 +283,6 @@ model ContactSubmission {
   @@map("contact_submissions")
 }
 
-
-
 enum ContactStatus {
   NEW
   IN_PROGRESS
@@ -337,20 +313,6 @@ enum AdminRole {
   EDITOR
 }
 
-enum NotificationType {
-  APPOINTMENT_REMINDER
-  APPOINTMENT_CONFIRMATION
-  FOLLOW_UP
-  GENERAL
-}
-
-enum NotificationMethod {
-  EMAIL
-  SMS
-  BOTH
-}
-
-
 
 enum JobStatus {
   PENDING
@@ -367,8 +329,6 @@ enum JobPriority {
   HIGH
   URGENT
 }
-
-
 
 enum ErrorSeverity {
   INFO

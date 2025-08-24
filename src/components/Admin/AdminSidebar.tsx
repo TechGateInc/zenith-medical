@@ -52,7 +52,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const { handleApiError } = useApiAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [intakeCount, setIntakeCount] = useState<number>(0);
-  const [, setNotificationCount] = useState<number>(0);
+
   const [loadingCount, setLoadingCount] = useState(true);
 
   // Fetch counts on component mount
@@ -169,38 +169,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
     }
   };
 
-  // Fetch notification count
-  const fetchNotificationCount = async () => {
-    try {
-      const response = await fetch('/api/admin/notifications/count');
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch notification count`);
-        
-        // Handle authentication errors
-        if (handleApiError(error, response)) {
-          return;
-        }
-        
-        throw error;
-      }
-      
-      const data = await response.json();
-      if (data.success) {
-        setNotificationCount(data.count);
-      }
-    } catch (error) {
-      // Only log error if it wasn't handled by the API auth hook
-      if (!handleApiError(error)) {
-        console.error('Error fetching notification count:', error);
-      }
-    }
-  };
+
 
   // Fetch all counts
   const fetchCounts = async () => {
-    await Promise.all([fetchIntakeCount(), fetchNotificationCount()]);
+    await fetchIntakeCount();
     setLoadingCount(false);
   };
 
@@ -232,9 +205,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
               <span className="flex-1">{item.name}</span>
               {item.badge && (
                 <span className={`ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ${
-                  ((item.name === 'Patient Intake' && item.badge > 0) || (item.name === 'Notifications' && item.badge > 0)) ? 'animate-pulse' : ''
+                  (item.name === 'Patient Intake' && item.badge > 0) ? 'animate-pulse' : ''
                 }`}>
-                  {loadingCount && (item.name === 'Patient Intake' || item.name === 'Notifications') ? '...' : item.badge}
+                  {loadingCount && item.name === 'Patient Intake' ? '...' : item.badge}
                 </span>
               )}
               {hasChildren && (

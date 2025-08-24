@@ -46,13 +46,7 @@ export async function GET() {
           timezone: settings.timezone,
           dateFormat: settings.dateFormat
         },
-        notifications: {
-          emailNotifications: settings.emailNotifications,
-          appointmentReminders: settings.appointmentReminders,
-          securityAlerts: settings.securityAlerts,
-          maintenanceMode: settings.maintenanceMode,
-          contactFormEnabled: settings.contactFormEnabled
-        },
+
         security: {
           sessionTimeout: settings.sessionTimeout,
           maxLoginAttempts: settings.maxLoginAttempts,
@@ -91,7 +85,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { contact, system, notifications, security } = body;
+    const { contact, system, security } = body;
 
     const updates: Partial<SystemSettings> = {};
 
@@ -167,23 +161,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Validate and prepare notification settings updates
-    if (notifications) {
-      if (typeof notifications.emailNotifications === 'boolean') {
-        updates.emailNotifications = notifications.emailNotifications;
-      }
-      if (typeof notifications.appointmentReminders === 'boolean') {
-        updates.appointmentReminders = notifications.appointmentReminders;
-      }
-      if (typeof notifications.securityAlerts === 'boolean') {
-        updates.securityAlerts = notifications.securityAlerts;
-      }
-      if (typeof notifications.maintenanceMode === 'boolean') {
-        updates.maintenanceMode = notifications.maintenanceMode;
-      }
-      if (typeof notifications.contactFormEnabled === 'boolean') {
-        updates.contactFormEnabled = notifications.contactFormEnabled;
-      }
-    }
+
 
     // Validate and prepare security settings updates
     if (security) {
@@ -221,13 +199,7 @@ export async function PUT(request: NextRequest) {
           timezone: updatedSettings.timezone,
           dateFormat: updatedSettings.dateFormat
         },
-        notifications: {
-          emailNotifications: updatedSettings.emailNotifications,
-          appointmentReminders: updatedSettings.appointmentReminders,
-          securityAlerts: updatedSettings.securityAlerts,
-          maintenanceMode: updatedSettings.maintenanceMode,
-          contactFormEnabled: updatedSettings.contactFormEnabled
-        },
+
         security: {
           sessionTimeout: updatedSettings.sessionTimeout,
           maxLoginAttempts: updatedSettings.maxLoginAttempts,

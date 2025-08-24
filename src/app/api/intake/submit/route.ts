@@ -245,12 +245,12 @@ export async function POST(request: NextRequest) {
           hour: '2-digit',
           minute: '2-digit'
         }),
-        appointmentBookingUrl: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227'
+
       }
 
       const patientEmailResult = await sendPatientConfirmationEmail(
-        emailAddress,
-        patientConfirmationData
+        patientConfirmationData,
+        emailAddress
       )
 
       // Send staff notification email

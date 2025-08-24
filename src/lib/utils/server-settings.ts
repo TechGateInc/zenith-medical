@@ -63,14 +63,7 @@ export async function getAddress(): Promise<string> {
 /**
  * Check if maintenance mode is enabled (server-side)
  */
-export async function isMaintenanceMode(): Promise<boolean> {
-  try {
-    return await settingsManager.isMaintenanceMode();
-  } catch (error) {
-    console.error('Error checking maintenance mode:', error);
-    return false; // Fallback - don't block access
-  }
-}
+
 
 /**
  * Get all settings (server-side)

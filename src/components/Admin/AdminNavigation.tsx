@@ -13,7 +13,6 @@ import {
   Users, 
   FileText, 
   Download,
-  Bell,
   Shield,
   HelpCircle,
   BookOpen,
@@ -60,11 +59,7 @@ const AdminNavigation: React.FC = () => {
       ],
     },
 
-    {
-      name: 'Notifications',
-      href: '/admin/notifications',
-      icon: Bell,
-    },
+
     {
       name: 'Export Data',
       href: '/admin/export',
@@ -148,17 +143,6 @@ const AdminNavigation: React.FC = () => {
 
           {/* Right side - User menu */}
           <div className="flex items-center space-x-4">
-            <Link
-              href="/admin/notifications"
-              className={`p-2 rounded-full transition-colors ${
-                isCurrentPath('/admin/notifications')
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-              }`}
-              title="Notifications"
-            >
-              <Bell size={20} />
-            </Link>
 
             <Link
               href="/api/auth/signout"

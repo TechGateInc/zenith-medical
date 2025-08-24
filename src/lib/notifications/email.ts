@@ -1,15 +1,10 @@
-import nodemailer from 'nodemailer'
 import { getCachedContactInfo } from '@/lib/utils/address-cache'
-
-// Email service types
-type EmailProvider = 'resend' | 'smtp'
 
 // Email template interfaces
 interface PatientConfirmationData {
   patientName: string
   submissionId: string
   submissionDate: string
-  appointmentBookingUrl: string
 }
 
 interface StaffNotificationData {
@@ -25,35 +20,52 @@ interface EmailResult {
   success: boolean
   messageId?: string
   error?: string
-  provider?: EmailProvider
 }
 
-// Email service configuration
-const getEmailProvider = (): EmailProvider => {
-  // Prioritize Resend if API key is available, otherwise use SMTP
-  if (process.env.RESEND_API_KEY) {
-    return 'resend'
-  }
-  return 'smtp'
-}
+// Resend email sending function
+const sendEmailWithResend = async (
+  to: string,
+  subject: string,
+  html: string,
+  text?: string
+): Promise<EmailResult> => {
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured')
+    }
 
-// SMTP configuration
-const getSMTPConfig = () => {
-  return {
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER || '',
-      pass: process.env.SMTP_PASS || ''
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: process.env.RESEND_FROM_EMAIL || 'noreply@zenithmedical.ca',
+        to: [to],
+        subject: subject,
+        html: html,
+        text: text || html.replace(/<[^>]*>/g, ''),
+      }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to send email')
+    }
+
+    return {
+      success: true,
+      messageId: data.id,
+    }
+  } catch (error) {
+    console.error('Resend email error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
-}
-
-// Create SMTP transporter
-const createSMTPTransporter = () => {
-  const config = getSMTPConfig()
-  return nodemailer.createTransport(config)
 }
 
 // Email templates
@@ -103,342 +115,185 @@ const generatePatientConfirmationTemplate = async (data: PatientConfirmationData
           margin: 0;
           font-size: 16px;
           opacity: 0.9;
-          font-weight: 500;
         }
         .content {
           padding: 40px 30px;
         }
-        .confirmation-box {
-          background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-          border: 2px solid #16a34a;
-          border-radius: 12px;
-          padding: 24px;
-          margin: 24px 0;
-          text-align: center;
-        }
-        .confirmation-box h2 {
-          color: #15803d;
-          margin: 0 0 12px 0;
-          font-size: 24px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-        .confirmation-box p {
-          margin: 0;
-          color: #166534;
-          font-size: 16px;
-          font-weight: 500;
-        }
-        .submission-details {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          padding: 24px;
-          margin: 24px 0;
-        }
-        .submission-details h3 {
-          margin: 0 0 16px 0;
+        .greeting {
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 24px;
           color: #1e293b;
-          font-size: 20px;
-          font-weight: 600;
         }
-        .submission-details ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-        .submission-details li {
-          margin: 12px 0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .submission-details strong {
-          color: #334155;
-          font-weight: 600;
-          min-width: 120px;
-        }
-        .submission-id {
-          background: #eff6ff;
-          color: #1d4ed8;
-          padding: 4px 12px;
-          border-radius: 6px;
-          font-family: 'Monaco', 'Menlo', monospace;
-          font-size: 14px;
-          font-weight: 600;
-        }
-        .status-badge {
-          background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-          color: #15803d;
-          padding: 4px 12px;
-          border-radius: 6px;
-          font-size: 14px;
-          font-weight: 600;
-        }
-        .cta-section {
-          text-align: center;
-          margin: 32px 0;
-        }
-        .cta-section h3 {
-          color: #1e293b;
-          font-size: 24px;
-          font-weight: 700;
-          margin: 0 0 12px 0;
-        }
-        .cta-section p {
-          color: #64748b;
+        .message {
           font-size: 16px;
-          margin: 0 0 24px 0;
+          margin-bottom: 24px;
+          color: #475569;
         }
-        .cta-button {
-          display: inline-block;
-          background: linear-gradient(135deg, #2563eb, #1d4ed8);
-          color: white;
-          padding: 16px 32px;
-          text-decoration: none;
+        .details {
+          background-color: #f1f5f9;
           border-radius: 8px;
-          font-weight: 600;
-          font-size: 16px;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          transition: all 0.2s ease;
-        }
-        .cta-button:hover {
-          background: linear-gradient(135deg, #1d4ed8, #1e40af);
-          transform: translateY(-1px);
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .security-note {
-          background: linear-gradient(135deg, #eff6ff, #dbeafe);
-          border: 1px solid #bfdbfe;
-          border-radius: 12px;
           padding: 20px;
           margin: 24px 0;
         }
-        .security-note h4 {
-          margin: 0 0 12px 0;
-          color: #1d4ed8;
-          font-size: 18px;
-          font-weight: 600;
+        .detail-row {
           display: flex;
-          align-items: center;
-          gap: 8px;
+          justify-content: space-between;
+          margin-bottom: 12px;
         }
-        .security-note p {
-          margin: 0;
-          color: #1e40af;
-          font-size: 14px;
-          line-height: 1.5;
+        .detail-row:last-child {
+          margin-bottom: 0;
         }
-        .info-section {
-          margin: 32px 0;
-        }
-        .info-section h3 {
-          color: #1e293b;
-          font-size: 20px;
+        .detail-label {
           font-weight: 600;
-          margin: 0 0 16px 0;
-        }
-        .info-section ul {
           color: #475569;
-          margin: 0;
-          padding-left: 20px;
         }
-        .info-section li {
-          margin: 8px 0;
-          line-height: 1.5;
+        .detail-value {
+          color: #1e293b;
         }
         .contact-info {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          padding: 24px;
+          background-color: #eff6ff;
+          border: 1px solid #dbeafe;
+          border-radius: 8px;
+          padding: 20px;
           margin: 24px 0;
         }
         .contact-info h3 {
           margin: 0 0 16px 0;
-          color: #1e293b;
-          font-size: 20px;
-          font-weight: 600;
+          color: #1e40af;
+          font-size: 18px;
         }
-        .contact-info p {
-          margin: 0;
-          color: #475569;
-          line-height: 1.6;
+        .contact-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .contact-item:last-child {
+          margin-bottom: 0;
+        }
+        .contact-icon {
+          width: 16px;
+          height: 16px;
+          margin-right: 8px;
+          color: #3b82f6;
         }
         .footer {
-          background: #f8fafc;
-          border-top: 1px solid #e2e8f0;
-          padding: 24px 30px;
+          background-color: #f8fafc;
+          padding: 30px;
           text-align: center;
+          border-top: 1px solid #e2e8f0;
         }
         .footer p {
-          margin: 8px 0;
+          margin: 0;
           color: #64748b;
-          font-size: 12px;
-          line-height: 1.4;
+          font-size: 14px;
         }
-        .footer a {
-          color: #2563eb;
-          text-decoration: none;
-        }
-        .footer a:hover {
-          text-decoration: underline;
-        }
-        @media (max-width: 480px) {
-          .email-container {
-            margin: 10px;
-          }
-          .header, .content, .footer {
-            padding: 24px 20px;
-          }
-          .header h1 {
-            font-size: 24px;
-          }
-          .cta-button {
-            padding: 14px 24px;
-            font-size: 15px;
-          }
+        .logo {
+          font-size: 24px;
+          font-weight: 700;
+          color: #1e40af;
+          margin-bottom: 8px;
         }
       </style>
     </head>
     <body>
       <div class="email-container">
         <div class="header">
-          <h1>Zenith Medical Centre</h1>
-                          <p>Expert Care Personal Touch</p>
+          <h1>✓ Form Received</h1>
+          <p>Your patient intake form has been successfully submitted</p>
         </div>
         
         <div class="content">
-          <div class="confirmation-box">
-            <h2>
-              <span style="color: #16a34a; font-size: 24px;">✓</span>
-              Submission Confirmed
-            </h2>
-            <p>Thank you, ${data.patientName}! Your patient intake form has been successfully received and securely processed.</p>
+          <div class="greeting">Dear ${data.patientName},</div>
+          
+          <div class="message">
+            Thank you for submitting your patient intake form to Zenith Medical Centre. We have received your information and our team will review it shortly.
           </div>
           
-          <div class="submission-details">
-            <h3>Submission Details</h3>
-            <ul>
-              <li>
-                <strong>Submission ID:</strong>
-                <span class="submission-id">${data.submissionId}</span>
-              </li>
-              <li>
-                <strong>Date & Time:</strong>
-                <span>${data.submissionDate}</span>
-              </li>
-              <li>
-                <strong>Status:</strong>
-                <span class="status-badge">Received & Encrypted</span>
-              </li>
-            </ul>
-            <p style="margin-top: 16px; color: #64748b; font-size: 14px; font-style: italic;">
-              Please keep your Submission ID for your records.
-            </p>
+          <div class="details">
+            <div class="detail-row">
+              <span class="detail-label">Submission ID:</span>
+              <span class="detail-value">${data.submissionId}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Submission Date:</span>
+              <span class="detail-value">${data.submissionDate}</span>
+            </div>
           </div>
           
-          <div class="cta-section">
-            <h3>Next Step: Book Your Appointment</h3>
-            <p>Complete your registration by scheduling your first appointment with our medical team.</p>
-            <a href="${data.appointmentBookingUrl}" class="cta-button">
-              📅 Schedule Appointment
-            </a>
+          <div class="message">
+            <strong>What happens next?</strong><br>
+            Our medical team will review your information and contact you within 1-2 business days to discuss next steps and schedule your appointment.
           </div>
-          
-          <div class="security-note">
-            <h4>
-              <span style="color: #2563eb; font-size: 18px;">🔒</span>
-              Your Privacy is Protected
-            </h4>
-            <p>Your personal health information has been encrypted using AES-256 encryption and is stored securely. Only authorized medical personnel will have access to your information.</p>
-          </div>
-          
-          <div class="info-section">
-            <h3>What to Bring to Your Appointment</h3>
-            <ul>
-              <li>Valid photo identification (driver's license, passport, or government ID)</li>
-              <li>Current insurance card or coverage information</li>
-              <li>List of current medications and dosages</li>
-              <li>Any relevant medical records or test results</li>
-              <li>Your preferred method of payment for any co-pays</li>
-            </ul>
-          </div>
-          
-
           
           <div class="contact-info">
-            <h3>Contact Information</h3>
-            <p>
-              <strong>Phone:</strong> <a href="tel:${contactInfo.primaryPhone.replace(/\s/g, '')}">${contactInfo.primaryPhone}</a><br>
-              <strong>Email:</strong> <a href="mailto:${contactInfo.adminEmail}">${contactInfo.adminEmail}</a><br>
-              <strong>Address:</strong> ${contactInfo.address}
-            </p>
+            <h3>📞 Contact Information</h3>
+            <div class="contact-item">
+              <span class="contact-icon">📞</span>
+              <span>Phone: ${contactInfo.primaryPhone || '249 806 0128'}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">📧</span>
+              <span>Email: ${contactInfo.adminEmail || 'admin@zenithmedical.ca'}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">📍</span>
+              <span>Address: ${contactInfo.address || 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3'}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">🕒</span>
+              <span>Hours: ${contactInfo.businessHours || 'Mon-Fri 8AM-6PM, Sat 9AM-2PM'}</span>
+            </div>
+          </div>
+          
+          <div class="message">
+            <strong>Emergency?</strong><br>
+            If you are experiencing a medical emergency, please call 911 or visit your nearest emergency room immediately.
           </div>
         </div>
         
         <div class="footer">
-          <p>This is an automated message from Zenith Medical Centre. Please do not reply to this email.</p>
-          <p>If you have questions about your submission, please call us at <a href="tel:${contactInfo.primaryPhone.replace(/\s/g, '')}">${contactInfo.primaryPhone}</a>.</p>
-          <p>&copy; ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.</p>
+          <div class="logo">Zenith Medical Centre</div>
+          <p>Providing quality healthcare services to our community</p>
+          <p>This is an automated message. Please do not reply to this email.</p>
         </div>
       </div>
     </body>
     </html>
   `
-  
+
   const text = `
-    ZENITH MEDICAL CENTRE
-    Expert Care Personal Touch
-    
-    Patient Intake Form Confirmation
-    
+    Patient Intake Form Confirmation - Zenith Medical Centre
+
     Dear ${data.patientName},
-    
-    ✓ SUBMISSION CONFIRMED
-    Thank you! Your patient intake form has been successfully submitted and securely processed.
-    
-    SUBMISSION DETAILS:
+
+    Thank you for submitting your patient intake form to Zenith Medical Centre. We have received your information and our team will review it shortly.
+
+    Submission Details:
     - Submission ID: ${data.submissionId}
-    - Date & Time: ${data.submissionDate}
-    - Status: Received & Encrypted
-    
-    Please keep your Submission ID for your records.
-    
-    NEXT STEP: BOOK YOUR APPOINTMENT
-    Complete your registration by scheduling your first appointment with our medical team.
-    
-    Appointment Booking: ${data.appointmentBookingUrl}
-    
-    WHAT TO BRING TO YOUR APPOINTMENT:
-    - Valid photo identification (driver's license, passport, or government ID)
-    - Current insurance card or coverage information
-    - List of current medications and dosages
-    - Any relevant medical records or test results
-    - Your preferred method of payment for any co-pays
-    
-    🔒 YOUR PRIVACY IS PROTECTED
-    Your personal health information has been encrypted using AES-256 encryption and is stored securely. Only authorized medical personnel will have access to your information.
-    
-    CONTACT INFORMATION:
-    Phone: ${contactInfo.primaryPhone}
-    Email: ${contactInfo.adminEmail}
-    Address: ${contactInfo.address}
-    
-    This is an automated message from Zenith Medical Centre. Please do not reply to this email.
-    For questions about your submission, please call us at ${contactInfo.primaryPhone}.
-    
-    © ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.
+    - Submission Date: ${data.submissionDate}
+
+    What happens next?
+    Our medical team will review your information and contact you within 1-2 business days to discuss next steps and schedule your appointment.
+
+    Contact Information:
+    - Phone: ${contactInfo.primaryPhone || '249 806 0128'}
+    - Email: ${contactInfo.adminEmail || 'admin@zenithmedical.ca'}
+    - Address: ${contactInfo.address || 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3'}
+    - Hours: ${contactInfo.businessHours || 'Mon-Fri 8AM-6PM, Sat 9AM-2PM'}
+
+    Emergency?
+    If you are experiencing a medical emergency, please call 911 or visit your nearest emergency room immediately.
+
+    Best regards,
+    Zenith Medical Centre Team
   `
-  
+
   return { subject, html, text }
 }
 
 const generateStaffNotificationTemplate = (data: StaffNotificationData): { subject: string; html: string; text: string } => {
-  const subject = `🏥 New Patient Intake Submission - ${data.submissionId}`
+  const subject = 'New Patient Intake Form Submission - Action Required'
   
   const html = `
     <!DOCTYPE html>
@@ -465,467 +320,191 @@ const generateStaffNotificationTemplate = (data: StaffNotificationData): { subje
           margin: 20px;
         }
         .header {
-          background: linear-gradient(135deg, #475569, #334155);
+          background: linear-gradient(135deg, #dc2626, #b91c1c);
           color: white;
-          padding: 30px;
+          padding: 40px 30px;
           text-align: center;
         }
         .header h1 {
           margin: 0 0 8px 0;
-          font-size: 24px;
+          font-size: 28px;
           font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
+          line-height: 1.2;
         }
         .header p {
           margin: 0;
           font-size: 16px;
           opacity: 0.9;
-          font-weight: 500;
         }
         .content {
-          padding: 30px;
+          padding: 40px 30px;
         }
-        .alert-box {
-          background: linear-gradient(135deg, #fef3c7, #fde68a);
-          border: 2px solid #f59e0b;
-          border-radius: 12px;
-          padding: 20px;
-          margin: 20px 0;
-          text-align: center;
+        .greeting {
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 24px;
+          color: #1e293b;
         }
-        .alert-box h3 {
-          margin: 0 0 12px 0;
-          color: #92400e;
-          font-size: 20px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-        .alert-box p {
-          margin: 0;
-          color: #a16207;
+        .message {
           font-size: 16px;
-          font-weight: 500;
-        }
-        .details-box {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          padding: 24px;
-          margin: 20px 0;
-        }
-        .details-box h3 {
-          margin: 0 0 16px 0;
-          color: #1e293b;
-          font-size: 20px;
-          font-weight: 600;
-        }
-        .details-box ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-        .details-box li {
-          margin: 12px 0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .details-box strong {
-          color: #334155;
-          font-weight: 600;
-          min-width: 140px;
-        }
-        .submission-id {
-          background: #eff6ff;
-          color: #1d4ed8;
-          padding: 4px 12px;
-          border-radius: 6px;
-          font-family: 'Monaco', 'Menlo', monospace;
-          font-size: 14px;
-          font-weight: 600;
-        }
-        .actions-section {
-          text-align: center;
-          margin: 32px 0;
-        }
-        .actions-section h3 {
-          color: #1e293b;
-          font-size: 22px;
-          font-weight: 700;
-          margin: 0 0 16px 0;
-        }
-        .actions-list {
-          text-align: left;
-          max-width: 400px;
-          margin: 0 auto 24px auto;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          padding: 20px;
-        }
-        .actions-list ol {
-          margin: 0;
-          padding-left: 20px;
+          margin-bottom: 24px;
           color: #475569;
         }
-        .actions-list li {
-          margin: 8px 0;
-          line-height: 1.5;
-        }
-        .cta-button {
-          display: inline-block;
-          background: linear-gradient(135deg, #2563eb, #1d4ed8);
-          color: white;
-          padding: 16px 32px;
-          text-decoration: none;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 16px;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          transition: all 0.2s ease;
-        }
-        .cta-button:hover {
-          background: linear-gradient(135deg, #1d4ed8, #1e40af);
-          transform: translateY(-1px);
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .privacy-reminder {
-          background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        .details {
+          background-color: #fef2f2;
           border: 1px solid #fecaca;
-          border-radius: 12px;
+          border-radius: 8px;
           padding: 20px;
           margin: 24px 0;
         }
-        .privacy-reminder h4 {
-          margin: 0 0 12px 0;
-          color: #dc2626;
-          font-size: 18px;
-          font-weight: 600;
+        .detail-row {
           display: flex;
-          align-items: center;
-          gap: 8px;
+          justify-content: space-between;
+          margin-bottom: 12px;
         }
-        .privacy-reminder p {
-          margin: 0;
+        .detail-row:last-child {
+          margin-bottom: 0;
+        }
+        .detail-label {
+          font-weight: 600;
           color: #dc2626;
-          font-size: 14px;
-          line-height: 1.5;
+        }
+        .detail-value {
+          color: #1e293b;
+        }
+        .action-button {
+          display: inline-block;
+          background: linear-gradient(135deg, #dc2626, #b91c1c);
+          color: white;
+          text-decoration: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-weight: 600;
+          margin: 24px 0;
         }
         .footer {
-          background: #f8fafc;
-          border-top: 1px solid #e2e8f0;
-          padding: 24px 30px;
+          background-color: #f8fafc;
+          padding: 30px;
           text-align: center;
+          border-top: 1px solid #e2e8f0;
         }
         .footer p {
-          margin: 8px 0;
+          margin: 0;
           color: #64748b;
-          font-size: 12px;
-          line-height: 1.4;
+          font-size: 14px;
         }
-        .timestamp {
-          color: #94a3b8;
-          font-size: 12px;
-          font-weight: 500;
-        }
-        @media (max-width: 480px) {
-          .email-container {
-            margin: 10px;
-          }
-          .header, .content, .footer {
-            padding: 20px;
-          }
-          .header h1 {
-            font-size: 20px;
-          }
-          .cta-button {
-            padding: 14px 24px;
-            font-size: 15px;
-          }
+        .logo {
+          font-size: 24px;
+          font-weight: 700;
+          color: #dc2626;
+          margin-bottom: 8px;
         }
       </style>
     </head>
     <body>
       <div class="email-container">
         <div class="header">
-          <h1>
-            <span style="font-size: 24px;">🏥</span>
-            Zenith Medical Centre
-          </h1>
-          <p>Staff Notification System</p>
+          <h1>🆕 New Patient Intake</h1>
+          <p>Action required - Review and process new submission</p>
         </div>
         
         <div class="content">
-          <div class="alert-box">
-            <h3>
-              <span style="color: #f59e0b; font-size: 20px;">⚡</span>
-              Action Required
-            </h3>
-            <p>A new patient has completed their intake form and requires review and appointment scheduling.</p>
+          <div class="greeting">Hello Medical Team,</div>
+          
+          <div class="message">
+            A new patient intake form has been submitted and requires your attention. Please review the details below and take appropriate action.
           </div>
           
-          <div class="details-box">
-            <h3>Submission Information</h3>
-            <ul>
-              <li>
-                <strong>Submission ID:</strong>
-                <span class="submission-id">${data.submissionId}</span>
-              </li>
-              <li>
-                <strong>Date:</strong>
-                <span>${data.submissionDate}</span>
-              </li>
-              <li>
-                <strong>Time:</strong>
-                <span>${data.submissionTime}</span>
-              </li>
-              <li>
-                <strong>Patient Email:</strong>
-                <span style="color: #2563eb; font-weight: 600;">${data.patientEmail}</span>
-              </li>
-              <li>
-                <strong>Has Preferred Name:</strong>
-                <span style="color: ${data.hasPreferredName ? '#16a34a' : '#64748b'}; font-weight: 600;">
-                  ${data.hasPreferredName ? 'Yes' : 'No'}
-                </span>
-              </li>
-            </ul>
-          </div>
-          
-          <div class="actions-section">
-            <h3>Required Actions</h3>
-            <div class="actions-list">
-              <ol>
-                <li><strong>Review Submission:</strong> Verify all patient information and check for completeness</li>
-                <li><strong>Contact Patient:</strong> Call or email to confirm details and answer any questions</li>
-                <li><strong>Schedule Appointment:</strong> Book their first appointment with appropriate physician</li>
-                <li><strong>Update Status:</strong> Mark submission as reviewed in the admin dashboard</li>
-                <li><strong>Prepare Charts:</strong> Set up patient file and prepare for first visit</li>
-              </ol>
+          <div class="details">
+            <div class="detail-row">
+              <span class="detail-label">Submission ID:</span>
+              <span class="detail-value">${data.submissionId}</span>
             </div>
-            <a href="${data.dashboardUrl}" class="cta-button">
-              📊 View in Admin Dashboard
-            </a>
+            <div class="detail-row">
+              <span class="detail-label">Submission Date:</span>
+              <span class="detail-value">${data.submissionDate}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Submission Time:</span>
+              <span class="detail-value">${data.submissionTime}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Patient Email:</span>
+              <span class="detail-value">${data.patientEmail}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Has Preferred Name:</span>
+              <span class="detail-value">${data.hasPreferredName ? 'Yes' : 'No'}</span>
+            </div>
           </div>
           
-          <div class="privacy-reminder">
-            <h4>
-              <span style="color: #dc2626; font-size: 18px;">🔒</span>
-              Privacy Reminder
-            </h4>
-            <p>This submission contains encrypted PHI (Protected Health Information). Follow privacy protocols when handling patient information. Only access what is necessary for patient care.</p>
+          <div class="message">
+            <strong>Required Action:</strong><br>
+            Please review the patient intake form in the admin dashboard and contact the patient within 1-2 business days to schedule their appointment.
+          </div>
+          
+          <a href="${data.dashboardUrl}" class="action-button">
+            View in Dashboard →
+          </a>
+          
+          <div class="message">
+            <strong>Priority:</strong> Normal<br>
+            <strong>Response Time:</strong> 1-2 business days
           </div>
         </div>
         
         <div class="footer">
-          <p class="timestamp">Generated: ${new Date().toLocaleString()}</p>
+          <div class="logo">Zenith Medical Centre</div>
+          <p>Staff Notification System</p>
           <p>This is an automated notification from Zenith Medical Centre Staff System.</p>
-          <p>For technical support, contact IT at <a href="mailto:admin@zenithmedical.ca" style="color: #2563eb;">admin@zenithmedical.ca</a></p>
         </div>
       </div>
     </body>
     </html>
   `
-  
+
   const text = `
-    ZENITH MEDICAL CENTRE
-    Staff Notification System
-    
-    🏥 NEW PATIENT INTAKE SUBMISSION
-    
-    ⚡ ACTION REQUIRED
-    A new patient has completed their intake form and requires review and appointment scheduling.
-    
-    SUBMISSION INFORMATION:
+    New Patient Intake Form Submission - Action Required
+
+    Hello Medical Team,
+
+    A new patient intake form has been submitted and requires your attention. Please review the details below and take appropriate action.
+
+    Submission Details:
     - Submission ID: ${data.submissionId}
-    - Date: ${data.submissionDate}
-    - Time: ${data.submissionTime}
+    - Submission Date: ${data.submissionDate}
+    - Submission Time: ${data.submissionTime}
     - Patient Email: ${data.patientEmail}
     - Has Preferred Name: ${data.hasPreferredName ? 'Yes' : 'No'}
-    
-    ADMIN DASHBOARD ACCESS:
-    ${data.dashboardUrl}
-    
-    REQUIRED ACTIONS:
-    1. Review Submission: Verify all patient information and check for completeness
-    2. Contact Patient: Call or email to confirm details and answer any questions
-    3. Schedule Appointment: Book their first appointment with appropriate physician
-    4. Update Status: Mark submission as reviewed in the admin dashboard
-    5. Prepare Charts: Set up patient file and prepare for first visit
-    
-    🔒 PRIVACY REMINDER
-    This submission contains encrypted PHI (Protected Health Information). Follow privacy protocols when handling patient information. Only access what is necessary for patient care.
-    
-    Generated: ${new Date().toLocaleString()}
-    
-    This is an automated notification from Zenith Medical Centre Staff System.
-    For technical support, contact IT at admin@zenithmedical.ca
+
+    Required Action:
+    Please review the patient intake form in the admin dashboard and contact the patient within 1-2 business days to schedule their appointment.
+
+    Dashboard Link: ${data.dashboardUrl}
+
+    Priority: Normal
+    Response Time: 1-2 business days
+
+    Best regards,
+    Zenith Medical Centre Staff System
   `
-  
+
   return { subject, html, text }
 }
 
-// Send email with Resend
-const sendEmailWithResend = async (
-  to: string,
-  subject: string,
-  html: string,
-  text: string,
-  fromName?: string,
-  fromEmail?: string
-): Promise<EmailResult> => {
-  try {
-    const { Resend } = await import('resend')
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    
-    // Use proper from email for Resend (must be verified domain or onboarding@resend.dev)
-    const fromEmailAddress = process.env.RESEND_FROM_EMAIL || fromEmail || 'onboarding@resend.dev'
-    const fromNameValue = process.env.RESEND_FROM_NAME || fromName || 'Zenith Medical Centre'
-    
-    console.log('Sending email with Resend:', {
-      to,
-      from: `${fromNameValue} <${fromEmailAddress}>`,
-      subject
-    })
-    
-    const result = await resend.emails.send({
-      from: `${fromNameValue} <${fromEmailAddress}>`,
-      to: [to],
-      subject: subject,
-      html: html,
-      text: text,
-    })
-    
-    console.log('Resend result:', result)
-    
-    if (result.error) {
-      throw new Error(result.error.message || 'Resend API error')
-    }
-    
-    return {
-      success: true,
-      messageId: result.data?.id,
-      provider: 'resend'
-    }
-  } catch (error) {
-    console.error('Resend email error:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      provider: 'resend'
-    }
-  }
-}
-
-// Send email with SMTP
-const sendEmailWithSMTP = async (
-  to: string,
-  subject: string,
-  html: string,
-  text: string,
-  fromName?: string,
-  fromEmail?: string
-): Promise<EmailResult> => {
-  try {
-    const transporter = createSMTPTransporter()
-    
-    const mailOptions = {
-      from: `${fromName || 'Zenith Medical Centre'} <${fromEmail || process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`,
-      to: to,
-      subject: subject,
-      html: html,
-      text: text,
-      headers: {
-        'X-Priority': '3',
-        'X-MSMail-Priority': 'Normal',
-        'List-Unsubscribe': '<mailto:admin@zenithmedical.ca>'
-      }
-    }
-    
-    const result = await transporter.sendMail(mailOptions)
-    
-    return {
-      success: true,
-      messageId: result.messageId,
-      provider: 'smtp'
-    }
-  } catch (error) {
-    console.error('SMTP email error:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      provider: 'smtp'
-    }
-  }
-}
-
-// Main email sending function with fallback
-const sendEmail = async (
-  to: string,
-  subject: string,
-  html: string,
-  text: string,
-  fromName?: string,
-  fromEmail?: string
-): Promise<EmailResult> => {
-  const provider = getEmailProvider()
-  
-  try {
-    if (provider === 'resend') {
-      const result = await sendEmailWithResend(to, subject, html, text, fromName, fromEmail)
-      if (result.success) {
-        return result
-      }
-      // Fallback to SMTP if Resend fails (unless disabled)
-      if (process.env.DISABLE_SMTP_FALLBACK !== 'true') {
-        console.log('Resend failed, falling back to SMTP...')
-        return await sendEmailWithSMTP(to, subject, html, text, fromName, fromEmail)
-      } else {
-        console.log('Resend failed, SMTP fallback disabled')
-        return result
-      }
-    } else {
-      const result = await sendEmailWithSMTP(to, subject, html, text, fromName, fromEmail)
-      if (result.success) {
-        return result
-      }
-      // Fallback to Resend if SMTP fails and Resend is available
-      if (process.env.RESEND_API_KEY) {
-        console.log('SMTP failed, falling back to Resend...')
-        return await sendEmailWithResend(to, subject, html, text, fromName, fromEmail)
-      }
-      return result
-    }
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Email sending failed',
-      provider: provider
-    }
-  }
-}
-
-// Email sending functions
+// Main email sending functions
 export const sendPatientConfirmationEmail = async (
-  patientEmail: string,
-  data: PatientConfirmationData
+  data: PatientConfirmationData,
+  patientEmail: string
 ): Promise<EmailResult> => {
   try {
     const template = await generatePatientConfirmationTemplate(data)
     
-    return await sendEmail(
+    return await sendEmailWithResend(
       patientEmail,
       template.subject,
       template.html,
-      template.text,
-      process.env.RESEND_FROM_NAME || 'Zenith Medical Centre',
-      process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+      template.text
     )
   } catch (error) {
     console.error('Patient confirmation email error:', error)
@@ -944,21 +523,37 @@ export const sendStaffNotificationEmail = async (
     
     // Get staff notification emails from environment variables
     const staffEmails = process.env.STAFF_NOTIFICATION_EMAILS?.split(',') || [
-      'admin@zenithmedical.ca',
       'admin@zenithmedical.ca'
     ]
     
-    // Send to first staff email (can be extended to send to multiple)
-    const staffEmail = staffEmails[0].trim()
-    
-            return await sendEmail(
-          staffEmail,
+    // Send to all staff emails
+    const results = await Promise.allSettled(
+      staffEmails.map(email => 
+        sendEmailWithResend(
+          email.trim(),
           template.subject,
           template.html,
-          template.text,
-          process.env.RESEND_FROM_NAME || 'Zenith Medical Centre System',
-          process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+          template.text
         )
+      )
+    )
+    
+    // Check if at least one email was sent successfully
+    const successfulResults = results.filter(
+      result => result.status === 'fulfilled' && result.value.success
+    )
+    
+    if (successfulResults.length > 0) {
+      return {
+        success: true,
+        messageId: (successfulResults[0] as PromiseFulfilledResult<EmailResult>).value.messageId
+      }
+    } else {
+      return {
+        success: false,
+        error: 'Failed to send to any staff email addresses'
+      }
+    }
   } catch (error) {
     console.error('Staff notification email error:', error)
     return {
@@ -968,148 +563,5 @@ export const sendStaffNotificationEmail = async (
   }
 }
 
-export const testEmailConfiguration = async (): Promise<EmailResult> => {
-  try {
-    const testData: PatientConfirmationData = {
-      patientName: 'Test Patient',
-      submissionId: 'TEST-123',
-      submissionDate: new Date().toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
-      appointmentBookingUrl: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227'
-    }
-    
-    const template = await generatePatientConfirmationTemplate(testData)
-    
-            return await sendEmail(
-          'test@example.com',
-          template.subject,
-          template.html,
-          template.text,
-          process.env.RESEND_FROM_NAME || 'Zenith Medical Centre',
-          process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
-        )
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Test email failed'
-    }
-  }
-}
-
-/**
- * Send a response email to a patient
- */
-export async function sendPatientResponseEmail(data: {
-  patientEmail: string
-  patientName: string
-  subject: string
-  message: string
-  adminName: string
-  submissionId: string
-}): Promise<EmailResult> {
-  try {
-    const { patientEmail, patientName, subject, message, adminName, submissionId } = data
-    
-    // Get cached contact information
-    const contactInfo = await getCachedContactInfo()
-    
-    const htmlTemplate = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-            .content { background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }
-            .message-box { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 20px 0; }
-            .footer { text-align: center; color: #64748b; font-size: 14px; margin-top: 30px; }
-            .contact-info { background: #e1f5fe; padding: 15px; border-radius: 8px; margin: 20px 0; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>📧 Response from Zenith Medical Centre</h1>
-            </div>
-            
-            <div class="content">
-              <p>Dear ${patientName},</p>
-              
-              <p>Thank you for submitting your patient intake form. We have received your information and wanted to follow up with you.</p>
-              
-              <div class="message-box">
-                <h3 style="color: #1e40af; margin-top: 0;">Message from ${adminName}:</h3>
-                <div style="white-space: pre-wrap; line-height: 1.6;">${message}</div>
-              </div>
-              
-              <div class="contact-info">
-                <h4 style="color: #1e40af; margin-top: 0;">Contact Information</h4>
-                <p><strong>Phone:</strong> ${contactInfo.primaryPhone}</p>
-                <p><strong>Email:</strong> ${contactInfo.adminEmail}</p>
-                <p><strong>Address:</strong> ${contactInfo.address}</p>
-              </div>
-              
-              <p>If you have any questions or need to provide additional information, please don't hesitate to contact us using the information above.</p>
-              
-              <p>Best regards,<br>
-              <strong>Zenith Medical Centre Team</strong></p>
-              
-              <div class="footer">
-                <p>This message was sent in response to your patient intake submission (ID: ${submissionId}).</p>
-                <p>© ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.</p>
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
-    
-    const textTemplate = `
-      Response from Zenith Medical Centre
-      
-      Dear ${patientName},
-      
-      Thank you for submitting your patient intake form. We have received your information and wanted to follow up with you.
-      
-      MESSAGE FROM ${adminName.toUpperCase()}:
-      ${message}
-      
-      CONTACT INFORMATION:
-      Phone: ${contactInfo.primaryPhone}
-      Email: ${contactInfo.adminEmail}
-      Address: ${contactInfo.address}
-      
-      If you have any questions or need to provide additional information, please don't hesitate to contact us using the information above.
-      
-      Best regards,
-      Zenith Medical Centre Team
-      
-      This message was sent in response to your patient intake submission (ID: ${submissionId}).
-      © ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.
-    `
-    
-    return await sendEmail(
-      patientEmail,
-      subject,
-      htmlTemplate,
-      textTemplate,
-      process.env.RESEND_FROM_NAME || 'Zenith Medical Centre',
-      process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
-    )
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send patient response email'
-    }
-  }
-}
-
-// Export types for use in other files
+// Export types for external use
 export type { PatientConfirmationData, StaffNotificationData, EmailResult } 

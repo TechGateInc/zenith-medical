@@ -57,13 +57,7 @@ export async function POST(request: NextRequest) {
     // Get settings from database
     const settings = await settingsManager.getSettings()
     
-    // Check if contact form is enabled
-    if (!settings.contactFormEnabled) {
-      return NextResponse.json(
-        { success: false, error: 'Contact form is currently disabled.' },
-        { status: 403 }
-      )
-    }
+
 
     const adminEmail = settings.adminEmail
 

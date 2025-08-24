@@ -11,15 +11,9 @@ export interface SystemSettings {
   businessHours: string;
   timezone: string;
   dateFormat: string;
-  emailNotifications: boolean;
-  appointmentReminders: boolean;
-  securityAlerts: boolean;
-  maintenanceMode: boolean;
-  contactFormEnabled: boolean;
   sessionTimeout: number;
   maxLoginAttempts: number;
   passwordExpiry: number;
-
   ipWhitelist?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -71,11 +65,7 @@ export class SettingsManager {
             businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
             timezone: 'America/Toronto',
             dateFormat: 'MM/DD/YYYY',
-            emailNotifications: true,
-            appointmentReminders: true,
-            securityAlerts: true,
-            maintenanceMode: false,
-            contactFormEnabled: true,
+
             sessionTimeout: 30,
             maxLoginAttempts: 5,
             passwordExpiry: 90,
@@ -101,11 +91,7 @@ export class SettingsManager {
         businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
         timezone: 'America/Toronto',
         dateFormat: 'MM/DD/YYYY',
-        emailNotifications: true,
-        appointmentReminders: true,
-        securityAlerts: true,
-        maintenanceMode: false,
-        contactFormEnabled: true,
+
         sessionTimeout: 30,
         maxLoginAttempts: 5,
         passwordExpiry: 90,
@@ -134,11 +120,7 @@ export class SettingsManager {
           businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
           timezone: 'America/Toronto',
           dateFormat: 'MM/DD/YYYY',
-          emailNotifications: true,
-          appointmentReminders: true,
-          securityAlerts: true,
-          maintenanceMode: false,
-          contactFormEnabled: true,
+
           sessionTimeout: 30,
           maxLoginAttempts: 5,
           passwordExpiry: 90,
@@ -193,21 +175,7 @@ export class SettingsManager {
     return settings.adminEmail;
   }
 
-  /**
-   * Check if maintenance mode is enabled
-   */
-  async isMaintenanceMode(): Promise<boolean> {
-    const settings = await this.getSettings();
-    return settings.maintenanceMode;
-  }
 
-  /**
-   * Check if contact form is enabled
-   */
-  async isContactFormEnabled(): Promise<boolean> {
-    const settings = await this.getSettings();
-    return settings.contactFormEnabled;
-  }
 
   /**
    * Get business address
@@ -242,13 +210,7 @@ export async function getAdminEmail(): Promise<string> {
   return settingsManager.getAdminEmail();
 }
 
-export async function isMaintenanceMode(): Promise<boolean> {
-  return settingsManager.isMaintenanceMode();
-}
 
-export async function isContactFormEnabled(): Promise<boolean> {
-  return settingsManager.isContactFormEnabled();
-}
 
 export async function getAddress(): Promise<string> {
   return settingsManager.getAddress();

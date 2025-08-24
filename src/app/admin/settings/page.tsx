@@ -9,7 +9,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Settings,
-  Bell,
   Globe,
   Database,
   Shield,
@@ -22,7 +21,7 @@ import {
 } from "lucide-react";
 import { SettingsSkeleton } from "@/components/UI/SkeletonLoader";
 
-import { useAuth } from "@/lib/auth/use-auth";
+
 
 interface ContactSettings {
   primaryPhone: string;
@@ -38,13 +37,7 @@ interface SystemSettings {
   dateFormat: string;
 }
 
-interface NotificationSettings {
-  emailNotifications: boolean;
-  appointmentReminders: boolean;
-  securityAlerts: boolean;
-  maintenanceMode: boolean;
-  contactFormEnabled: boolean;
-}
+
 
 interface SecuritySettings {
   sessionTimeout: number;
@@ -69,14 +62,7 @@ export default function SettingsPage() {
     dateFormat: "MM/DD/YYYY",
   });
 
-  const [notificationSettings, setNotificationSettings] =
-    useState<NotificationSettings>({
-      emailNotifications: true,
-      appointmentReminders: true,
-      securityAlerts: true,
-      maintenanceMode: false,
-      contactFormEnabled: true,
-    });
+
 
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
     sessionTimeout: 30,
@@ -87,7 +73,7 @@ export default function SettingsPage() {
   });
 
   const [activeTab, setActiveTab] = useState<
-    "contact" | "system" | "notifications" | "security" | "database"
+    "contact" | "system" | "security" | "database"
   >("contact");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -105,7 +91,7 @@ export default function SettingsPage() {
     const tabParam = urlParams.get("tab");
     if (
       tabParam &&
-      ["contact", "system", "notifications", "security", "database"].includes(
+      ["contact", "system", "security", "database"].includes(
         tabParam
       )
     ) {
@@ -113,7 +99,6 @@ export default function SettingsPage() {
         tabParam as
           | "contact"
           | "system"
-          | "notifications"
           | "security"
           | "database"
       );
@@ -139,17 +124,7 @@ export default function SettingsPage() {
             timezone: data.settings.system.timezone || "America/Toronto",
             dateFormat: data.settings.system.dateFormat || "MM/DD/YYYY",
           });
-          setNotificationSettings({
-            emailNotifications:
-              data.settings.notifications.emailNotifications ?? true,
-            appointmentReminders:
-              data.settings.notifications.appointmentReminders ?? true,
-            securityAlerts: data.settings.notifications.securityAlerts ?? true,
-            maintenanceMode:
-              data.settings.notifications.maintenanceMode ?? false,
-            contactFormEnabled:
-              data.settings.notifications.contactFormEnabled ?? true,
-          });
+          
           setSecuritySettings({
             sessionTimeout: data.settings.security.sessionTimeout || 30,
             maxLoginAttempts: data.settings.security.maxLoginAttempts || 5,
@@ -175,7 +150,7 @@ export default function SettingsPage() {
       const settingsData = {
         contact: contactSettings,
         system: systemSettings,
-        notifications: notificationSettings,
+
         security: securitySettings,
       };
 
@@ -208,18 +183,7 @@ export default function SettingsPage() {
               timezone: data.settings.system.timezone || "America/Toronto",
               dateFormat: data.settings.system.dateFormat || "MM/DD/YYYY",
             });
-            setNotificationSettings({
-              emailNotifications:
-                data.settings.notifications.emailNotifications ?? true,
-              appointmentReminders:
-                data.settings.notifications.appointmentReminders ?? true,
-              securityAlerts:
-                data.settings.notifications.securityAlerts ?? true,
-              maintenanceMode:
-                data.settings.notifications.maintenanceMode ?? false,
-              contactFormEnabled:
-                data.settings.notifications.contactFormEnabled ?? true,
-            });
+
             setSecuritySettings({
               sessionTimeout: data.settings.security.sessionTimeout || 30,
               maxLoginAttempts: data.settings.security.maxLoginAttempts || 5,
@@ -405,17 +369,7 @@ export default function SettingsPage() {
               <Globe className="h-4 w-4 inline mr-2" />
               System
             </button>
-            <button
-              onClick={() => setActiveTab("notifications")}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "notifications"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              <Bell className="h-4 w-4 inline mr-2" />
-              Notifications
-            </button>
+
             <button
               onClick={() => setActiveTab("security")}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
@@ -643,176 +597,7 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {/* Notifications Tab */}
-          {activeTab === "notifications" && (
-            <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Notification Settings
-              </h2>
 
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Email Notifications
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Enable system notifications via email
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setNotificationSettings((prev) => ({
-                        ...prev,
-                        emailNotifications: !prev.emailNotifications,
-                      }))
-                    }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      notificationSettings.emailNotifications
-                        ? "bg-blue-600"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        notificationSettings.emailNotifications
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Appointment Reminders
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Automated appointment reminder system
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setNotificationSettings((prev) => ({
-                        ...prev,
-                        appointmentReminders: !prev.appointmentReminders,
-                      }))
-                    }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      notificationSettings.appointmentReminders
-                        ? "bg-blue-600"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        notificationSettings.appointmentReminders
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Security Alerts
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Real-time security event notifications
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setNotificationSettings((prev) => ({
-                        ...prev,
-                        securityAlerts: !prev.securityAlerts,
-                      }))
-                    }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      notificationSettings.securityAlerts
-                        ? "bg-blue-600"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        notificationSettings.securityAlerts
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Maintenance Mode
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Emergency setting to disable public access
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setNotificationSettings((prev) => ({
-                        ...prev,
-                        maintenanceMode: !prev.maintenanceMode,
-                      }))
-                    }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      notificationSettings.maintenanceMode
-                        ? "bg-red-600"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        notificationSettings.maintenanceMode
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Contact Form
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Enable or disable the contact us form
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setNotificationSettings((prev) => ({
-                        ...prev,
-                        contactFormEnabled: !prev.contactFormEnabled,
-                      }))
-                    }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      notificationSettings.contactFormEnabled
-                        ? "bg-blue-600"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        notificationSettings.contactFormEnabled
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Security Tab */}
           {activeTab === "security" && (
