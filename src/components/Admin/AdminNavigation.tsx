@@ -14,7 +14,6 @@ import {
   FileText, 
   Download,
   Bell,
-  Calendar,
   Shield,
   HelpCircle,
   BookOpen,
@@ -60,18 +59,7 @@ const AdminNavigation: React.FC = () => {
         },
       ],
     },
-    {
-      name: 'Appointments',
-      href: '/admin/appointments',
-      icon: Calendar,
-      children: [
-        {
-          name: 'Providers',
-          href: '/admin/appointments/providers',
-          icon: Users,
-        },
-      ],
-    },
+
     {
       name: 'Notifications',
       href: '/admin/notifications',

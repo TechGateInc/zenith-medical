@@ -28,7 +28,6 @@ interface SecurityStats {
   failedAttempts: number;
   activeUsers: number;
   lastSecurityScan: string;
-  complianceScore: number;
   securityAlerts: number;
 }
 
@@ -42,13 +41,7 @@ interface SecurityEvent {
   ipAddress?: string;
 }
 
-interface ComplianceItem {
-  id: string;
-  category: string;
-  description: string;
-  status: 'compliant' | 'warning' | 'non_compliant';
-  lastChecked: string;
-}
+
 
 export default function SecurityPage() {
   const [stats, setStats] = useState<SecurityStats>({
@@ -56,15 +49,13 @@ export default function SecurityPage() {
     failedAttempts: 0,
     activeUsers: 0,
     lastSecurityScan: '',
-    complianceScore: 0,
     securityAlerts: 0
   });
   
   const [events, setEvents] = useState<SecurityEvent[]>([]);
-  const [compliance, setCompliance] = useState<ComplianceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'compliance'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'events'>('overview');
 
   useEffect(() => {
     fetchSecurityData();
@@ -76,10 +67,9 @@ export default function SecurityPage() {
       setError(null);
       
       // Fetch data from actual API endpoints
-      const [statsResponse, eventsResponse, complianceResponse] = await Promise.allSettled([
+      const [statsResponse, eventsResponse] = await Promise.allSettled([
         fetch('/api/admin/security/stats'),
-        fetch('/api/admin/security/events'),
-        fetch('/api/admin/security/compliance')
+        fetch('/api/admin/security/events')
       ]);
 
       // Process stats response
@@ -98,23 +88,12 @@ export default function SecurityPage() {
         }
       }
 
-      // Process compliance response
-      if (complianceResponse.status === 'fulfilled' && complianceResponse.value.ok) {
-        const complianceData = await complianceResponse.value.json();
-        if (complianceData.success) {
-          setCompliance(complianceData.compliance);
-        }
-      }
-
       // If any API calls failed, log the errors but don't fail the entire fetch
       if (statsResponse.status === 'rejected') {
         console.error('Failed to fetch security stats:', statsResponse.reason);
       }
       if (eventsResponse.status === 'rejected') {
         console.error('Failed to fetch security events:', eventsResponse.reason);
-      }
-      if (complianceResponse.status === 'rejected') {
-        console.error('Failed to fetch compliance data:', complianceResponse.reason);
       }
 
     } catch (err) {
@@ -141,23 +120,7 @@ export default function SecurityPage() {
     );
   };
 
-  const getComplianceStatus = (status: ComplianceItem['status']) => {
-    const statusConfig = {
-      compliant: { icon: CheckCircle, bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-200', label: 'Compliant' },
-      warning: { icon: AlertTriangle, bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-200', label: 'Warning' },
-      non_compliant: { icon: AlertTriangle, bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-200', label: 'Non-Compliant' }
-    };
 
-    const config = statusConfig[status];
-    const IconComponent = config.icon;
-    
-    return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${config.bg} ${config.text} ${config.border}`}>
-        <IconComponent className="w-4 h-4 mr-1" />
-        {config.label}
-      </span>
-    );
-  };
 
   const getEventIcon = (type: SecurityEvent['type']) => {
     switch (type) {
@@ -194,8 +157,7 @@ export default function SecurityPage() {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Shield },
-    { id: 'events', label: 'Security Events', icon: Activity },
-    { id: 'compliance', label: 'Compliance', icon: FileText }
+    { id: 'events', label: 'Security Events', icon: Activity }
   ];
 
   if (loading) {
@@ -224,7 +186,7 @@ export default function SecurityPage() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Security Center</h1>
-            <p className="text-gray-600">Monitor security events, compliance status, and audit logs</p>
+            <p className="text-gray-600">Monitor security events and audit logs</p>
           </div>
           
           <div className="flex items-center space-x-3 mt-4 lg:mt-0">
@@ -330,17 +292,7 @@ export default function SecurityPage() {
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-6">
-                      <div className="flex items-center">
-                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                          <CheckCircle className="w-6 h-6 text-purple-600" />
-                        </div>
-                        <div className="ml-4">
-                          <p className="text-sm font-medium text-gray-500">Compliance Score</p>
-                          <p className="text-2xl font-bold text-gray-900">{stats.complianceScore}%</p>
-                        </div>
-                      </div>
-                    </div>
+
                   </div>
 
                   {/* Quick Actions */}
@@ -414,32 +366,7 @@ export default function SecurityPage() {
                 </div>
               )}
 
-              {/* Compliance Tab */}
-              {activeTab === 'compliance' && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Compliance Status</h3>
-                    <span className="text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</span>
-                  </div>
 
-                  <div className="space-y-4">
-                    {compliance.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h4 className="font-medium text-gray-900">{item.category}</h4>
-                            {getComplianceStatus(item.status)}
-                          </div>
-                          <p className="text-sm text-gray-600">{item.description}</p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Last checked: {new Date(item.lastChecked).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>

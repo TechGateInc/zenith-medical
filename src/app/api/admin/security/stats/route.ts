@@ -62,22 +62,7 @@ export async function GET() {
       Promise.resolve(8) // Mock data
     ]);
 
-    // Calculate compliance score based on various factors
-    const complianceFactors = {
-      httpsEnabled: true,
-      dataEncryption: true,
-      backupSchedule: true,
-      accessControl: true,
-      auditLogs: true,
-      passwordPolicy: true,
-      sessionSecurity: true,
-      ipRestrictions: false // Example: not fully configured
-    };
 
-    const complianceScore = Math.round(
-      (Object.values(complianceFactors).filter(Boolean).length / 
-       Object.values(complianceFactors).length) * 100
-    );
 
     return NextResponse.json({
       success: true,
@@ -86,7 +71,7 @@ export async function GET() {
         failedAttempts,
         activeUsers,
         lastSecurityScan: new Date().toISOString(),
-        complianceScore,
+
         securityAlerts: failedAttempts > 5 ? 2 : 0
       }
     });

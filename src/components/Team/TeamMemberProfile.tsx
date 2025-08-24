@@ -11,9 +11,7 @@ import {
   Mail, 
   Phone, 
   User, 
-  Tag,
   Calendar,
-  Award,
   X
 } from 'lucide-react';
 import type { TeamMember } from './TeamMemberCard';

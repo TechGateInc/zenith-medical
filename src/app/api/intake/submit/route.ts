@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const userAgent = headersList.get('user-agent') || 'unknown'
 
     // Destructure form data from request body
-    const { section1, section2, section3, section4, privacyPolicyAgreed } = body
+    const { section1, section2, section3, privacyPolicyAgreed } = body
 
     // Basic validation for new structure
     if (!section1 || !section3 || privacyPolicyAgreed === undefined) {
@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
       dateOfBirth,
       sex: gender,
       emailAddress,
-      residenceApartmentNumber,
       residenceStreetAddress: streetAddress,
       residenceCity: city,
       residencePostalCode: postalZipCode
@@ -85,9 +84,6 @@ export async function POST(request: NextRequest) {
       nextOfKinName,
       nextOfKinPhone,
       relationshipToPatient,
-      patientName,
-      signature,
-      signatureDate,
       phoneNumber
     } = section3
 

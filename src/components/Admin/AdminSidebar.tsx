@@ -17,7 +17,6 @@ import {
   Users, 
   FileText, 
   Download,
-  Calendar,
   Shield,
   HelpCircle,
   BookOpen,
@@ -110,18 +109,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
         },
       ],
     },
-    {
-      name: 'Appointments',
-      href: '/admin/appointments',
-      icon: Calendar,
-      children: [
-        {
-          name: 'Providers',
-          href: '/admin/appointments/providers',
-          icon: Users,
-        },
-      ],
-    },
+
     // Notifications temporarily removed
     // {
     //   name: 'Notifications',

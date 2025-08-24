@@ -29,7 +29,7 @@ The Zenith Medical Centre Admin Panel provides comprehensive management tools fo
 
 - Monitor patient intake submissions
 - Manage website content (blog posts, FAQ, team members, services)
-- Oversee appointment bookings and providers
+- Oversee patient intake and communications
 - Monitor security events and compliance
 - Export patient data for reporting
 - Configure system settings

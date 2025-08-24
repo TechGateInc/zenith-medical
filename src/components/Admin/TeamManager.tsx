@@ -21,7 +21,6 @@ import {
   User,
   Mail,
   Phone,
-  Tag,
   Loader2,
   AlertTriangle
 } from 'lucide-react';
@@ -68,49 +67,6 @@ interface ApiResponse {
   };
 }
 
-// Add TagInput component inside TeamManager for specialties
-function TagInput({ value, onChange, placeholder }: { value: string[]; onChange: (tags: string[]) => void; placeholder?: string }) {
-  const [input, setInput] = useState('');
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === 'Enter' || e.key === ',') && input.trim()) {
-      e.preventDefault();
-      if (!value.includes(input.trim())) {
-        onChange([...value, input.trim()]);
-      }
-      setInput('');
-    } else if (e.key === 'Backspace' && !input && value.length > 0) {
-      onChange(value.slice(0, -1));
-    }
-  };
-
-  const handleRemove = (index: number) => {
-    onChange(value.filter((_, i) => i !== index));
-  };
-
-  return (
-    <div className="flex flex-wrap items-center gap-2 border border-gray-300 rounded-lg px-2 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-500">
-      {value.map((tag, idx) => (
-        <span key={idx} className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-          {tag}
-          <button type="button" onClick={() => handleRemove(idx)} className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none">&times;</button>
-        </span>
-      ))}
-      <input
-        type="text"
-        value={input}
-        onChange={handleInputChange}
-        onKeyDown={handleInputKeyDown}
-        className="flex-1 min-w-[120px] px-2 py-1 border-none outline-none bg-transparent text-sm"
-        placeholder={placeholder || 'Add specialty'}
-      />
-    </div>
-  );
-}
 
 const TeamManager: React.FC = () => {
   // API authentication hook

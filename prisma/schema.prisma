@@ -275,18 +275,7 @@ model Appointment {
   @@map("appointments")
 }
 
-model BookingProvider {
-  id        String   @id @default(cuid())
-  name      String
-  type      String   @unique
-  active    Boolean  @default(false)
-  isDefault Boolean  @default(false)
-  config    Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("booking_providers")
-}
 
 model NotificationTemplate {
   id           String             @id @default(cuid())
@@ -303,12 +292,6 @@ model NotificationTemplate {
 
   @@map("notification_templates")
 }
-
-
-
-
-
-
 
 model Service {
   id          String   @id @default(cuid())

@@ -90,7 +90,7 @@ export function fileToDataURLServer(file: File): Promise<string> {
       const base64 = Buffer.from(arrayBuffer).toString('base64');
       const mimeType = file.type || 'image/jpeg';
       resolve(`data:${mimeType};base64,${base64}`);
-    } catch (error) {
+    } catch {
       reject(new Error('Failed to read file'));
     }
   });
