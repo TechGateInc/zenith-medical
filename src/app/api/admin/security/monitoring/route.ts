@@ -379,7 +379,7 @@ export async function HEAD() {
     
     return response
 
-  } catch (error) {
+  } catch {
     return new NextResponse(null, { status: 500 })
   }
 } 

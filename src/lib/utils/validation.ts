@@ -36,7 +36,7 @@ export const formatPhone = (phone: string): string => {
   const cleaned = cleanPhone(phone)
   
   // Remove leading + and 1 for processing
-  let digits = cleaned.replace(/^\+?1?/, '')
+  const digits = cleaned.replace(/^\+?1?/, '')
   
   // Ensure we have exactly 10 digits for Canadian numbers
   if (digits.length === 10) {
@@ -59,7 +59,7 @@ export const validateCanadianPhone = (phone: string): ValidationResult => {
   const cleaned = cleanPhone(phone)
   
   // Remove country code if present
-  let digits = cleaned.replace(/^\+?1/, '')
+  const digits = cleaned.replace(/^\+?1/, '')
   
   // Must be exactly 10 digits
   if (digits.length !== 10) {

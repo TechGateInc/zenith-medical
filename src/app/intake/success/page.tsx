@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Layout from "../../../components/Layout/Layout";
 import Button from "../../../components/UI/Button";
 import Link from "next/link";
+import { useCachedPrimaryPhone } from '@/lib/hooks/useCachedAddress';
 
 interface BookingProvider {
   name: string;
@@ -30,6 +31,7 @@ export default function IntakeSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone();
 
   const [bookingProviders, setBookingProviders] = useState<BookingProvider[]>(
     []
@@ -147,7 +149,7 @@ export default function IntakeSuccessPage() {
         success: false,
         error: "Failed to connect to booking system",
         fallbackMessage:
-          "Please call <a href='tel:2498060128' className='text-blue-600 hover:underline'>249 806 0128</a> to schedule your appointment.",
+          `Please call <a href='tel:${phoneLoading ? '2498060128' : primaryPhone.replace(/\s/g, '')}' className='text-blue-600 hover:underline'>${phoneLoading ? '249 806 0128' : primaryPhone}</a> to schedule your appointment.`,
       });
     } finally {
       setIsBooking(false);
@@ -943,8 +945,8 @@ export default function IntakeSuccessPage() {
                       Phone Support
                     </h3>
                     <p className="text-xl font-bold text-blue-600 mb-2">
-                      <a href="tel:2498060128" className="text-blue-600 hover:underline">
-                        249 806 0128
+                      <a href={`tel:${phoneLoading ? '2498060128' : primaryPhone.replace(/\s/g, '')}`} className="text-blue-600 hover:underline">
+                        {phoneLoading ? '249 806 0128' : primaryPhone}
                       </a>
                     </p>
                     <p className="text-sm text-slate-500">

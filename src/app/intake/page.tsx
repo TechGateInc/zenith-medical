@@ -4,11 +4,14 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Layout from '../../components/Layout/Layout'
 import IntakeForm, { type PatientIntakeData } from '../../components/Forms/IntakeForm'
+import { useCachedPrimaryPhone, useCachedAdminEmail } from '@/lib/hooks/useCachedAddress'
 
 export default function IntakePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone()
+  const { adminEmail, loading: emailLoading } = useCachedAdminEmail()
 
   const handleFormSubmit = async (formData: PatientIntakeData) => {
     setIsSubmitting(true)
@@ -142,7 +145,7 @@ export default function IntakePage() {
                     <h3 className="text-xl font-bold text-red-800 mb-2">Submission Error</h3>
                     <p className="text-red-700 mb-2">{error}</p>
                     <p className="text-red-600 text-sm">
-                      Please try again or contact us at <a href="tel:2498060128" className="text-blue-600 hover:underline">249 806 0128</a> if the problem persists.
+                      Please try again or contact us at <a href={`tel:${phoneLoading ? '2498060128' : primaryPhone.replace(/\s/g, '')}`} className="text-blue-600 hover:underline">{phoneLoading ? '249 806 0128' : primaryPhone}</a> if the problem persists.
                     </p>
                   </div>
                 </div>
@@ -188,13 +191,13 @@ export default function IntakePage() {
                     Having trouble with the form? Our staff can help you complete it over the phone during business hours.
                   </p>
                   <a
-                    href="tel:2498060128"
+                    href={`tel:${phoneLoading ? '2498060128' : primaryPhone.replace(/\s/g, '')}`}
                     className="bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                    <span className="text-blue-600 hover:underline">Call 249 806 0128</span>
+                    <span className="text-blue-600 hover:underline">Call {phoneLoading ? '249 806 0128' : primaryPhone}</span>
                   </a>
                 </div>
 
@@ -209,7 +212,7 @@ export default function IntakePage() {
                     Not sure what information to provide? We can answer any questions about the intake process via email.
                   </p>
                   <a
-                                            href="mailto:admin@zenithmedical.ca"
+                    href={`mailto:${emailLoading ? 'admin@zenithmedical.ca' : adminEmail}`}
                     className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

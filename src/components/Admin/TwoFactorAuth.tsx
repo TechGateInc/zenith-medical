@@ -6,11 +6,10 @@ import toast from 'react-hot-toast';
 import Image from 'next/image';
 
 interface TwoFactorAuthProps {
-  userEmail: string;
   onStatusChange?: (enabled: boolean) => void;
 }
 
-export default function TwoFactorAuth({ userEmail, onStatusChange }: TwoFactorAuthProps) {
+export default function TwoFactorAuth({ onStatusChange }: TwoFactorAuthProps) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isSetupMode, setIsSetupMode] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -152,7 +151,7 @@ export default function TwoFactorAuth({ userEmail, onStatusChange }: TwoFactorAu
       setCopiedCode(text);
       toast.success('Copied to clipboard');
       setTimeout(() => setCopiedCode(null), 2000);
-    } catch (error) {
+    } catch {
       toast.error('Failed to copy to clipboard');
     }
   };

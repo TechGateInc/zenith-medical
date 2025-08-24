@@ -709,11 +709,11 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-                             {securitySettings.twoFactorAuth && user?.email && (
-                 <div className="mt-6">
-                   <TwoFactorAuth userEmail={user.email} />
-                 </div>
-               )}
+                                                           {securitySettings.twoFactorAuth && user?.email && (
+                <div className="mt-6">
+                  <TwoFactorAuth />
+                </div>
+              )}
             </div>
           )}
 

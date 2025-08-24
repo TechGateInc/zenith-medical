@@ -40,52 +40,11 @@ export default async function About() {
   // Fetch team members from database
   const teamMembers = await getTeamMembers()
 
-  // Fallback hardcoded team members in case database is empty or fails
-  const fallbackTeamMembers = [
-    {
-      name: "Dr. Sarah Mitchell",
-      role: "Chief Medical Officer & Family Physician",
-      credentials: "MD, CCFP",
-      experience: "15+ years",
-      specialties: ["Family Medicine", "Preventive Care", "Women's Health"],
-      bio: "Board-certified family physician with 15+ years of excellence, leading our medical centre with expertise in preventive medicine and comprehensive patient care.",
-      image: "/team/dr-mitchell.jpg" // Placeholder for actual image
-    },
-    {
-      name: "Dr. Michael Chen",
-      role: "Family Physician",
-      credentials: "MD, CCFP",
-      experience: "12+ years",
-      specialties: ["Family Medicine", "Chronic Care", "Geriatrics"],
-      bio: "Accomplished family doctor with 12+ years of experience, specializing in chronic disease management and geriatric medicine with a patient-centered approach.",
-      image: "/team/dr-chen.jpg" // Placeholder for actual image
-    },
-    {
-      name: "Dr. Emily Rodriguez",
-      role: "Family Physician",
-      credentials: "MD, CCFP",
-      experience: "8+ years",
-      specialties: ["Family Medicine", "Pediatrics", "Mental Health"],
-      bio: "Compassionate physician with 8+ years of experience, providing specialized expertise in pediatric care and mental health support for all ages.",
-      image: "/team/dr-rodriguez.jpg" // Placeholder for actual image
-    },
-    {
-      name: "Jennifer Thompson",
-      role: "Nurse Practitioner",
-      credentials: "NP, RN, BScN",
-      experience: "10+ years",
-      specialties: ["Primary Care", "Health Promotion", "Patient Education"],
-      bio: "Experienced nurse practitioner with 10+ years in primary care, providing holistic patient education and health promotion services.",
-      image: "/team/np-thompson.jpg" // Placeholder for actual image
-    }
-  ]
 
-  // Use database team members if available, otherwise fallback to hardcoded data
-  const displayTeamMembers = teamMembers.length > 0 ? teamMembers : fallbackTeamMembers
 
   // Generate structured data for team members
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const doctorStructuredData = displayTeamMembers.map((member: any) => 
+  const doctorStructuredData = teamMembers.map((member: any) => 
     generateDoctorStructuredData({
       name: member.name,
       title: member.title || member.role,
@@ -326,78 +285,7 @@ export default async function About() {
           </section>
         )}
 
-        {/* Meet Our Team */}
-        <section className="mb-20 lg:mb-32">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-6">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              OUR TEAM
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
-              Meet Our Team
-            </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              Our experienced healthcare professionals are dedicated to providing exceptional care for you and your family.
-            </p>
-          </div>
 
-          {teamMembers.filter((m: any) => !m.isDoctor).length > 0 ? (
-            // Display database team members using TeamMemberCard component
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers
-                .filter((member: any) => !member.isDoctor)
-                .map((member) => (
-                <TeamMemberCard
-                  key={member.id}
-                  member={member}
-                  variant="default"
-                  showEmail={false}
-                  showPhone={false}
-                  showSpecialties={true}
-                  showBio={true}
-                />
-              ))}
-            </div>
-          ) : (
-            // Enhanced fallback display
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {fallbackTeamMembers.map((member, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="p-8">
-                    {/* Placeholder for team member photo */}
-                    <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-slate-100 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                      <svg className="h-16 w-16 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                    
-                    <div className="text-center mb-6">
-                      <h3 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">{member.name}</h3>
-                      <p className="text-blue-600 font-semibold text-lg">{member.role}</p>
-                      <p className="text-slate-500 font-medium">{member.credentials}</p>
-                      <p className="text-slate-500 text-sm">{member.experience} experience</p>
-                    </div>
-
-                    <p className="text-slate-600 mb-6 leading-relaxed text-center">{member.bio}</p>
-
-                    <div className="border-t pt-6">
-                      <h4 className="font-semibold text-slate-800 mb-3 text-center">Specialties</h4>
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {member.specialties.map((specialty, idx) => (
-                          <span key={idx} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                            {specialty}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
 
         {/* Facilities & Technology */}
         <section className="mb-20 lg:mb-32">

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Layout from '../../../components/Layout/Layout'
 import Link from 'next/link'
+import { useCachedPrimaryPhone } from '@/lib/hooks/useCachedAddress'
 
 interface AppointmentDetails {
   id: string
@@ -22,6 +23,7 @@ export default function AppointmentSuccess() {
   const [appointment, setAppointment] = useState<AppointmentDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone()
 
   useEffect(() => {
     if (appointmentId) {
@@ -203,7 +205,7 @@ export default function AppointmentSuccess() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">Call Our Office</h4>
-                  <p className="text-blue-600 font-medium text-lg"><a href="tel:2498060128" className="hover:underline">249 806 0128</a></p>
+                  <p className="text-blue-600 font-medium text-lg"><a href={`tel:${phoneLoading ? '2498060128' : primaryPhone.replace(/\s/g, '')}`} className="hover:underline">{phoneLoading ? '249 806 0128' : primaryPhone}</a></p>
                   <p className="text-gray-600 text-sm">Monday - Friday: 8:00 AM - 6:00 PM</p>
                   <p className="text-gray-600 text-sm">Saturday: 9:00 AM - 2:00 PM</p>
                 </div>

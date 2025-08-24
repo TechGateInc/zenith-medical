@@ -106,7 +106,7 @@ export async function GET(
           updatedAt: true
         }
       })
-    } catch (error) {
+    } catch {
       console.log('Dependent table not yet migrated, skipping dependent data fetch')
       dependents = []
     }

@@ -310,7 +310,7 @@ export class OscarJobQueue {
     }
   }
 
-  private async executePatientUpdate(service: any, payload: JobPayload): Promise<JobResult> {
+  private async executePatientUpdate(_service: any, _payload: JobPayload): Promise<JobResult> {
     // Implementation for patient update
     throw new OscarConfigurationError('Patient update not yet implemented', 'missing_setup')
   }

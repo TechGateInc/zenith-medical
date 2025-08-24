@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import { getCachedContactInfo } from '@/lib/utils/address-cache'
 
 // Email service types
 type EmailProvider = 'resend' | 'smtp'
@@ -56,8 +57,11 @@ const createSMTPTransporter = () => {
 }
 
 // Email templates
-const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { subject: string; html: string; text: string } => {
+const generatePatientConfirmationTemplate = async (data: PatientConfirmationData): Promise<{ subject: string; html: string; text: string }> => {
   const subject = 'Patient Intake Form Received - Zenith Medical Centre'
+  
+  // Get cached contact information
+  const contactInfo = await getCachedContactInfo()
   
   const html = `
     <!DOCTYPE html>
@@ -369,16 +373,16 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
           <div class="contact-info">
             <h3>Contact Information</h3>
             <p>
-              <strong>Phone:</strong> <a href="tel:+12498060128">249 806 0128</a><br>
-              <strong>Email:</strong> <a href="mailto:admin@zenithmedical.ca">admin@zenithmedical.ca</a><br>
-              <strong>Address:</strong> Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
+              <strong>Phone:</strong> <a href="tel:${contactInfo.primaryPhone.replace(/\s/g, '')}">${contactInfo.primaryPhone}</a><br>
+              <strong>Email:</strong> <a href="mailto:${contactInfo.adminEmail}">${contactInfo.adminEmail}</a><br>
+              <strong>Address:</strong> ${contactInfo.address}
             </p>
           </div>
         </div>
         
         <div class="footer">
           <p>This is an automated message from Zenith Medical Centre. Please do not reply to this email.</p>
-          <p>If you have questions about your submission, please call us at <a href="tel:+12498060128">249 806 0128</a>.</p>
+          <p>If you have questions about your submission, please call us at <a href="tel:${contactInfo.primaryPhone.replace(/\s/g, '')}">${contactInfo.primaryPhone}</a>.</p>
           <p>&copy; ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.</p>
         </div>
       </div>
@@ -420,12 +424,12 @@ const generatePatientConfirmationTemplate = (data: PatientConfirmationData): { s
     Your personal health information has been encrypted using AES-256 encryption and is stored securely. Only authorized medical personnel will have access to your information.
     
     CONTACT INFORMATION:
-    Phone: 249 806 0128
-    Email: admin@zenithmedical.ca
-    Address: Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
+    Phone: ${contactInfo.primaryPhone}
+    Email: ${contactInfo.adminEmail}
+    Address: ${contactInfo.address}
     
     This is an automated message from Zenith Medical Centre. Please do not reply to this email.
-    For questions about your submission, please call us at 249 806 0128.
+    For questions about your submission, please call us at ${contactInfo.primaryPhone}.
     
     © ${new Date().getFullYear()} Zenith Medical Centre. All rights reserved.
   `
@@ -913,7 +917,7 @@ export const sendPatientConfirmationEmail = async (
   data: PatientConfirmationData
 ): Promise<EmailResult> => {
   try {
-    const template = generatePatientConfirmationTemplate(data)
+    const template = await generatePatientConfirmationTemplate(data)
     
     return await sendEmail(
       patientEmail,
@@ -980,7 +984,7 @@ export const testEmailConfiguration = async (): Promise<EmailResult> => {
       appointmentBookingUrl: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227'
     }
     
-    const template = generatePatientConfirmationTemplate(testData)
+    const template = await generatePatientConfirmationTemplate(testData)
     
             return await sendEmail(
           'test@example.com',
@@ -1011,6 +1015,9 @@ export async function sendPatientResponseEmail(data: {
 }): Promise<EmailResult> {
   try {
     const { patientEmail, patientName, subject, message, adminName, submissionId } = data
+    
+    // Get cached contact information
+    const contactInfo = await getCachedContactInfo()
     
     const htmlTemplate = `
       <!DOCTYPE html>
@@ -1044,9 +1051,9 @@ export async function sendPatientResponseEmail(data: {
               
               <div class="contact-info">
                 <h4 style="color: #1e40af; margin-top: 0;">Contact Information</h4>
-                <p><strong>Phone:</strong> 249 806 0128</p>
-                <p><strong>Email:</strong> admin@zenithmedical.ca</p>
-                <p><strong>Address:</strong> Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3</p>
+                <p><strong>Phone:</strong> ${contactInfo.primaryPhone}</p>
+                <p><strong>Email:</strong> ${contactInfo.adminEmail}</p>
+                <p><strong>Address:</strong> ${contactInfo.address}</p>
               </div>
               
               <p>If you have any questions or need to provide additional information, please don't hesitate to contact us using the information above.</p>
@@ -1075,9 +1082,9 @@ export async function sendPatientResponseEmail(data: {
       ${message}
       
       CONTACT INFORMATION:
-      Phone: 249 806 0128
-      Email: admin@zenithmedical.ca
-      Address: Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3
+      Phone: ${contactInfo.primaryPhone}
+      Email: ${contactInfo.adminEmail}
+      Address: ${contactInfo.address}
       
       If you have any questions or need to provide additional information, please don't hesitate to contact us using the information above.
       

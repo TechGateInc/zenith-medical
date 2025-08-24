@@ -186,7 +186,7 @@ const formAccessibility = {
 // Color contrast and visual accessibility
 const visualAccessibility = {
   // Check if element meets color contrast requirements
-  checkColorContrast: (foreground: string, background: string): boolean => {
+  checkColorContrast: (): boolean => {
     // This would typically use a more sophisticated color contrast calculation
     // For now, return true as we're using design system colors
     return true
@@ -226,7 +226,7 @@ const progressAccessibility = {
 
   // Generate progress bar attributes
   generateProgressAttributes: (currentStep: number, totalSteps: number) => {
-    const progress = (currentStep / totalSteps) * 100
+    // const progress = (currentStep / totalSteps) * 100
     
     return {
       role: 'progressbar',
@@ -309,7 +309,7 @@ const responsiveAccessibility = {
     if (typeof window === 'undefined') return
 
     let hadKeyboardEvent = true
-    let keyboardThrottleTimeout = 0
+    // let keyboardThrottleTimeout = 0
 
     const onPointerDown = () => {
       hadKeyboardEvent = false
