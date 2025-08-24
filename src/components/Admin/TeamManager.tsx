@@ -314,15 +314,6 @@ const TeamManager: React.FC = () => {
     }));
   };
 
-  // Handle specialties input
-  const handleSpecialtiesChange = (value: string) => {
-    const specialties = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-    setFormData(prev => ({
-      ...prev,
-      specialties
-    }));
-  };
-
   // Handle drag start
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedItem(id);

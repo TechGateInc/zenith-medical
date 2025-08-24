@@ -19,7 +19,7 @@ export interface SystemSettings {
   sessionTimeout: number;
   maxLoginAttempts: number;
   passwordExpiry: number;
-  twoFactorAuth: boolean;
+
   ipWhitelist?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -79,7 +79,7 @@ export class SettingsManager {
             sessionTimeout: 30,
             maxLoginAttempts: 5,
             passwordExpiry: 90,
-            twoFactorAuth: false
+
           }
         });
       }
@@ -109,7 +109,6 @@ export class SettingsManager {
         sessionTimeout: 30,
         maxLoginAttempts: 5,
         passwordExpiry: 90,
-        twoFactorAuth: false,
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -143,7 +142,6 @@ export class SettingsManager {
           sessionTimeout: 30,
           maxLoginAttempts: 5,
           passwordExpiry: 90,
-          twoFactorAuth: false,
           updatedBy,
           ...updates
         }

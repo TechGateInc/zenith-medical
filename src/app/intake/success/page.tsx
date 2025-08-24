@@ -11,7 +11,7 @@ export default function IntakeSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
-  const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone();
+  const { primaryPhone } = useCachedPrimaryPhone();
 
   useEffect(() => {
     const id = searchParams.get("id");

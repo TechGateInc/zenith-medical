@@ -21,7 +21,7 @@ import {
   Phone,
 } from "lucide-react";
 import { SettingsSkeleton } from "@/components/UI/SkeletonLoader";
-import TwoFactorAuth from "@/components/Admin/TwoFactorAuth";
+
 import { useAuth } from "@/lib/auth/use-auth";
 
 interface ContactSettings {
@@ -50,12 +50,11 @@ interface SecuritySettings {
   sessionTimeout: number;
   maxLoginAttempts: number;
   passwordExpiry: number;
-  twoFactorAuth: boolean;
+
   ipWhitelist: string;
 }
 
 export default function SettingsPage() {
-  const { user } = useAuth();
   const [contactSettings, setContactSettings] = useState<ContactSettings>({
     primaryPhone: "",
     emergencyPhone: "",
@@ -83,7 +82,7 @@ export default function SettingsPage() {
     sessionTimeout: 30,
     maxLoginAttempts: 5,
     passwordExpiry: 90,
-    twoFactorAuth: false,
+
     ipWhitelist: "",
   });
 
@@ -155,7 +154,6 @@ export default function SettingsPage() {
             sessionTimeout: data.settings.security.sessionTimeout || 30,
             maxLoginAttempts: data.settings.security.maxLoginAttempts || 5,
             passwordExpiry: data.settings.security.passwordExpiry || 90,
-            twoFactorAuth: data.settings.security.twoFactorAuth ?? false,
             ipWhitelist: data.settings.security.ipWhitelist || "",
           });
         }
@@ -226,7 +224,6 @@ export default function SettingsPage() {
               sessionTimeout: data.settings.security.sessionTimeout || 30,
               maxLoginAttempts: data.settings.security.maxLoginAttempts || 5,
               passwordExpiry: data.settings.security.passwordExpiry || 90,
-              twoFactorAuth: data.settings.security.twoFactorAuth ?? false,
               ipWhitelist: data.settings.security.ipWhitelist || "",
             });
           }
@@ -903,46 +900,6 @@ export default function SettingsPage() {
                   </p>
                 </div>
               </div>
-
-              <div className="mt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Two-Factor Authentication
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Require 2FA for admin access
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setSecuritySettings((prev) => ({
-                        ...prev,
-                        twoFactorAuth: !prev.twoFactorAuth,
-                      }))
-                    }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      securitySettings.twoFactorAuth
-                        ? "bg-blue-600"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        securitySettings.twoFactorAuth
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-
-              {securitySettings.twoFactorAuth && user?.email && (
-                <div className="mt-6">
-                  <TwoFactorAuth />
-                </div>
-              )}
             </div>
           )}
 

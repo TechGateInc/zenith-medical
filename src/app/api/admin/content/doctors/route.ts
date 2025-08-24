@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth/config';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/admin/content/doctors - Fetch all doctor profiles
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {

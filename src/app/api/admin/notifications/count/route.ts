@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth/config';
 import { prisma } from '@/lib/prisma';
 import { AdminRole } from '@prisma/client';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);

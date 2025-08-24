@@ -25,7 +25,7 @@ const defaultSettings = {
   sessionTimeout: 30,
   maxLoginAttempts: 5,
   passwordExpiry: 90,
-  twoFactorAuth: false,
+
   ipWhitelist: null,
   updatedBy: null
 };

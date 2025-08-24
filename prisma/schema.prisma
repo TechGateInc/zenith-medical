@@ -42,32 +42,12 @@ model PatientIntake {
   primaryLanguage         String?
   title                   String?
   workPhone               String?
-  appointments            Appointment[]
   dependents              Dependent[]
-  messages                Message[]
 
   @@map("patient_intakes")
 }
 
-model Message {
-  id              String        @id @default(cuid())
-  patientIntakeId String
-  content         String
-  subject         String?
-  senderType      SenderType
-  senderName      String
-  senderEmail     String?
-  adminUserId     String?
-  isRead          Boolean       @default(false)
-  readAt          DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  ipAddress       String?
-  userAgent       String?
-  patientIntake   PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
 
-  @@map("messages")
-}
 
 model Dependent {
   id                             String        @id @default(cuid())
@@ -101,9 +81,7 @@ model AdminUser {
   lockedUntil          DateTime?
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
-  twoFactorBackupCodes String[]
-  twoFactorEnabled     Boolean    @default(false)
-  twoFactorSecret      String?
+
   auditLogs            AuditLog[]
 
   @@map("admin_users")
@@ -246,35 +224,6 @@ model AuditLog {
   @@map("audit_logs")
 }
 
-model Appointment {
-  id                    String         @id @default(cuid())
-  patientIntakeId       String?
-  providerType          String
-  providerAppointmentId String?
-  providerName          String?
-  patientName           String
-  patientEmail          String
-  patientPhone          String
-  appointmentDate       String
-  appointmentTime       String
-  appointmentType       String
-  duration              Int?
-  providerId            String?
-  providerStaffName     String?
-  status                String
-  notes                 String?
-  reminderSent          Boolean        @default(false)
-  confirmationSent      Boolean        @default(false)
-  bookingUrl            String?
-  metadata              Json?
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime       @updatedAt
-
-  patientIntake         PatientIntake? @relation(fields: [patientIntakeId], references: [id])
-
-  @@map("appointments")
-}
-
 
 
 model NotificationTemplate {
@@ -322,7 +271,7 @@ model SystemSettings {
   sessionTimeout       Int      @default(30)
   maxLoginAttempts     Int      @default(5)
   passwordExpiry       Int      @default(90)
-  twoFactorAuth        Boolean  @default(false)
+
   ipWhitelist          String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
@@ -356,10 +305,7 @@ model ContactSubmission {
   @@map("contact_submissions")
 }
 
-enum SenderType {
-  PATIENT
-  ADMIN
-}
+
 
 enum ContactStatus {
   NEW

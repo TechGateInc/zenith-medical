@@ -211,12 +211,12 @@ async function createLogicalBackup(): Promise<string> {
         updatedAt: true,
         lastLoginAt: true,
         loginAttempts: true,
-        twoFactorEnabled: true
+
       }
     })
     
     backupData += `\n-- Admin Users: ${adminUsers.length} records\n`
-    backupData += `INSERT INTO admin_users (id, email, name, role, created_at, updated_at, last_login_at, login_attempts, two_factor_enabled) VALUES\n`
+    backupData += `INSERT INTO admin_users (id, email, name, role, created_at, updated_at, last_login_at, login_attempts) VALUES\n`
     
     adminUsers.forEach((user, index) => {
       const values = [
@@ -228,7 +228,7 @@ async function createLogicalBackup(): Promise<string> {
         `'${user.updatedAt.toISOString()}'`,
         `'${user.lastLoginAt?.toISOString() || null}'`,
         `${user.loginAttempts}`,
-        `${user.twoFactorEnabled || false}`
+
       ]
       backupData += `(${values.join(', ')})${index < adminUsers.length - 1 ? ',' : ';'}\n`
     })

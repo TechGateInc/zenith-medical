@@ -18,7 +18,6 @@ import {
   UserX,
   Globe,
   Database,
-  FileText,
   Key,
 } from 'lucide-react';
 import { SecuritySkeleton } from '@/components/UI/SkeletonLoader';

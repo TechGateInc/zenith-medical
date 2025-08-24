@@ -57,7 +57,7 @@ export async function GET() {
           sessionTimeout: settings.sessionTimeout,
           maxLoginAttempts: settings.maxLoginAttempts,
           passwordExpiry: settings.passwordExpiry,
-          twoFactorAuth: settings.twoFactorAuth,
+      
           ipWhitelist: settings.ipWhitelist
         }
       }
@@ -196,9 +196,7 @@ export async function PUT(request: NextRequest) {
       if (typeof security.passwordExpiry === 'number' && security.passwordExpiry > 0) {
         updates.passwordExpiry = security.passwordExpiry;
       }
-      if (typeof security.twoFactorAuth === 'boolean') {
-        updates.twoFactorAuth = security.twoFactorAuth;
-      }
+      
       if (typeof security.ipWhitelist === 'string') {
         updates.ipWhitelist = security.ipWhitelist;
       }
@@ -234,7 +232,7 @@ export async function PUT(request: NextRequest) {
           sessionTimeout: updatedSettings.sessionTimeout,
           maxLoginAttempts: updatedSettings.maxLoginAttempts,
           passwordExpiry: updatedSettings.passwordExpiry,
-          twoFactorAuth: updatedSettings.twoFactorAuth,
+
           ipWhitelist: updatedSettings.ipWhitelist
         }
       }

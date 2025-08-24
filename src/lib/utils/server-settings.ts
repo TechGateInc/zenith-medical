@@ -97,7 +97,7 @@ export async function getAllSettings() {
       sessionTimeout: 30,
       maxLoginAttempts: 5,
       passwordExpiry: 90,
-      twoFactorAuth: false,
+    
       ipWhitelist: undefined,
       createdAt: new Date(),
       updatedAt: new Date()
