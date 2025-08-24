@@ -91,13 +91,6 @@ interface DoctorFormData {
   emergencyContact?: string;
 }
 
-interface ApiResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-  message?: string;
-}
-
 // TagInput component for managing arrays of strings
 function TagInput({ 
   value, 

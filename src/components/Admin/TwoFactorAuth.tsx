@@ -1,18 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Shield, Eye, EyeOff, Copy, Check, AlertCircle, Key, Smartphone, Lock } from 'lucide-react';
+import { Shield, Copy, Check, AlertCircle, Key, Smartphone, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
 
 interface TwoFactorAuthProps {
   userEmail: string;
   onStatusChange?: (enabled: boolean) => void;
-}
-
-interface BackupCode {
-  code: string;
-  used: boolean;
 }
 
 export default function TwoFactorAuth({ userEmail, onStatusChange }: TwoFactorAuthProps) {
@@ -198,7 +193,7 @@ export default function TwoFactorAuth({ userEmail, onStatusChange }: TwoFactorAu
             <div className="bg-gray-50 rounded-xl p-4">
               <h4 className="font-medium text-gray-900 mb-2">Manual Entry Key</h4>
               <p className="text-sm text-gray-600 mb-3">
-                If you can't scan the QR code, enter this key manually:
+                If you can&apos;t scan the QR code, enter this key manually:
               </p>
               <div className="flex items-center space-x-3">
                 <code className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono">
@@ -369,7 +364,7 @@ export default function TwoFactorAuth({ userEmail, onStatusChange }: TwoFactorAu
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
             <p className="text-gray-700 text-sm">
               Two-factor authentication adds an extra layer of security to your account. 
-              You'll need to enter a code from your authenticator app each time you sign in.
+              You&apos;ll need to enter a code from your authenticator app each time you sign in.
             </p>
           </div>
           <button

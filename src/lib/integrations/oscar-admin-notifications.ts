@@ -655,7 +655,7 @@ export class OscarAdminNotifications {
         acknowledgedBy
       })
       return true
-    } catch (error) {
+    } catch  {
       return false
     }
   }
@@ -679,7 +679,7 @@ export class OscarAdminNotifications {
       })
 
       return true
-    } catch (error) {
+    } catch  {
       return false
     }
   }

@@ -31,7 +31,7 @@ export default function Contact() {
               Contact Us
             </h1>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Get in touch with our team. We're here to help with any questions about our services or to schedule your appointment.
+              Get in touch with our team. We&apos;re here to help with any questions about our services or to schedule your appointment.
             </p>
           </div>
 

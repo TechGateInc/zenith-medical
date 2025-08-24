@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { encryptPHI, decryptPHI } from '@/lib/utils/encryption'
+import { encryptPHI } from '@/lib/utils/encryption'
 import { settingsManager } from '@/lib/utils/settings'
 import { customAlphabet } from 'nanoid'
 

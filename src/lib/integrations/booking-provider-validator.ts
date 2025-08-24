@@ -174,7 +174,7 @@ export class BookingProviderValidator {
         if (!url.hostname.includes('calendly.com')) {
           result.warnings.push('Embed URL does not appear to be a Calendly URL')
         }
-      } catch (error) {
+      } catch  {
         result.errors.push('Calendly embed URL is not a valid URL')
         result.isValid = false
       }
@@ -197,7 +197,7 @@ export class BookingProviderValidator {
         if (!url.hostname.includes('simplepractice.com')) {
           result.warnings.push('Embed URL does not appear to be a SimplePractice URL')
         }
-      } catch (error) {
+      } catch  {
         result.errors.push('SimplePractice embed URL is not a valid URL')
         result.isValid = false
       }
@@ -222,7 +222,7 @@ export class BookingProviderValidator {
         if (url.protocol !== 'https:') {
           result.warnings.push('Webhook URL should use HTTPS for security')
         }
-      } catch (error) {
+      } catch  {
         result.errors.push('Webhook URL is not a valid URL')
         result.isValid = false
       }
@@ -242,7 +242,7 @@ export class BookingProviderValidator {
     } else {
       try {
         new URL(embedUrl)
-      } catch (error) {
+      } catch  {
         result.errors.push('Embed URL is not a valid URL')
         result.isValid = false
       }

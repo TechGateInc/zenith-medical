@@ -857,7 +857,7 @@ export default function IntakeForm({ onSubmit, isSubmitting = false }: IntakeFor
 
           {formData.section2.length === 0 && (
             <p className="text-slate-600 italic text-center py-8">
-              No dependents added. Click "Add Dependent" to enroll children under 16 or dependent adults.
+              No dependents added. Click &quot;Add Dependent&quot; to enroll children under 16 or dependent adults.
             </p>
           )}
 

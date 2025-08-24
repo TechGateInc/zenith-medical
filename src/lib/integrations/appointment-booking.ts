@@ -305,7 +305,7 @@ export class AppointmentBookingService {
   }
 
   private async createCalendlyAppointment(appointmentData: AppointmentData, provider: BookingProvider): Promise<BookingResponse> {
-    const { embedUrl, redirectUrl } = provider.config
+    const { embedUrl } = provider.config
 
     // NOTE: Calendly API v2 does NOT support creating appointments programmatically
     // Calendly's approach is embed-based or direct booking page redirection

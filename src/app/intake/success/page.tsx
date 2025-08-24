@@ -30,9 +30,7 @@ export default function IntakeSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
-  const [, setRedirectCountdown] = useState<number | null>(
-    null
-  );
+
   const [bookingProviders, setBookingProviders] = useState<BookingProvider[]>(
     []
   );
@@ -982,7 +980,7 @@ export default function IntakeSuccessPage() {
                       </a>
                     </p>
                     <p className="text-sm text-slate-500">
-                      We'll respond within 24 hours
+                      We&apos;ll respond within 24 hours
                     </p>
                   </div>
                 </div>

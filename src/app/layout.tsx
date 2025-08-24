@@ -5,7 +5,6 @@ import './globals.css'
 import SessionProvider from '../lib/auth/session-provider'
 import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Analytics/AnalyticsProvider'
 import AnalyticsConsent from '../components/Analytics/AnalyticsConsent'
-import { usePathname } from 'next/navigation'
 import ToastProvider from '../components/UI/ToastProvider'
 import { Analytics } from '@vercel/analytics/react'
 

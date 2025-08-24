@@ -338,7 +338,7 @@ export class ComplianceChecker {
         recommendations: issues.length > 0 ? ['Implement unique email validation'] : [],
         lastChecked: new Date()
       }
-    } catch (error) {
+    } catch  {
       return {
         compliant: false,
         score: 0,
@@ -440,7 +440,7 @@ export class ComplianceChecker {
         recommendations: issues.length > 0 ? ['Implement comprehensive audit logging'] : [],
         lastChecked: new Date()
       }
-    } catch (error) {
+    } catch  {
       return {
         compliant: false,
         score: 0,
@@ -493,7 +493,7 @@ export class ComplianceChecker {
         recommendations: [],
         lastChecked: new Date()
       }
-    } catch (error) {
+    } catch  {
       return {
         compliant: false,
         score: 0,
@@ -565,7 +565,7 @@ export class ComplianceChecker {
         recommendations: issues.length > 0 ? ['Implement comprehensive consent tracking'] : [],
         lastChecked: new Date()
       }
-    } catch (error) {
+    } catch  {
       return {
         compliant: false,
         score: 0,
@@ -638,7 +638,7 @@ export class ComplianceChecker {
         recommendations,
         lastChecked: new Date()
       }
-    } catch (error) {
+    } catch  {
       return {
         compliant: false,
         score: 0,
