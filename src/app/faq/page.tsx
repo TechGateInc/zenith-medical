@@ -40,25 +40,7 @@ export default function FAQ() {
     },
 
 
-    // Insurance & Billing
-    {
-      id: 'ins-1',
-      question: 'What insurance plans do you accept?',
-      answer: 'We accept most major insurance plans including provincial health insurance (OHIP, MSP, etc.), extended health insurance plans, workers\' compensation claims, and third-party insurance. Please call to verify your specific plan coverage.',
-      category: 'insurance'
-    },
-    {
-      id: 'ins-2',
-      question: 'What if I don\'t have insurance?',
-      answer: 'We offer flexible payment options for uninsured patients, including payment plans and competitive self-pay rates. Please speak with our billing department to discuss your options and find a solution that works for your budget.',
-      category: 'insurance'
-    },
-    {
-      id: 'ins-3',
-      question: 'Do you offer direct billing?',
-      answer: 'Yes, we offer direct billing for most extended health insurance plans. This means you may only need to pay your co-payment or deductible at the time of service. We handle the insurance claim process for you.',
-      category: 'insurance'
-    },
+
 
     // Services & Treatments
     {
@@ -130,7 +112,6 @@ export default function FAQ() {
   const categories = [
     { id: 'all', name: 'All Questions' },
     { id: 'appointments', name: 'Appointments & Scheduling' },
-    { id: 'insurance', name: 'Insurance & Billing' },
     { id: 'services', name: 'Services & Treatments' },
     { id: 'patient-info', name: 'Patient Information' },
     { id: 'covid', name: 'COVID & Safety' }

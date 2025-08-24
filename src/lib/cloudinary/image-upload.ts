@@ -135,12 +135,8 @@ export async function uploadTeamMemberPhoto(
         member_id: memberId,
         original_filename: file.name,
         upload_date: new Date().toISOString(),
-        ...options.context
-      },
-      metadata: {
         type: 'team_member_photo',
-        member_id: memberId,
-        ...options.metadata
+        ...options.context
       },
       ...options
     };
@@ -184,13 +180,8 @@ export async function uploadBlogImage(
         image_type: imageType,
         original_filename: file.name,
         upload_date: new Date().toISOString(),
-        ...options.context
-      },
-      metadata: {
         type: 'blog_image',
-        blog_id: blogId,
-        image_type: imageType,
-        ...options.metadata
+        ...options.context
       },
       ...options
     };
@@ -232,12 +223,8 @@ export async function uploadGeneralImage(
         category,
         original_filename: file.name,
         upload_date: new Date().toISOString(),
-        ...options.context
-      },
-      metadata: {
         type: 'general_image',
-        category,
-        ...options.metadata
+        ...options.context
       },
       ...options
     };

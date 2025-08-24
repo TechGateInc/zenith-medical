@@ -223,7 +223,7 @@ export default async function DoctorProfile({ params }: { params: Promise<{ slug
       )}
 
       {/* Education & Training */}
-      {(doctor.doctor?.medicalSchool || doctor.doctor?.residency || doctor.doctor?.fellowship) && (
+      {(doctor.doctor?.medicalSchool || doctor.doctor?.residency) && (
         <section className="py-16 lg:py-24 bg-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -248,13 +248,6 @@ export default async function DoctorProfile({ params }: { params: Promise<{ slug
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-slate-800 mb-3">Residency</h3>
                   <p className="text-slate-600">{doctor.doctor?.residency}</p>
-                </div>
-              )}
-              
-              {doctor.doctor?.fellowship && (
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">Fellowship</h3>
-                  <p className="text-slate-600">{doctor.doctor?.fellowship}</p>
                 </div>
               )}
             </div>

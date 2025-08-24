@@ -143,29 +143,7 @@ export default async function Services() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {/* Left Content - Payment Options */}
               <div className="space-y-8">
-                <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-                  <div className="flex items-center mb-6">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                      <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-800">Insurance Plans</h3>
-                  </div>
-                  <p className="text-slate-600 mb-6 leading-relaxed">
-                    We accept OHIP and work with most major insurance providers to ensure you get the coverage you deserve.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">OHIP accepted for covered services</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Out-of-pocket payment (cash, debit, or credit) for non-OHIP services</span>
-                    </div>
-                  </div>
-                </div>
+
 
                 <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
                   <div className="flex items-center mb-6">
