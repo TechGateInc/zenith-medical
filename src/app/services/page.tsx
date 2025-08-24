@@ -60,10 +60,7 @@ export default async function Services() {
                   <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">{services.length}</div>
                   <div className="text-slate-600 font-medium">Primary Care Areas</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Walk-In</div>
-                  <div className="text-slate-600 font-medium">Patients Welcome</div>
-                </div>
+
                 <div className="text-center">
                   <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">Clinic</div>
                   <div className="text-slate-600 font-medium">Care Available</div>
@@ -247,17 +244,7 @@ export default async function Services() {
 
                 {/* Feature Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Walk-In Patients Welcome</h3>
-                    <p className="text-sm text-slate-600">
-                      Walk-in anytime - care provided based on doctor availability.
-                    </p>
-                  </div>
+
 
                   <div className="text-center">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

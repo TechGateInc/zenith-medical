@@ -101,7 +101,7 @@ export default async function Home() {
                   <div className="text-slate-700">
                     <span className="text-sm">Now Open:</span>
                     <span className="font-semibold ml-1">Accepting New Patients</span>
-                    <span className="text-sm ml-2">• Walk-In Patients Welcome</span>
+
                   </div>
                 </div>
               </div>
@@ -247,17 +247,7 @@ export default async function Home() {
                   </div>
                 </div>
                 
-                <div className="flex items-start">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-6 flex-shrink-0">
-                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3">Walk-In Patients Welcome</h3>
-                    <p className="text-slate-600 leading-relaxed">Walk-in patients are always welcome. Being seen depends on doctor availability, ensuring you get care when our medical team is available.</p>
-                  </div>
-                </div>
+
                 
                 <div className="flex items-start">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-6 flex-shrink-0">
@@ -333,17 +323,7 @@ export default async function Home() {
 
                 {/* Feature Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Walk-In Patients Welcome</h3>
-                    <p className="text-sm text-slate-600">
-                      Walk-in anytime - care provided based on doctor availability.
-                    </p>
-                  </div>
+
 
                   <div className="text-center">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -23,7 +23,7 @@ export default function FAQ() {
     {
       id: 'apt-1',
       question: 'How do I schedule an appointment?',
-      answer: `You can schedule an appointment by calling our office at ${phoneLoading ? '249 806 0128' : primaryPhone}, using our online contact form, or completing the patient intake form. We offer both routine appointments and welcome walk-in patients for urgent care needs.`,
+      answer: `You can schedule an appointment by calling our office at ${phoneLoading ? '249 806 0128' : primaryPhone}, using our online contact form, or completing the patient intake form. We offer comprehensive routine appointments and urgent care services.`,
       category: 'appointments'
     },
     {
@@ -35,15 +35,10 @@ export default function FAQ() {
     {
       id: 'apt-3',
       question: 'How far in advance should I book an appointment?',
-      answer: 'For routine check-ups, we recommend booking 2-4 weeks in advance. For urgent care needs, walk-in patients are welcome. Annual physicals and specialized consultations may require longer lead times during busy periods.',
+      answer: 'For routine check-ups, we recommend booking 2-4 weeks in advance. For urgent care needs, we offer same-day appointments based on availability. Annual physicals and specialized consultations may require longer lead times during busy periods.',
       category: 'appointments'
     },
-    {
-      id: 'apt-4',
-      question: 'Do you accept walk-in patients?',
-      answer: 'Yes, walk-in patients are always welcome. Being seen depends on doctor availability. We recommend calling ahead to check availability for urgent medical needs like acute illnesses, minor injuries, and urgent health concerns.',
-      category: 'appointments'
-    },
+
 
     // Insurance & Billing
     {
@@ -75,7 +70,7 @@ export default function FAQ() {
     {
       id: 'svc-2',
       question: 'Do you provide emergency care?',
-      answer: 'While we are not an emergency room, we welcome walk-in patients for urgent care needs. Being seen depends on doctor availability. For life-threatening emergencies, please call 911 or go to your nearest emergency room immediately. We can provide follow-up care after emergency treatment.',
+      answer: 'While we are not an emergency room, we offer urgent care services based on doctor availability. For life-threatening emergencies, please call 911 or go to your nearest emergency room immediately. We can provide follow-up care after emergency treatment.',
       category: 'services'
     },
     {
@@ -367,7 +362,7 @@ export default function FAQ() {
                 </div>
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Schedule Appointment</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  Book your next appointment online or call our office. We offer both routine appointments and welcome walk-in patients.
+                  Book your next appointment online or call our office. We offer comprehensive routine appointments and urgent care services.
                 </p>
                 <a
                   href="https://zenithmedical.cortico.ca/"
