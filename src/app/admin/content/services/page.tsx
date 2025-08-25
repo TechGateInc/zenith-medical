@@ -351,7 +351,7 @@ export default function AdminServicesPage() {
                 rows={3}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Enter SVG code with class="h-8 w-8" for proper sizing
+                Enter SVG code with class=&quot;h-8 w-8&quot; for proper sizing
               </p>
             </div>
           )}

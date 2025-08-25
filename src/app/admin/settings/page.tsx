@@ -684,7 +684,7 @@ export default function SettingsPage() {
                     className="w-full"
                   />
                   <p className="mt-1 text-sm text-gray-500">
-                    Image for the "Why Choose Us" section on the homepage. Recommended size: 600x400px or larger.
+                    Image for the &quot;Why Choose Us&quot; section on the homepage. Recommended size: 600x400px or larger.
                   </p>
                 </div>
 
@@ -724,7 +724,7 @@ export default function SettingsPage() {
                     className="w-full"
                   />
                   <p className="mt-1 text-sm text-gray-500">
-                    Image for the "Our Mission" section on the about page. Recommended size: 600x400px or larger.
+                    Image for the &quot;Our Mission&quot; section on the about page. Recommended size: 600x400px or larger.
                   </p>
                 </div>
 
