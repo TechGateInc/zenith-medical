@@ -673,17 +673,17 @@ export default function DoctorManager() {
           </div>
 
           {/* Photo Upload - Moved to top for prominence */}
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Doctor Photo <span className="text-red-500">*</span>
             </label>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 mb-3">
               Upload a professional photo for the doctor. This photo will be
               displayed on their profile page and in the doctors listing.
               {!editingDoctor &&
                 " For new doctor profiles, a photo is highly recommended."}
             </p>
-            <div className="bg-white p-4 rounded-lg border border-gray-300">
+            <div className="bg-white p-3 rounded-lg border border-gray-300">
               <ImageUpload
                 uploadType="team-member"
                 entityId={editingDoctor?.id || formData.teamMemberId}
@@ -713,6 +713,7 @@ export default function DoctorManager() {
                   }
                   toast.success("Photo removed");
                 }}
+                className="max-w-sm"
               />
             </div>
           </div>

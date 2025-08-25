@@ -676,18 +676,23 @@ const TeamManager: React.FC = () => {
             {/* Form Content */}
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               {/* Photo Upload */}
-              <div>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Photo
                 </label>
-                <ImageUpload
-                  uploadType="team-member"
-                  entityId={editingMember?.id || 'new'}
-                  currentImageUrl={formData.photoUrl}
-                  onUploadSuccess={handleImageUpload}
-                  onImageRemove={() => setFormData(prev => ({ ...prev, photoUrl: '' }))}
-                  className="max-w-md"
-                />
+                <p className="text-sm text-gray-500 mb-3">
+                  Upload a professional photo for the team member. This photo will be displayed on their profile.
+                </p>
+                <div className="bg-white p-3 rounded-lg border border-gray-300">
+                  <ImageUpload
+                    uploadType="team-member"
+                    entityId={editingMember?.id || 'new'}
+                    currentImageUrl={formData.photoUrl}
+                    onUploadSuccess={handleImageUpload}
+                    onImageRemove={() => setFormData(prev => ({ ...prev, photoUrl: '' }))}
+                    className="max-w-sm"
+                  />
+                </div>
               </div>
 
               {/* Basic Info */}

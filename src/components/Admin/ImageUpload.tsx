@@ -263,9 +263,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <Image
               src={previewUrl}
               alt="Preview"
-              width={400}
-              height={192}
-              className="w-full h-48 object-cover rounded-lg"
+              width={300}
+              height={144}
+              className="w-full h-36 object-cover rounded-lg"
             />
             
             {/* Remove Button */}
@@ -302,20 +302,20 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
         {/* Upload Prompt */}
         {!previewUrl && (
-          <div className="p-8 text-center">
-            <div className="mx-auto mb-4 flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full">
+          <div className="p-6 text-center">
+            <div className="mx-auto mb-3 flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full">
               {isUploading ? (
-                <Loader2 className="animate-spin text-blue-600" size={24} />
+                <Loader2 className="animate-spin text-blue-600" size={20} />
               ) : (
-                <Camera className="text-gray-600" size={24} />
+                <Camera className="text-gray-600" size={20} />
               )}
             </div>
             
-            <div className="text-lg font-medium text-gray-900 mb-2">
+            <div className="text-base font-medium text-gray-900 mb-1">
               {isUploading ? 'Uploading...' : 'Upload an image'}
             </div>
             
-            <div className="text-sm text-gray-600 mb-4">
+            <div className="text-sm text-gray-600 mb-3">
               Drag and drop or click to select a file
             </div>
             
