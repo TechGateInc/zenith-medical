@@ -1,8 +1,9 @@
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
 import { generateMetadata as generateSEOMetadata, generateDoctorStructuredData, PAGE_METADATA } from '../../lib/utils/seo'
-import { getAppointmentBookingUrl, getPatientIntakeUrl } from '../../lib/utils/server-settings'
+import { getAppointmentBookingUrl, getPatientIntakeUrl, getAboutMissionImageUrl } from '../../lib/utils/server-settings'
 import { prisma } from '../../lib/prisma'
+import Image from 'next/image'
 import { TeamMemberCard } from '../../components/Team'
 
 export const metadata = generateSEOMetadata({
@@ -42,6 +43,7 @@ export default async function About() {
   const teamMembers = await getTeamMembers()
   const appointmentBookingUrl = await getAppointmentBookingUrl()
   const patientIntakeUrl = await getPatientIntakeUrl()
+  const aboutMissionImageUrl = await getAboutMissionImageUrl()
 
   // Generate structured data for team members
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -132,58 +134,71 @@ export default async function About() {
             </div>
             
             <div className="relative">
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 lg:p-10 rounded-2xl shadow-lg">
-                <h3 className="text-2xl lg:text-3xl font-bold text-green-800 mb-8">Our Core Values</h3>
-                <div className="space-y-6">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+              {aboutMissionImageUrl ? (
+                <div className="w-full h-96 rounded-2xl overflow-hidden shadow-lg">
+                  <Image
+                    src={aboutMissionImageUrl}
+                    alt="Our Mission and Core Values"
+                    width={600}
+                    height={400}
+                    className="w-full h-full object-cover"
+                    priority={false}
+                  />
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 lg:p-10 rounded-2xl shadow-lg">
+                  <h3 className="text-2xl lg:text-3xl font-bold text-green-800 mb-8">Our Core Values</h3>
+                  <div className="space-y-6">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-800 mb-1">Compassion</h4>
+                        <p className="text-slate-600">Caring for every patient with empathy and respect</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-slate-800 mb-1">Compassion</h4>
-                      <p className="text-slate-600">Caring for every patient with empathy and respect</p>
+                    
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-800 mb-1">Excellence</h4>
+                        <p className="text-slate-600">Maintaining the highest standards of medical care</p>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+                    
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-800 mb-1">Integrity</h4>
+                        <p className="text-slate-600">Honest, transparent, and ethical healthcare practices</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-slate-800 mb-1">Excellence</h4>
-                      <p className="text-slate-600">Maintaining the highest standards of medical care</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-slate-800 mb-1">Integrity</h4>
-                      <p className="text-slate-600">Honest, transparent, and ethical healthcare practices</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-slate-800 mb-1">Innovation</h4>
-                      <p className="text-slate-600">Embracing efficient medical technology and practices</p>
+                    
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-800 mb-1">Innovation</h4>
+                        <p className="text-slate-600">Embracing efficient medical technology and practices</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
               
               {/* Decorative elements */}
               <div className="absolute -top-6 -right-6 w-12 h-12 bg-green-200 rounded-full opacity-60"></div>
@@ -245,7 +260,7 @@ export default async function About() {
         </section>
 
         {/* Our Doctors */}
-        {teamMembers.filter((m: any) => m.isDoctor).length > 0 && (
+        {teamMembers.filter((m: { isDoctor: boolean }) => m.isDoctor).length > 0 && (
           <section className="mb-20 lg:mb-32">
             <div className="text-center mb-16">
               <div className="inline-flex items-center px-4 py-2 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-6">
@@ -264,7 +279,7 @@ export default async function About() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {teamMembers
-                .filter((member: any) => member.isDoctor)
+                .filter((member: { isDoctor: boolean }) => member.isDoctor)
                 .map((member) => (
                   <Link
                     key={member.id}

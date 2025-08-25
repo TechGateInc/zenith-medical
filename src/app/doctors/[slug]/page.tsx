@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { generateDoctorStructuredData } from '../../../lib/utils/seo'
 import { prisma } from '../../../lib/prisma'
-import { getAppointmentBookingUrl, getPatientIntakeUrl } from '../../../lib/utils/server-settings'
+import { getAppointmentBookingUrl } from '../../../lib/utils/server-settings'
 
 // Note: In Next.js 15, params is a Promise in server components
 

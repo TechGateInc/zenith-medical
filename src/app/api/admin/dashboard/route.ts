@@ -57,15 +57,15 @@ export async function GET(request: NextRequest) {
     })
 
     // Decrypt patient data for display
-    const decryptedSubmissions = intakeSubmissions.map((submission: any) => {
+    const decryptedSubmissions = intakeSubmissions.map((submission: Record<string, unknown>) => {
       try {
         // Decrypt individual fields that we need for the dashboard
-        const decryptedFirstName = submission.legalFirstName ? decryptPHI(submission.legalFirstName) : ''
-        const decryptedLastName = submission.legalLastName ? decryptPHI(submission.legalLastName) : ''
-        const decryptedPreferredName = submission.preferredName ? decryptPHI(submission.preferredName) : ''
-        const decryptedEmail = submission.emailAddress ? decryptPHI(submission.emailAddress) : ''
-        const decryptedPhone = submission.phoneNumber ? decryptPHI(submission.phoneNumber) : ''
-        const decryptedHealthNumber = submission.healthInformationNumber ? decryptPHI(submission.healthInformationNumber) : ''
+        const decryptedFirstName = submission.legalFirstName ? decryptPHI(submission.legalFirstName as string) : ''
+        const decryptedLastName = submission.legalLastName ? decryptPHI(submission.legalLastName as string) : ''
+        const decryptedPreferredName = submission.preferredName ? decryptPHI(submission.preferredName as string) : ''
+        const decryptedEmail = submission.emailAddress ? decryptPHI(submission.emailAddress as string) : ''
+        const decryptedPhone = submission.phoneNumber ? decryptPHI(submission.phoneNumber as string) : ''
+        const decryptedHealthNumber = submission.healthInformationNumber ? decryptPHI(submission.healthInformationNumber as string) : ''
 
         return {
           id: submission.id,
@@ -74,10 +74,10 @@ export async function GET(request: NextRequest) {
           preferredName: decryptedPreferredName || undefined,
           emailAddress: decryptedEmail,
           phoneNumber: decryptedPhone,
-          status: submission.status,
-          appointmentBooked: submission.appointmentBooked,
-          createdAt: submission.createdAt.toISOString(),
-          updatedAt: submission.updatedAt.toISOString(),
+          status: submission.status as string,
+          appointmentBooked: submission.appointmentBooked as boolean,
+          createdAt: (submission.createdAt as Date).toISOString(),
+          updatedAt: (submission.updatedAt as Date).toISOString(),
           healthInformationNumber: decryptedHealthNumber
         }
       } catch (decryptionError) {
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
               userId: session.user.id,
               action: 'ERROR',
               resource: 'patient_intake',
-              resourceId: submission.id,
+              resourceId: submission.id as string,
               details: {
                 error: 'decryption_failed',
                 timestamp: new Date().toISOString()
@@ -101,15 +101,15 @@ export async function GET(request: NextRequest) {
 
           // Return partial data without decryption
           return {
-            id: submission.id,
+            id: submission.id as string,
             legalFirstName: 'Decryption Failed',
             legalLastName: '',
             emailAddress: 'Decryption Failed',
             phoneNumber: 'Decryption Failed',
-            status: submission.status,
-            appointmentBooked: submission.appointmentBooked,
-            createdAt: submission.createdAt.toISOString(),
-            updatedAt: submission.updatedAt.toISOString(),
+            status: submission.status as string,
+            appointmentBooked: submission.appointmentBooked as boolean,
+            createdAt: (submission.createdAt as Date).toISOString(),
+            updatedAt: (submission.updatedAt as Date).toISOString(),
             healthInformationNumber: 'Decryption Failed'
           }
         }

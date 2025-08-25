@@ -254,6 +254,9 @@ model SystemSettings {
   homepageImageUrl     String?
   appointmentBookingUrl String?
   patientIntakeUrl     String?
+  whyChooseUsImageUrl  String?
+  aboutMissionImageUrl String?
+  servicesPaymentImageUrl String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
   updatedBy            String?

@@ -100,6 +100,45 @@ export async function getPatientIntakeUrl(): Promise<string> {
 }
 
 /**
+ * Get Why Choose Us section image URL (server-side)
+ */
+export async function getWhyChooseUsImageUrl(): Promise<string | undefined> {
+  try {
+    const settings = await settingsManager.getSettings();
+    return settings.whyChooseUsImageUrl;
+  } catch (error) {
+    console.error('Error getting Why Choose Us image URL:', error);
+    return undefined;
+  }
+}
+
+/**
+ * Get About Mission section image URL (server-side)
+ */
+export async function getAboutMissionImageUrl(): Promise<string | undefined> {
+  try {
+    const settings = await settingsManager.getSettings();
+    return settings.aboutMissionImageUrl;
+  } catch (error) {
+    console.error('Error getting About Mission image URL:', error);
+    return undefined;
+  }
+}
+
+/**
+ * Get Services Payment section image URL (server-side)
+ */
+export async function getServicesPaymentImageUrl(): Promise<string | undefined> {
+  try {
+    const settings = await settingsManager.getSettings();
+    return settings.servicesPaymentImageUrl;
+  } catch (error) {
+    console.error('Error getting Services Payment image URL:', error);
+    return undefined;
+  }
+}
+
+/**
  * Check if maintenance mode is enabled (server-side)
  */
 

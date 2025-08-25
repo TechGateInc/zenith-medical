@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
     // Build where clause for filtering
-    const whereClause: any = {}
+    const whereClause: Record<string, unknown> = {}
     
     if (status && ['SUBMITTED', 'REVIEWED', 'APPOINTMENT_SCHEDULED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED'].includes(status)) {
       whereClause.status = status
@@ -99,23 +99,23 @@ export async function GET(request: NextRequest) {
     })
 
     // Decrypt patient data for export
-    const decryptedSubmissions = intakeSubmissions.map((submission: any) => {
+    const decryptedSubmissions = intakeSubmissions.map((submission: Record<string, unknown>) => {
       try {
         const decryptedData = decryptPatientData({
-          legalFirstName: submission.legalFirstName,
-          legalLastName: submission.legalLastName,
-          preferredName: submission.preferredName || '',
-          dateOfBirth: submission.dateOfBirth,
-          phoneNumber: submission.phoneNumber,
-          emailAddress: submission.emailAddress,
-          streetAddress: submission.streetAddress,
-          city: submission.city,
-          provinceState: submission.provinceState,
-          postalZipCode: submission.postalZipCode,
-          nextOfKinName: submission.nextOfKinName,
-          nextOfKinPhone: submission.nextOfKinPhone,
-          relationshipToPatient: submission.relationshipToPatient,
-          healthInformationNumber: submission.healthInformationNumber
+          legalFirstName: submission.legalFirstName as string,
+          legalLastName: submission.legalLastName as string,
+          preferredName: submission.preferredName as string || '',
+          dateOfBirth: submission.dateOfBirth as string,
+          phoneNumber: submission.phoneNumber as string,
+          emailAddress: submission.emailAddress as string,
+          streetAddress: submission.streetAddress as string,
+          city: submission.city as string,
+          provinceState: submission.provinceState as string,
+          postalZipCode: submission.postalZipCode as string,
+          nextOfKinName: submission.nextOfKinName as string,
+          nextOfKinPhone: submission.nextOfKinPhone as string,
+          relationshipToPatient: submission.relationshipToPatient as string,
+          healthInformationNumber: submission.healthInformationNumber as string
         })
 
         return {
@@ -133,12 +133,12 @@ export async function GET(request: NextRequest) {
           nextOfKinName: decryptedData.nextOfKinName,
           nextOfKinPhone: decryptedData.nextOfKinPhone,
           relationshipToPatient: decryptedData.relationshipToPatient,
-          status: submission.status,
-          appointmentBooked: submission.appointmentBooked ? 'Yes' : 'No',
-          appointmentBookedAt: submission.appointmentBookedAt?.toISOString() || '',
-          privacyPolicyAccepted: submission.privacyPolicyAccepted ? 'Yes' : 'No',
-          createdAt: submission.createdAt.toISOString(),
-          updatedAt: submission.updatedAt.toISOString(),
+          status: submission.status as string,
+          appointmentBooked: submission.appointmentBooked as boolean ? 'Yes' : 'No',
+          appointmentBookedAt: (submission.appointmentBookedAt as Date)?.toISOString() || '',
+          privacyPolicyAccepted: submission.privacyPolicyAccepted as boolean ? 'Yes' : 'No',
+          createdAt: (submission.createdAt as Date).toISOString(),
+          updatedAt: (submission.updatedAt as Date).toISOString(),
           healthInformationNumber: decryptedData.healthInformationNumber
         }
       } catch (decryptionError) {
@@ -160,12 +160,12 @@ export async function GET(request: NextRequest) {
           nextOfKinName: 'DECRYPTION_FAILED',
           nextOfKinPhone: 'DECRYPTION_FAILED',
           relationshipToPatient: 'DECRYPTION_FAILED',
-          status: submission.status,
-          appointmentBooked: submission.appointmentBooked ? 'Yes' : 'No',
-          appointmentBookedAt: submission.appointmentBookedAt?.toISOString() || '',
-          privacyPolicyAccepted: submission.privacyPolicyAccepted ? 'Yes' : 'No',
-          createdAt: submission.createdAt.toISOString(),
-          updatedAt: submission.updatedAt.toISOString(),
+          status: submission.status as string,
+          appointmentBooked: submission.appointmentBooked as boolean ? 'Yes' : 'No',
+          appointmentBookedAt: (submission.appointmentBookedAt as Date)?.toISOString() || '',
+          privacyPolicyAccepted: submission.privacyPolicyAccepted as boolean ? 'Yes' : 'No',
+          createdAt: (submission.createdAt as Date).toISOString(),
+          updatedAt: (submission.updatedAt as Date).toISOString(),
           healthInformationNumber: 'DECRYPTION_FAILED'
         }
       }

@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -55,10 +55,41 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
 
   const [loadingCount, setLoadingCount] = useState(true);
 
+  // Fetch all counts
+  const fetchCounts = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/intake/count');
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch intake count`);
+        
+        // Handle authentication errors
+        if (handleApiError(error, response)) {
+          return;
+        }
+        
+        throw error;
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        setIntakeCount(data.count);
+      }
+    } catch (error) {
+      // Only log error if it wasn't handled by the API auth hook
+      if (!handleApiError(error)) {
+        console.error('Error fetching intake count:', error);
+      }
+    }
+    setLoadingCount(false);
+  }, [handleApiError]);
+
   // Fetch counts on component mount
   useEffect(() => {
     fetchCounts();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   const navigation: NavigationItem[] = [
     {
@@ -139,45 +170,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const hasActiveChild = (children?: NavigationItem[]) => {
     return children?.some(child => isCurrentPath(child.href));
   };
-
-  // Fetch unviewed intake count
-  const fetchIntakeCount = async () => {
-    try {
-      const response = await fetch('/api/admin/intake/count');
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch intake count`);
-        
-        // Handle authentication errors
-        if (handleApiError(error, response)) {
-          return;
-        }
-        
-        throw error;
-      }
-      
-      const data = await response.json();
-      if (data.success) {
-        setIntakeCount(data.count);
-      }
-    } catch (error) {
-      // Only log error if it wasn't handled by the API auth hook
-      if (!handleApiError(error)) {
-        console.error('Error fetching intake count:', error);
-      }
-    }
-  };
-
-
-
-  // Fetch all counts
-  const fetchCounts = async () => {
-    await fetchIntakeCount();
-    setLoadingCount(false);
-  };
-
-
 
   const renderNavigationItem = (item: NavigationItem, isChild: boolean = false) => {
     const isActive = isCurrentPath(item.href);

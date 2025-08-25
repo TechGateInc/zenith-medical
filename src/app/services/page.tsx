@@ -1,6 +1,7 @@
 import Layout from '../../components/Layout/Layout'
 import { generateMetadata as generateSEOMetadata, PAGE_METADATA } from '../../lib/utils/seo'
-import { getAppointmentBookingUrl, getPatientIntakeUrl } from '../../lib/utils/server-settings'
+import { getAppointmentBookingUrl, getPatientIntakeUrl, getServicesPaymentImageUrl } from '../../lib/utils/server-settings'
+import Image from 'next/image'
 
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.services,
@@ -32,6 +33,7 @@ export default async function Services() {
   const services = await getServices()
   const appointmentBookingUrl = await getAppointmentBookingUrl()
   const patientIntakeUrl = await getPatientIntakeUrl()
+  const servicesPaymentImageUrl = await getServicesPaymentImageUrl()
 
   return (
     <Layout>
@@ -165,27 +167,40 @@ export default async function Services() {
                 </div>
               </div>
 
-              {/* Right Content - Visual Element */}
+                            {/* Right Content - Visual Element */}
               <div className="relative">
-                <div className="w-full h-96 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                  {/* Background Pattern */}
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-6 left-6 w-12 h-12 bg-green-600 rounded-full"></div>
-                    <div className="absolute top-16 right-12 w-8 h-8 bg-green-500 rounded-full"></div>
-                    <div className="absolute bottom-12 left-12 w-6 h-6 bg-green-700 rounded-full"></div>
-                    <div className="absolute bottom-6 right-6 w-16 h-16 bg-green-400 rounded-full"></div>
+                {servicesPaymentImageUrl ? (
+                  <div className="w-full h-96 rounded-2xl overflow-hidden shadow-lg">
+                    <Image
+                      src={servicesPaymentImageUrl}
+                      alt="Payment Options and Affordable Healthcare"
+                      width={600}
+                      height={400}
+                      className="w-full h-full object-cover"
+                      priority={false}
+                    />
                   </div>
-                  
-                  <div className="text-center relative z-10">
-                    <div className="w-24 h-24 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
+                ) : (
+                  <div className="w-full h-96 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-6 left-6 w-12 h-12 bg-green-600 rounded-full"></div>
+                      <div className="absolute top-16 right-12 w-8 h-8 bg-green-500 rounded-full"></div>
+                      <div className="absolute bottom-12 left-12 w-6 h-6 bg-green-700 rounded-full"></div>
+                      <div className="absolute bottom-6 right-6 w-16 h-16 bg-green-400 rounded-full"></div>
                     </div>
-                    <h3 className="text-2xl font-bold text-green-800 mb-2">Affordable Healthcare</h3>
-                    <p className="text-green-700">Accessible to everyone</p>
+                    
+                    <div className="text-center relative z-10">
+                      <div className="w-24 h-24 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold text-green-800 mb-2">Affordable Healthcare</h3>
+                      <p className="text-green-700">Accessible to everyone</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

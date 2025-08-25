@@ -219,7 +219,7 @@ export default function AdminDashboard() {
               ].map((filterOption) => (
                 <button
                   key={filterOption.key}
-                  onClick={() => setFilter(filterOption.key as any)}
+                  onClick={() => setFilter(filterOption.key as 'all' | 'pending' | 'scheduled' | 'completed')}
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                     filter === filterOption.key
                       ? 'bg-white text-blue-600 shadow-sm'

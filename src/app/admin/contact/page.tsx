@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -65,16 +65,7 @@ export default function ContactManagement() {
   const [priorityFilter, setPriorityFilter] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    if (status === "loading") return;
-    if (!session) {
-      router.push("/admin/login");
-      return;
-    }
-    fetchSubmissions();
-  }, [session, status, pagination.page, statusFilter, priorityFilter]);
-
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -96,9 +87,18 @@ export default function ContactManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, statusFilter, priorityFilter]);
 
-  const updateSubmission = async (id: string, updates: any) => {
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.push("/admin/login");
+      return;
+    }
+    fetchSubmissions();
+  }, [session, status, fetchSubmissions, router]);
+
+  const updateSubmission = async (id: string, updates: Partial<ContactSubmission>) => {
     try {
       const response = await fetch("/api/admin/contact", {
         method: "PUT",

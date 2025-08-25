@@ -43,7 +43,10 @@ export async function GET() {
           businessHours: settings.businessHours,
           homepageImageUrl: settings.homepageImageUrl,
           appointmentBookingUrl: settings.appointmentBookingUrl,
-          patientIntakeUrl: settings.patientIntakeUrl
+          patientIntakeUrl: settings.patientIntakeUrl,
+          whyChooseUsImageUrl: settings.whyChooseUsImageUrl,
+          aboutMissionImageUrl: settings.aboutMissionImageUrl,
+          servicesPaymentImageUrl: settings.servicesPaymentImageUrl
         },
         system: {
           timezone: settings.timezone,
@@ -162,6 +165,18 @@ export async function PUT(request: NextRequest) {
 
       if (contact.patientIntakeUrl !== undefined) {
         updates.patientIntakeUrl = contact.patientIntakeUrl || null;
+      }
+
+      if (contact.whyChooseUsImageUrl !== undefined) {
+        updates.whyChooseUsImageUrl = contact.whyChooseUsImageUrl || null;
+      }
+
+      if (contact.aboutMissionImageUrl !== undefined) {
+        updates.aboutMissionImageUrl = contact.aboutMissionImageUrl || null;
+      }
+
+      if (contact.servicesPaymentImageUrl !== undefined) {
+        updates.servicesPaymentImageUrl = contact.servicesPaymentImageUrl || null;
       }
     }
 

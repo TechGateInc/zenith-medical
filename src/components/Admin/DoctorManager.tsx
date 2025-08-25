@@ -253,7 +253,7 @@ export default function DoctorManager() {
   // Only fetch data once on component mount
   useEffect(() => {
     refreshData();
-  }, []); // Empty dependency array to run only once
+  }, [refreshData]); // Include refreshData in dependencies
 
   // Filter doctors based on search and filter criteria
   const filteredDoctors = doctors.filter((doctor) => {

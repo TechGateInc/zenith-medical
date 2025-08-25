@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getCachedContactInfo } from '@/lib/utils/address-cache'
 import { settingsManager } from '@/lib/utils/settings'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Use cached contact info for better performance
     const cachedInfo = await getCachedContactInfo()

@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // PUT /api/admin/content/doctors/[id] - Update doctor profile
 export async function PUT(
   request: Request,
-  { params }: any,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,7 @@ export async function PUT(
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const {
       professionalBio,
@@ -82,7 +82,7 @@ export async function PUT(
 // DELETE /api/admin/content/doctors/[id] - Delete doctor profile
 export async function DELETE(
   request: Request,
-  { params }: any,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -90,7 +90,7 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Delete doctor profile
     await prisma.doctor.delete({

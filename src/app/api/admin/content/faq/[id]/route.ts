@@ -99,7 +99,7 @@ export async function PATCH(
 
     // Parse request body
     const body = await request.json()
-    const updateData: any = {}
+    const updateData: Record<string, string | boolean | number | null | undefined> = {}
 
     // Handle fields
     if (body.question !== undefined) updateData.question = body.question
@@ -109,14 +109,14 @@ export async function PATCH(
     if (body.orderIndex !== undefined) updateData.orderIndex = body.orderIndex
 
     // Validate required fields if being updated
-    if (updateData.question !== undefined && !updateData.question.trim()) {
+    if (updateData.question !== undefined && typeof updateData.question === 'string' && !updateData.question.trim()) {
       return NextResponse.json(
         { error: 'Question cannot be empty' },
         { status: 400 }
       )
     }
 
-    if (updateData.answer !== undefined && !updateData.answer.trim()) {
+    if (updateData.answer !== undefined && typeof updateData.answer === 'string' && !updateData.answer.trim()) {
       return NextResponse.json(
         { error: 'Answer cannot be empty' },
         { status: 400 }

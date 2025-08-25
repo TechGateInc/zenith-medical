@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const stats = searchParams.get('stats');
 
     // Build where clause
-    const where: any = {};
+    const where: Record<string, boolean> = {};
     if (published === 'true') {
       where.published = true;
     } else if (published === 'false') {

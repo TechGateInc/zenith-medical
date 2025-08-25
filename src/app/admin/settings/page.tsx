@@ -35,6 +35,9 @@ interface ContactSettings {
   homepageImageUrl?: string;
   appointmentBookingUrl?: string;
   patientIntakeUrl?: string;
+  whyChooseUsImageUrl?: string;
+  aboutMissionImageUrl?: string;
+  servicesPaymentImageUrl?: string;
 }
 
 interface SystemSettings {
@@ -63,6 +66,9 @@ export default function SettingsPage() {
     homepageImageUrl: "",
     appointmentBookingUrl: "",
     patientIntakeUrl: "",
+    whyChooseUsImageUrl: "",
+    aboutMissionImageUrl: "",
+    servicesPaymentImageUrl: "",
   });
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
@@ -130,6 +136,9 @@ export default function SettingsPage() {
             homepageImageUrl: data.settings.contact.homepageImageUrl || "",
             appointmentBookingUrl: data.settings.contact.appointmentBookingUrl || "",
             patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
+            whyChooseUsImageUrl: data.settings.contact.whyChooseUsImageUrl || "",
+            aboutMissionImageUrl: data.settings.contact.aboutMissionImageUrl || "",
+            servicesPaymentImageUrl: data.settings.contact.servicesPaymentImageUrl || "",
           });
           setSystemSettings({
             timezone: data.settings.system.timezone || "America/Toronto",
@@ -196,9 +205,12 @@ export default function SettingsPage() {
               address: data.settings.contact.address || "",
               businessHours: data.settings.contact.businessHours || "",
               homepageImageUrl: data.settings.contact.homepageImageUrl || "",
-              appointmentBookingUrl: data.settings.contact.appointmentBookingUrl || "",
-              patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
-            });
+                              appointmentBookingUrl: data.settings.contact.appointmentBookingUrl || "",
+                patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
+                whyChooseUsImageUrl: data.settings.contact.whyChooseUsImageUrl || "",
+                aboutMissionImageUrl: data.settings.contact.aboutMissionImageUrl || "",
+                servicesPaymentImageUrl: data.settings.contact.servicesPaymentImageUrl || "",
+              });
             setSystemSettings({
               timezone: data.settings.system.timezone || "America/Toronto",
               dateFormat: data.settings.system.dateFormat || "MM/DD/YYYY",
@@ -572,7 +584,7 @@ export default function SettingsPage() {
                       imageType="hero"
                       category="homepage"
                       currentImageUrl={contactSettings.homepageImageUrl}
-                      onUploadSuccess={(result: any) => {
+                      onUploadSuccess={(result: { secure_url: string }) => {
                         setContactSettings((prev) => ({
                           ...prev,
                           homepageImageUrl: result.secure_url,
@@ -633,6 +645,126 @@ export default function SettingsPage() {
                   />
                   <p className="mt-1 text-sm text-gray-500">
                     URL for the patient intake form
+                  </p>
+                </div>
+
+                {/* Why Choose Us Section Image */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Why Choose Us Section Image
+                  </label>
+                  {contactSettings.whyChooseUsImageUrl && (
+                    <div className="mb-4">
+                      <img
+                        src={contactSettings.whyChooseUsImageUrl}
+                        alt="Why Choose Us Section"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                      />
+                    </div>
+                  )}
+                  <ImageUpload
+                    uploadType="general"
+                    imageType="section"
+                    category="why-choose-us"
+                    currentImageUrl={contactSettings.whyChooseUsImageUrl}
+                    onUploadSuccess={(result: { secure_url: string }) => {
+                      setContactSettings((prev) => ({
+                        ...prev,
+                        whyChooseUsImageUrl: result.secure_url,
+                      }));
+                    }}
+                    onUploadError={(error: string) => {
+                      setMessage({
+                        type: "error",
+                        text: `Image upload failed: ${error}`,
+                      });
+                    }}
+                    maxFileSize={5}
+                    allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                    className="w-full"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Image for the "Why Choose Us" section on the homepage. Recommended size: 600x400px or larger.
+                  </p>
+                </div>
+
+                {/* About Mission Section Image */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    About Mission Section Image
+                  </label>
+                  {contactSettings.aboutMissionImageUrl && (
+                    <div className="mb-4">
+                      <img
+                        src={contactSettings.aboutMissionImageUrl}
+                        alt="About Mission Section"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                      />
+                    </div>
+                  )}
+                  <ImageUpload
+                    uploadType="general"
+                    imageType="section"
+                    category="about-mission"
+                    currentImageUrl={contactSettings.aboutMissionImageUrl}
+                    onUploadSuccess={(result: { secure_url: string }) => {
+                      setContactSettings((prev) => ({
+                        ...prev,
+                        aboutMissionImageUrl: result.secure_url,
+                      }));
+                    }}
+                    onUploadError={(error: string) => {
+                      setMessage({
+                        type: "error",
+                        text: `Image upload failed: ${error}`,
+                      });
+                    }}
+                    maxFileSize={5}
+                    allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                    className="w-full"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Image for the "Our Mission" section on the about page. Recommended size: 600x400px or larger.
+                  </p>
+                </div>
+
+                {/* Services Payment Section Image */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Services Payment Section Image
+                  </label>
+                  {contactSettings.servicesPaymentImageUrl && (
+                    <div className="mb-4">
+                      <img
+                        src={contactSettings.servicesPaymentImageUrl}
+                        alt="Services Payment Section"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                      />
+                    </div>
+                  )}
+                  <ImageUpload
+                    uploadType="general"
+                    imageType="section"
+                    category="services-payment"
+                    currentImageUrl={contactSettings.servicesPaymentImageUrl}
+                    onUploadSuccess={(result: { secure_url: string }) => {
+                      setContactSettings((prev) => ({
+                        ...prev,
+                        servicesPaymentImageUrl: result.secure_url,
+                      }));
+                    }}
+                    onUploadError={(error: string) => {
+                      setMessage({
+                        type: "error",
+                        text: `Image upload failed: ${error}`,
+                      });
+                    }}
+                    maxFileSize={5}
+                    allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                    className="w-full"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Image for the payment options section on the services page. Recommended size: 600x400px or larger.
                   </p>
                 </div>
               </div>

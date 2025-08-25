@@ -114,7 +114,7 @@ export async function PATCH(
     }
 
     // Prepare update data
-    const updateData: any = {};
+    const updateData: Record<string, string | boolean | number | null | undefined> = {};
 
     if (name && name !== existingCategory.name) {
       // Generate new slug if name changed

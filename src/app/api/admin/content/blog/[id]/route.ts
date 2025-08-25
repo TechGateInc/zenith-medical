@@ -127,7 +127,7 @@ export async function PATCH(
 
     // Parse request body
     const body = await request.json()
-    const updateData: any = {}
+    const updateData: Record<string, string | boolean | Date | null | undefined> = {}
 
     // Handle slug updates with validation
     if (body.slug && body.slug !== existingPost.slug) {
@@ -281,8 +281,8 @@ export async function DELETE(
     })
 
     // Only admins and super admins can delete posts
-    const allowedDeleteRoles = [AdminRole.SUPER_ADMIN, AdminRole.ADMIN]
-    if (!user || !user.role || !allowedDeleteRoles.includes(user.role as any)) {
+    const allowedDeleteRoles: AdminRole[] = [AdminRole.SUPER_ADMIN, AdminRole.ADMIN]
+    if (!user || !user.role || !allowedDeleteRoles.includes(user.role)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 

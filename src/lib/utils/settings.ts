@@ -18,6 +18,9 @@ export interface SystemSettings {
   homepageImageUrl?: string;
   appointmentBookingUrl?: string;
   patientIntakeUrl?: string;
+  whyChooseUsImageUrl?: string;
+  aboutMissionImageUrl?: string;
+  servicesPaymentImageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
   updatedBy?: string;
@@ -94,13 +97,15 @@ export class SettingsManager {
         businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
         timezone: 'America/Toronto',
         dateFormat: 'MM/DD/YYYY',
-
         sessionTimeout: 30,
         maxLoginAttempts: 5,
         passwordExpiry: 90,
         homepageImageUrl: '/images/home.webp',
         appointmentBookingUrl: 'https://zenithmedical.cortico.ca/',
         patientIntakeUrl: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227',
+        whyChooseUsImageUrl: undefined,
+        aboutMissionImageUrl: undefined,
+        servicesPaymentImageUrl: undefined,
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -126,10 +131,16 @@ export class SettingsManager {
           businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
           timezone: 'America/Toronto',
           dateFormat: 'MM/DD/YYYY',
-
           sessionTimeout: 30,
           maxLoginAttempts: 5,
           passwordExpiry: 90,
+          address: 'Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3',
+          homepageImageUrl: null,
+          appointmentBookingUrl: null,
+          patientIntakeUrl: null,
+          whyChooseUsImageUrl: null,
+          aboutMissionImageUrl: null,
+          servicesPaymentImageUrl: null,
           updatedBy,
           ...updates
         }

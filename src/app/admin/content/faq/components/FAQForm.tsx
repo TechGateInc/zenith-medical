@@ -58,7 +58,7 @@ export default function FAQForm({ mode, initialData }: FAQFormProps) {
     }
   }, [mode, initialData])
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof typeof formData, value: string | boolean | number) => {
     setFormData(prev => ({ ...prev, [field]: value }))
 
     // Clear error for this field

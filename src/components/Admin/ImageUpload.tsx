@@ -12,7 +12,7 @@ import { X, Camera, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 interface ImageUploadProps {
   uploadType: 'team-member' | 'blog-image' | 'general';
   entityId?: string;
-  imageType?: 'hero' | 'content';
+  imageType?: 'hero' | 'content' | 'section';
   category?: string;
   currentImageUrl?: string;
   onUploadSuccess: (uploadResult: UploadResult) => void;

@@ -161,7 +161,7 @@ const TeamManager: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, filterPublished, sortBy, sortDirection, currentPage, itemsPerPage]);
+  }, [searchTerm, filterPublished, sortBy, sortDirection, currentPage, itemsPerPage, handleApiError]);
 
   // Initial load
   useEffect(() => {

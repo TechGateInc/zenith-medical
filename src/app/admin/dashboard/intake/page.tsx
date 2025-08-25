@@ -42,7 +42,7 @@ export default function PatientIntakePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const fetchIntakeSubmissions = async (isRetry: boolean = false) => {
+  const fetchIntakeSubmissions = useCallback(async (isRetry: boolean = false) => {
     try {
       if (!isRetry) {
         setLoading(true);
@@ -65,7 +65,21 @@ export default function PatientIntakePage() {
         if (response.status >= 500 && retryCount < 3) {
           const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
           setRetryCount(prev => prev + 1);
-          setTimeout(() => fetchIntakeSubmissions(true), delay);
+          // Use a separate retry function to avoid circular dependency
+          setTimeout(async () => {
+            try {
+              const retryResponse = await fetch('/api/admin/intake');
+              if (retryResponse.ok) {
+                const retryData = await retryResponse.json();
+                if (retryData.success) {
+                  setSubmissions(retryData.submissions || []);
+                  setRetryCount(0);
+                }
+              }
+            } catch (retryErr) {
+              console.error('Retry failed:', retryErr);
+            }
+          }, delay);
           return;
         }
         
@@ -93,7 +107,8 @@ export default function PatientIntakePage() {
         setLoading(false);
       }
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleApiError]);
 
   const filterSubmissions = useCallback(() => {
     let filtered = submissions;
@@ -185,11 +200,14 @@ export default function PatientIntakePage() {
 
   useEffect(() => {
     fetchIntakeSubmissions();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
+  // Apply filters whenever dependencies change
   useEffect(() => {
     filterSubmissions();
-  }, [filterSubmissions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submissions, searchTerm, statusFilter, dateFilter, startDate, endDate, sortOrder]);
 
   const getStatusBadge = (status: IntakeSubmission['status']) => {
     const statusConfig = {
@@ -215,6 +233,9 @@ export default function PatientIntakePage() {
   };
 
   const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    setRetryCount(0);
     fetchIntakeSubmissions(false);
   };
 
@@ -429,7 +450,7 @@ export default function PatientIntakePage() {
             
             <div className="flex items-center space-x-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum;
+                let pageNum: number;
                 if (totalPages <= 5) {
                   pageNum = i + 1;
                 } else if (currentPage <= 3) {

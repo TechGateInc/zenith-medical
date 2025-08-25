@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // PUT /api/admin/content/doctors/[id]/toggle-published - Toggle published status
 export async function PUT(
   request: Request,
-  { params }: any,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,7 @@ export async function PUT(
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { published } = body;
 

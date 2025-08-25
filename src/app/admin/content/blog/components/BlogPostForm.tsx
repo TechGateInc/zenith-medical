@@ -119,12 +119,12 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
       .trim()
   }
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof typeof formData, value: string | boolean | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     
     // Auto-generate slug when title changes (only for new posts or if slug matches old title slug)
     if (field === 'title' && (mode === 'create' || (initialData && formData.slug === generateSlug(initialData.title)))) {
-      setFormData(prev => ({ ...prev, slug: generateSlug(value) }))
+      setFormData(prev => ({ ...prev, slug: generateSlug(value as string) }))
     }
 
     // Clear error for this field

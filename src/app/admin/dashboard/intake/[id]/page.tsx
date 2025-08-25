@@ -590,7 +590,7 @@ export default function IntakeDetailPage() {
                 </h2>
                 <div className="space-y-6">
                   {submission.dependents.map(
-                    (dependent: any, index: number) => (
+                    (dependent: Record<string, string | boolean | undefined> & { id: string }, index: number) => (
                       <div
                         key={dependent.id}
                         className="border-l-4 border-blue-200 pl-4"

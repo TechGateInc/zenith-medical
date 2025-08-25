@@ -217,7 +217,7 @@ export default function FAQManagementPage() {
               <h2 className="text-lg font-medium text-gray-900">Filter FAQs</h2>
               <select
                 value={filter}
-                onChange={(e) => setFilter(e.target.value as any)}
+                onChange={(e) => setFilter(e.target.value as 'all' | 'published' | 'draft')}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="all">All FAQs ({faqs.length})</option>

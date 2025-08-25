@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit
 
     // Build where clause
-    const where: any = {}
+    const where: Record<string, string> = {}
     if (status) where.status = status
     if (priority) where.priority = priority
 
@@ -96,7 +96,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update submission
-    const updateData: any = {}
+    const updateData: Record<string, string | Date | undefined> = {}
     if (status) updateData.status = status
     if (priority) updateData.priority = priority
     if (assignedTo !== undefined) updateData.assignedTo = assignedTo

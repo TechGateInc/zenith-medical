@@ -2,7 +2,28 @@ import Layout from '../components/Layout/Layout'
 import Link from 'next/link'
 import { generateMetadata as generateSEOMetadata, generateHomepageStructuredData, PAGE_METADATA } from '../lib/utils/seo'
 import Image from 'next/image'
-import { getHomepageImageUrl, getAppointmentBookingUrl, getPatientIntakeUrl } from '../lib/utils/server-settings'
+import { getHomepageImageUrl, getAppointmentBookingUrl, getPatientIntakeUrl, getWhyChooseUsImageUrl } from '../lib/utils/server-settings'
+
+interface Service {
+  id: string
+  title: string
+  description: string
+  features: string[]
+  icon?: string
+  orderIndex: number
+  published: boolean
+}
+
+async function getServices(): Promise<Service[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/services`, { cache: 'no-store' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.services || []
+  } catch {
+    return []
+  }
+}
 
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.home,
@@ -14,6 +35,8 @@ export default async function Home() {
   const homepageImageUrl = await getHomepageImageUrl()
   const appointmentBookingUrl = await getAppointmentBookingUrl()
   const patientIntakeUrl = await getPatientIntakeUrl()
+  const whyChooseUsImageUrl = await getWhyChooseUsImageUrl()
+  const services = await getServices()
 
   return (
     <Layout className="bg-slate-50">
@@ -253,29 +276,108 @@ export default async function Home() {
 
               {/* Right Content - Visual Element */}
               <div className="relative">
-                <div className="w-full h-96 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                  {/* Background Pattern */}
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-6 left-6 w-12 h-12 bg-purple-600 rounded-full"></div>
-                    <div className="absolute top-16 right-12 w-8 h-8 bg-purple-500 rounded-full"></div>
-                    <div className="absolute bottom-12 left-12 w-6 h-6 bg-purple-700 rounded-full"></div>
-                    <div className="absolute bottom-6 right-6 w-16 h-16 bg-purple-400 rounded-full"></div>
+                {whyChooseUsImageUrl ? (
+                  <div className="w-full h-96 rounded-2xl overflow-hidden shadow-lg">
+                    <Image
+                      src={whyChooseUsImageUrl}
+                      alt="Why Choose Zenith Medical Centre"
+                      width={600}
+                      height={400}
+                      className="w-full h-full object-cover"
+                      priority={false}
+                    />
                   </div>
-                  
-                  <div className="text-center relative z-10">
-                    <div className="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                      </svg>
+                ) : (
+                  <div className="w-full h-96 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-6 left-6 w-12 h-12 bg-purple-600 rounded-full"></div>
+                      <div className="absolute top-16 right-12 w-8 h-8 bg-purple-500 rounded-full"></div>
+                      <div className="absolute bottom-12 left-12 w-6 h-6 bg-purple-700 rounded-full"></div>
+                      <div className="absolute bottom-6 right-6 w-16 h-16 bg-purple-400 rounded-full"></div>
                     </div>
-                    <h3 className="text-2xl font-bold text-purple-800 mb-2">Excellence in Care</h3>
-                    <p className="text-purple-700">Trusted by thousands of families</p>
+                    
+                    <div className="text-center relative z-10">
+                      <div className="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold text-purple-800 mb-2">Excellence in Care</h3>
+                      <p className="text-purple-700">Trusted by thousands of families</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
         </section>
+
+        {/* Medical Services Section */}
+        {services.length > 0 && (
+          <section className="mb-16">
+            <div className="max-w-6xl mx-auto">
+              {/* Section Badge */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center justify-center px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
+                  <span className="text-sm font-semibold text-green-700 uppercase tracking-wider">
+                    Our Services
+                  </span>
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Our Medical Services</h2>
+                <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                  Comprehensive healthcare services for you and your family with efficient medical expertise and compassionate care
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {services.slice(0, 6).map((service) => (
+                  <div
+                    key={service.id}
+                    className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  >
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600">
+                      {service.icon ? (
+                        <span dangerouslySetInnerHTML={{ __html: service.icon }} />
+                      ) : (
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-semibold text-slate-800 mb-3">{service.title}</h3>
+                    <p className="text-slate-600 leading-relaxed mb-4">{service.description}</p>
+                    {service.features && service.features.length > 0 && (
+                      <ul className="space-y-2">
+                        {service.features.slice(0, 3).map((feature, index) => (
+                          <li key={index} className="flex items-center text-sm text-slate-600">
+                            <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* View All Services Link */}
+              <div className="text-center mt-12">
+                <a
+                  href="/services"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg"
+                >
+                  View All Services
+                  <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Final CTA Section */}
         <section className="bg-slate-50 rounded-xl p-8 mb-8">
