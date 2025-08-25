@@ -61,6 +61,19 @@ export async function getAddress(): Promise<string> {
 }
 
 /**
+ * Get homepage image URL (server-side)
+ */
+export async function getHomepageImageUrl(): Promise<string> {
+  try {
+    const settings = await settingsManager.getSettings();
+    return settings.homepageImageUrl || '/images/home.webp';
+  } catch (error) {
+    console.error('Error getting homepage image URL:', error);
+    return '/images/home.webp'; // Fallback
+  }
+}
+
+/**
  * Check if maintenance mode is enabled (server-side)
  */
 
@@ -83,14 +96,10 @@ export async function getAllSettings() {
       businessHours: 'Mon-Fri 8AM-6PM, Sat 9AM-2PM',
       timezone: 'America/Toronto',
       dateFormat: 'MM/DD/YYYY',
-      emailNotifications: true,
-      appointmentReminders: true,
-      securityAlerts: true,
-      maintenanceMode: false,
       sessionTimeout: 30,
       maxLoginAttempts: 5,
       passwordExpiry: 90,
-    
+      homepageImageUrl: '/images/home.webp',
       ipWhitelist: undefined,
       createdAt: new Date(),
       updatedAt: new Date()

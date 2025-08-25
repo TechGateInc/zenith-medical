@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Settings,
   Globe,
@@ -20,6 +21,7 @@ import {
   Phone,
 } from "lucide-react";
 import { SettingsSkeleton } from "@/components/UI/SkeletonLoader";
+import ImageUpload from "@/components/Admin/ImageUpload";
 
 
 
@@ -30,6 +32,7 @@ interface ContactSettings {
   adminEmail: string;
   address: string;
   businessHours: string;
+  homepageImageUrl?: string;
 }
 
 interface SystemSettings {
@@ -55,6 +58,7 @@ export default function SettingsPage() {
     adminEmail: "",
     address: "",
     businessHours: "",
+    homepageImageUrl: "",
   });
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
@@ -119,6 +123,7 @@ export default function SettingsPage() {
             adminEmail: data.settings.contact.adminEmail || "",
             address: data.settings.contact.address || "",
             businessHours: data.settings.contact.businessHours || "",
+            homepageImageUrl: data.settings.contact.homepageImageUrl || "",
           });
           setSystemSettings({
             timezone: data.settings.system.timezone || "America/Toronto",
@@ -178,6 +183,7 @@ export default function SettingsPage() {
               adminEmail: data.settings.contact.adminEmail || "",
               address: data.settings.contact.address || "",
               businessHours: data.settings.contact.businessHours || "",
+              homepageImageUrl: data.settings.contact.homepageImageUrl || "",
             });
             setSystemSettings({
               timezone: data.settings.system.timezone || "America/Toronto",
@@ -528,6 +534,49 @@ export default function SettingsPage() {
                   />
                   <p className="mt-1 text-sm text-gray-500">
                     Business hours displayed to patients
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Homepage Hero Image
+                  </label>
+                  <div className="space-y-4">
+                    {contactSettings.homepageImageUrl && (
+                      <div className="relative">
+                        <Image
+                          src={contactSettings.homepageImageUrl}
+                          alt="Current homepage image"
+                          width={400}
+                          height={192}
+                          className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-300"
+                        />
+                      </div>
+                    )}
+                    <ImageUpload
+                      uploadType="general"
+                      imageType="hero"
+                      category="homepage"
+                      currentImageUrl={contactSettings.homepageImageUrl}
+                      onUploadSuccess={(result: any) => {
+                        setContactSettings((prev) => ({
+                          ...prev,
+                          homepageImageUrl: result.secure_url,
+                        }));
+                      }}
+                      onUploadError={(error: string) => {
+                        setMessage({
+                          type: "error",
+                          text: `Image upload failed: ${error}`,
+                        });
+                      }}
+                      maxFileSize={5}
+                      allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                      className="w-full"
+                    />
+                  </div>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Hero image displayed on the homepage. Recommended size: 1200x600px or larger.
                   </p>
                 </div>
               </div>

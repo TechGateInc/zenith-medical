@@ -15,6 +15,7 @@ export interface SystemSettings {
   maxLoginAttempts: number;
   passwordExpiry: number;
   ipWhitelist?: string;
+  homepageImageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
   updatedBy?: string;
@@ -95,6 +96,7 @@ export class SettingsManager {
         sessionTimeout: 30,
         maxLoginAttempts: 5,
         passwordExpiry: 90,
+        homepageImageUrl: '/images/home.webp',
         createdAt: new Date(),
         updatedAt: new Date()
       };

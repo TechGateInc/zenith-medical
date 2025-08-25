@@ -40,7 +40,8 @@ export async function GET() {
           faxNumber: settings.faxNumber,
           adminEmail: settings.adminEmail,
           address: settings.address,
-          businessHours: settings.businessHours
+          businessHours: settings.businessHours,
+          homepageImageUrl: settings.homepageImageUrl
         },
         system: {
           timezone: settings.timezone,
@@ -148,6 +149,10 @@ export async function PUT(request: NextRequest) {
       if (contact.address) {
         updates.address = contact.address;
       }
+
+      if (contact.homepageImageUrl !== undefined) {
+        updates.homepageImageUrl = contact.homepageImageUrl || null;
+      }
     }
 
     // Validate and prepare system settings updates
@@ -193,7 +198,8 @@ export async function PUT(request: NextRequest) {
           faxNumber: updatedSettings.faxNumber,
           adminEmail: updatedSettings.adminEmail,
           address: updatedSettings.address,
-          businessHours: updatedSettings.businessHours
+          businessHours: updatedSettings.businessHours,
+          homepageImageUrl: updatedSettings.homepageImageUrl
         },
         system: {
           timezone: updatedSettings.timezone,

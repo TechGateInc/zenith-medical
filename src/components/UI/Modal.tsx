@@ -38,9 +38,9 @@ const Modal: React.FC<ModalProps> = ({
   size = 'md'
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const initialFocusRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle escape key
+  // Handle escape key and focus management
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -52,9 +52,26 @@ const Modal: React.FC<ModalProps> = ({
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
       
-      // Focus the modal when it opens
+      // Focus the first focusable element in the modal content instead of the close button
       setTimeout(() => {
-        initialFocusRef.current?.focus();
+        const modal = modalRef.current;
+        if (modal) {
+          // Find the first focusable element in the modal content
+          const focusableElements = modal.querySelectorAll(
+            'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          );
+          
+          if (focusableElements.length > 0) {
+            // Focus the first focusable element that's not the close button
+            const firstFocusable = Array.from(focusableElements).find(
+              (el) => el !== closeButtonRef.current
+            ) as HTMLElement;
+            
+            if (firstFocusable) {
+              firstFocusable.focus();
+            }
+          }
+        }
       }, 100);
     }
 
@@ -71,11 +88,38 @@ const Modal: React.FC<ModalProps> = ({
     }
   };
 
-  // Handle enter key for confirmation
+  // Handle enter key for confirmation and focus trapping
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && onConfirm && !loading && !disabled) {
       e.preventDefault();
       onConfirm();
+    }
+    
+    // Focus trapping with Tab key
+    if (e.key === 'Tab') {
+      const modal = modalRef.current;
+      if (!modal) return;
+      
+      const focusableElements = modal.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+      
+      if (e.shiftKey) {
+        // Shift + Tab: going backwards
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab: going forwards
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
     }
   };
 
@@ -134,7 +178,7 @@ const Modal: React.FC<ModalProps> = ({
           </div>
           {showCloseButton && (
             <button
-              ref={initialFocusRef}
+              ref={closeButtonRef}
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100"
               aria-label="Close modal"

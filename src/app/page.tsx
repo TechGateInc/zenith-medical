@@ -2,6 +2,7 @@ import Layout from '../components/Layout/Layout'
 import Link from 'next/link'
 import { generateMetadata as generateSEOMetadata, generateHomepageStructuredData, PAGE_METADATA } from '../lib/utils/seo'
 import Image from 'next/image'
+import { getHomepageImageUrl } from '../lib/utils/server-settings'
 
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.home,
@@ -10,6 +11,7 @@ export const metadata = generateSEOMetadata({
 
 export default async function Home() {
   const structuredData = generateHomepageStructuredData()
+  const homepageImageUrl = await getHomepageImageUrl()
 
   return (
     <Layout className="bg-slate-50">
@@ -81,7 +83,7 @@ export default async function Home() {
               <div className="relative">
                 <div className="w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
                   <Image 
-                    src="/images/home.webp" 
+                    src={homepageImageUrl} 
                     alt="Zenith Medical Centre - Cutting-edge medical facility" 
                     width={800}
                     height={384}
