@@ -684,37 +684,37 @@ export default function DoctorManager() {
                 " For new doctor profiles, a photo is highly recommended."}
             </p>
             <div className="bg-white p-3 rounded-lg border border-gray-300">
-              <ImageUpload
-                uploadType="team-member"
-                entityId={editingDoctor?.id || formData.teamMemberId}
-                currentImageUrl={editingDoctor?.photoUrl}
-                onUploadSuccess={(uploadResult) => {
-                  // Update the team member's photo URL
-                  if (editingDoctor) {
-                    // Update the local state to reflect the new photo
-                    setEditingDoctor({
-                      ...editingDoctor,
-                      photoUrl: uploadResult.secure_url,
-                    });
-                    setPhotoChanged(true);
-                  }
-                  toast.success("Photo uploaded successfully");
-                }}
-                onUploadError={(error) => {
-                  toast.error(`Failed to upload photo: ${error}`);
-                }}
-                onImageRemove={() => {
-                  if (editingDoctor) {
-                    setEditingDoctor({
-                      ...editingDoctor,
-                      photoUrl: undefined,
-                    });
-                    setPhotoChanged(true);
-                  }
-                  toast.success("Photo removed");
-                }}
-                className="max-w-sm"
-              />
+                              <ImageUpload
+                  uploadType="team-member"
+                  entityId={editingDoctor?.id || formData.teamMemberId}
+                  currentImageUrl={editingDoctor?.photoUrl}
+                  onUploadSuccess={(uploadResult) => {
+                    // Update the team member's photo URL
+                    if (editingDoctor) {
+                      // Update the local state to reflect the new photo
+                      setEditingDoctor({
+                        ...editingDoctor,
+                        photoUrl: uploadResult.secure_url,
+                      });
+                      setPhotoChanged(true);
+                    }
+                    toast.success("Photo uploaded successfully");
+                  }}
+                  onUploadError={(error) => {
+                    toast.error(`Failed to upload photo: ${error}`);
+                  }}
+                  onImageRemove={() => {
+                    if (editingDoctor) {
+                      setEditingDoctor({
+                        ...editingDoctor,
+                        photoUrl: undefined,
+                      });
+                      setPhotoChanged(true);
+                    }
+                    toast.success("Photo removed");
+                  }}
+                  className="max-w-xs"
+                />
             </div>
           </div>
 

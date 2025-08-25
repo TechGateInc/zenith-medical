@@ -690,7 +690,7 @@ const TeamManager: React.FC = () => {
                     currentImageUrl={formData.photoUrl}
                     onUploadSuccess={handleImageUpload}
                     onImageRemove={() => setFormData(prev => ({ ...prev, photoUrl: '' }))}
-                    className="max-w-sm"
+                    className="max-w-xs"
                   />
                 </div>
               </div>

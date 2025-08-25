@@ -52,7 +52,7 @@ const Modal: React.FC<ModalProps> = ({
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
       
-      // Focus the first focusable element in the modal content instead of the close button
+      // Focus the first focusable element in the modal content only when modal opens
       setTimeout(() => {
         const modal = modalRef.current;
         if (modal) {
@@ -67,7 +67,8 @@ const Modal: React.FC<ModalProps> = ({
               (el) => el !== closeButtonRef.current
             ) as HTMLElement;
             
-            if (firstFocusable) {
+            // Only focus if no element is currently focused or if focus is outside the modal
+            if (firstFocusable && (!document.activeElement || !modal.contains(document.activeElement))) {
               firstFocusable.focus();
             }
           }

@@ -1,5 +1,4 @@
 import { ImageResponse } from '@vercel/og'
-import Image from 'next/image'
 import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
@@ -22,7 +21,7 @@ export async function GET(req: NextRequest) {
           background: 'white',
         }}
       >
-        <Image
+        <img
           src={logoUrl}
           alt="Zenith Medical Centre Logo"
           width={200}
