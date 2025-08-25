@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { generateDoctorStructuredData } from '../../../lib/utils/seo'
 import { prisma } from '../../../lib/prisma'
+import { getAppointmentBookingUrl, getPatientIntakeUrl } from '../../../lib/utils/server-settings'
 
 // Note: In Next.js 15, params is a Promise in server components
 
@@ -95,6 +96,9 @@ export default async function DoctorProfile({ params }: { params: Promise<{ slug
     notFound()
   }
 
+  // Get appointment URLs
+  const appointmentBookingUrl = await getAppointmentBookingUrl()
+
   // Generate structured data for the doctor
   const doctorStructuredData = generateDoctorStructuredData({
     name: doctor.name,
@@ -166,15 +170,17 @@ export default async function DoctorProfile({ params }: { params: Promise<{ slug
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+                <a
+                  href={appointmentBookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-lg"
                 >
                   <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                   Request Appointment
-                </Link>
+                </a>
                 <Link
                   href="/doctors"
                   className="inline-flex items-center justify-center px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-lg transition-colors"
@@ -301,15 +307,17 @@ export default async function DoctorProfile({ params }: { params: Promise<{ slug
             Book an appointment and experience exceptional care from our experienced healthcare professional.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+            <a
+              href={appointmentBookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-lg"
             >
               <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
               Request Appointment
-            </Link>
+            </a>
             <Link
               href="/doctors"
               className="inline-flex items-center justify-center px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-lg transition-colors"

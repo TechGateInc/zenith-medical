@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image'
 import { useCachedPrimaryPhone, useCachedAddressOnly, useCachedBusinessHours } from '@/lib/hooks/useCachedAddress';
+import { useAppointmentUrls } from '@/lib/hooks/useSettings';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone();
   const { address, loading: addressLoading } = useCachedAddressOnly();
   const { businessHours, loading: hoursLoading } = useCachedBusinessHours();
+  const { patientIntakeUrl } = useAppointmentUrls();
 
   const quickLinks = [
     { name: 'Home', href: '/' },
@@ -18,7 +20,7 @@ export default function Footer() {
   ]
 
   const patientResources = [
-    { name: 'Patient Intake', href: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227' },
+    { name: 'Patient Intake', href: patientIntakeUrl },
     { name: 'FAQs', href: '/faq' },
   ]
 

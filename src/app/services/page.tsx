@@ -1,6 +1,6 @@
 import Layout from '../../components/Layout/Layout'
-import Link from 'next/link'
 import { generateMetadata as generateSEOMetadata, PAGE_METADATA } from '../../lib/utils/seo'
+import { getAppointmentBookingUrl, getPatientIntakeUrl } from '../../lib/utils/server-settings'
 
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.services,
@@ -30,6 +30,8 @@ async function getServices(): Promise<Service[]> {
 
 export default async function Services() {
   const services = await getServices()
+  const appointmentBookingUrl = await getAppointmentBookingUrl()
+  const patientIntakeUrl = await getPatientIntakeUrl()
 
   return (
     <Layout>
@@ -199,93 +201,65 @@ export default async function Services() {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left Content */}
-              <div>
-                <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
-                  Ready to Experience Our Comprehensive Care?
-                </h2>
-                <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                  Schedule an appointment today and discover how our efficient medical facility and experienced team can serve your healthcare needs.
-                </p>
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight text-center">
+                Ready to Experience Our Comprehensive Care?
+              </h2>
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed text-center">
+                Schedule an appointment today and discover how our efficient medical facility and experienced team can serve your healthcare needs.
+              </p>
 
-                {/* Feature Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-
-
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Secure Health Records</h3>
-                    <p className="text-sm text-slate-600">
-                      Secure digital records with patient portal access.
-                    </p>
+              {/* Feature Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 max-w-2xl mx-auto">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
                   </div>
-
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 3v12m0 0l3-3m-3 3l-3-3m12-9a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Instant Updates</h3>
-                    <p className="text-sm text-slate-600">
-                      Get real-time notifications about appointments and health updates.
-                    </p>
-                  </div>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-2">Secure Health Records</h3>
+                  <p className="text-sm text-slate-600">
+                    Secure digital records with patient portal access.
+                  </p>
                 </div>
 
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4">
-            <a
-              href="https://zenithmedical.cortico.ca/"
-              target="_blank"
-              rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
-            >
-                    <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 3v12m0 0l3-3m-3 3l-3-3m12-9a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Request Appointment
-            </a>
-            <Link
-              href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-            >
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-2">Instant Updates</h3>
+                  <p className="text-sm text-slate-600">
+                    Get real-time notifications about appointments and health updates.
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href={appointmentBookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
+                >
+                  <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  Request Appointment
+                </a>
+                <a
+                  href={patientIntakeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                >
                   <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   Patient Intake Form
-                </Link>
-                </div>
-              </div>
-
-              {/* Right Content - Visual Element */}
-              <div className="hidden lg:block">
-                <div className="relative">
-                  <div className="w-full h-96 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-4 left-4 w-8 h-8 bg-blue-600 rounded-full"></div>
-                      <div className="absolute top-12 right-8 w-6 h-6 bg-blue-500 rounded-full"></div>
-                      <div className="absolute bottom-8 left-8 w-4 h-4 bg-blue-700 rounded-full"></div>
-                      <div className="absolute bottom-4 right-4 w-10 h-10 bg-blue-400 rounded-full"></div>
-                    </div>
-                    
-                    <div className="text-center relative z-10">
-                      <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-2xl font-bold text-blue-800 mb-2">Your Health Journey</h3>
-                      <p className="text-blue-700">Starts with comprehensive care</p>
-                    </div>
-                  </div>
-                </div>
+                </a>
               </div>
             </div>
           </div>

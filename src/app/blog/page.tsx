@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
+import { useAppointmentUrls } from '@/lib/hooks/useSettings'
 
 interface BlogPost {
   slug: string
@@ -20,6 +21,7 @@ interface BlogPost {
 
 export default function Blog() {
   const [activeCategory, setActiveCategory] = useState('all')
+  const { patientIntakeUrl } = useAppointmentUrls()
 
   // Sample blog posts - in a real app, this would come from a CMS or database
   const blogPosts: BlogPost[] = [
@@ -436,12 +438,14 @@ export default function Blog() {
                       </svg>
                 Schedule Consultation
               </Link>
-              <Link
-                href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+              <a
+                href={patientIntakeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 Complete Patient Intake
-              </Link>
+              </a>
                   </div>
                 </div>
 

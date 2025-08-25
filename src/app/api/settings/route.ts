@@ -21,7 +21,9 @@ export async function GET() {
           faxNumber: settings.faxNumber,
           adminEmail: settings.adminEmail,
           address: settings.address,
-          businessHours: settings.businessHours
+          businessHours: settings.businessHours,
+          appointmentBookingUrl: settings.appointmentBookingUrl,
+          patientIntakeUrl: settings.patientIntakeUrl
         },
         system: {
           timezone: settings.timezone,

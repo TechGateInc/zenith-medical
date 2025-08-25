@@ -113,4 +113,93 @@ export function useBusinessHours(): { businessHours: string; loading: boolean } 
   };
 }
 
+// Cache for appointment URLs
+let appointmentUrlsCache: {
+  appointmentBookingUrl: string;
+  patientIntakeUrl: string;
+  timestamp: number;
+} | null = null;
+
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Clear the appointment URLs cache
+ */
+export function clearAppointmentUrlsCache() {
+  appointmentUrlsCache = null;
+}
+
+/**
+ * Hook to get appointment booking and patient intake URLs with caching
+ */
+export function useAppointmentUrls() {
+  const [appointmentBookingUrl, setAppointmentBookingUrl] = useState<string>('https://zenithmedical.cortico.ca/')
+  const [patientIntakeUrl, setPatientIntakeUrl] = useState<string>('https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchUrls = async (forceRefresh = false) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Check cache first (unless forcing refresh)
+      if (!forceRefresh && appointmentUrlsCache && (Date.now() - appointmentUrlsCache.timestamp) < CACHE_DURATION) {
+        setAppointmentBookingUrl(appointmentUrlsCache.appointmentBookingUrl)
+        setPatientIntakeUrl(appointmentUrlsCache.patientIntakeUrl)
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch('/api/settings')
+      if (response.ok) {
+        const data = await response.json()
+        const newAppointmentBookingUrl = data.settings?.contact?.appointmentBookingUrl || 'https://zenithmedical.cortico.ca/'
+        const newPatientIntakeUrl = data.settings?.contact?.patientIntakeUrl || 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227'
+
+        // Update cache
+        appointmentUrlsCache = {
+          appointmentBookingUrl: newAppointmentBookingUrl,
+          patientIntakeUrl: newPatientIntakeUrl,
+          timestamp: Date.now()
+        }
+
+        setAppointmentBookingUrl(newAppointmentBookingUrl)
+        setPatientIntakeUrl(newPatientIntakeUrl)
+      } else {
+        throw new Error('Failed to fetch appointment URLs')
+      }
+    } catch (error) {
+      console.error('Failed to fetch appointment URLs:', error)
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUrls()
+
+    // Listen for settings updates to refresh cache
+    const handleSettingsUpdate = () => {
+      appointmentUrlsCache = null // Clear cache
+      fetchUrls(true) // Force refresh
+    }
+
+    window.addEventListener('settingsUpdated', handleSettingsUpdate)
+
+    return () => {
+      window.removeEventListener('settingsUpdated', handleSettingsUpdate)
+    }
+  }, [])
+
+  return { 
+    appointmentBookingUrl, 
+    patientIntakeUrl, 
+    loading, 
+    error,
+    refresh: () => fetchUrls(true)
+  }
+}
+
 

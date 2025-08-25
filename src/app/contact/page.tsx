@@ -2,12 +2,14 @@
 
 import Layout from '../../components/Layout/Layout';
 import { useCachedPrimaryPhone, useCachedAddressOnly, useCachedAdminEmail } from '@/lib/hooks/useCachedAddress';
+import { useAppointmentUrls } from '@/lib/hooks/useSettings';
 import Link from 'next/link';
 
 export default function Contact() {
   const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone();
   const { address, loading: addressLoading } = useCachedAddressOnly();
   const { adminEmail, loading: emailLoading } = useCachedAdminEmail();
+  const { patientIntakeUrl } = useAppointmentUrls();
 
   const contactInfo = {
     primary: <a href={`tel:${primaryPhone.replace(/\s/g, '')}`} className="text-blue-600 hover:underline">
@@ -85,12 +87,14 @@ export default function Contact() {
                 <h2 className="text-2xl font-bold text-slate-800 mb-6">Quick Actions</h2>
                 
                 <div className="space-y-4">
-                  <Link
-                    href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+                  <a
+                    href={patientIntakeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
                     Complete Patient Intake
-                  </Link>
+                  </a>
                   
                   <Link
                     href="/appointments"

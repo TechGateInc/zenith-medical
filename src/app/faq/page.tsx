@@ -5,6 +5,7 @@ import Layout from '../../components/Layout/Layout'
 import Link from 'next/link'
 import { generateFAQStructuredData } from '../../lib/utils/seo'
 import { useCachedPrimaryPhone } from '@/lib/hooks/useCachedAddress'
+import { useAppointmentUrls } from '@/lib/hooks/useSettings'
 
 interface FAQItem {
   id: string
@@ -17,6 +18,7 @@ export default function FAQ() {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [activeCategory, setActiveCategory] = useState('all')
   const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone()
+  const { appointmentBookingUrl, patientIntakeUrl } = useAppointmentUrls()
 
   const faqData: FAQItem[] = [
     // Appointments & Scheduling
@@ -327,12 +329,14 @@ export default function FAQ() {
                 <p className="text-slate-600 mb-6 leading-relaxed">
                   Complete your intake form before your first visit to save time and ensure we have all necessary information.
                 </p>
-                <Link
-                  href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+                <a
+                  href={patientIntakeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                 >
                   Complete Patient Intake
-                </Link>
+                </a>
               </div>
 
               <div className="bg-white rounded-2xl shadow-lg p-8 text-center border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
@@ -346,7 +350,7 @@ export default function FAQ() {
                   Book your next appointment online or call our office. We offer comprehensive routine appointments and urgent care services.
                 </p>
                 <a
-                  href="https://zenithmedical.cortico.ca/"
+                  href={appointmentBookingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-600 hover:bg-green-700 text-white hover:text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg inline-flex items-center justify-center"

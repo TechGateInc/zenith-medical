@@ -4,10 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useAppointmentUrls } from '@/lib/hooks/useSettings'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { appointmentBookingUrl, patientIntakeUrl } = useAppointmentUrls()
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -62,14 +64,16 @@ export default function Header() {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+            <a
+              href={patientIntakeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
             >
               Patient Intake
-            </Link>
+            </a>
             <a
-              href="https://zenithmedical.cortico.ca/"
+              href={appointmentBookingUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-blue-600 hover:bg-blue-700 text-white hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -119,15 +123,17 @@ export default function Header() {
               </Link>
             ))}
             <div className="border-t border-gray-200 pt-3 mt-3">
-              <Link
-                href="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+              <a
+                href={patientIntakeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Patient Intake
-              </Link>
+              </a>
               <a
-                href="https://zenithmedical.cortico.ca/"
+                href={appointmentBookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block px-3 py-2 mt-1 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 hover:text-white transition-colors"

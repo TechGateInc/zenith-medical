@@ -16,6 +16,8 @@ export interface SystemSettings {
   passwordExpiry: number;
   ipWhitelist?: string;
   homepageImageUrl?: string;
+  appointmentBookingUrl?: string;
+  patientIntakeUrl?: string;
   createdAt: Date;
   updatedAt: Date;
   updatedBy?: string;
@@ -97,6 +99,8 @@ export class SettingsManager {
         maxLoginAttempts: 5,
         passwordExpiry: 90,
         homepageImageUrl: '/images/home.webp',
+        appointmentBookingUrl: 'https://zenithmedical.cortico.ca/',
+        patientIntakeUrl: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227',
         createdAt: new Date(),
         updatedAt: new Date()
       };

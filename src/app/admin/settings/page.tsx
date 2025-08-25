@@ -33,6 +33,8 @@ interface ContactSettings {
   address: string;
   businessHours: string;
   homepageImageUrl?: string;
+  appointmentBookingUrl?: string;
+  patientIntakeUrl?: string;
 }
 
 interface SystemSettings {
@@ -59,6 +61,8 @@ export default function SettingsPage() {
     address: "",
     businessHours: "",
     homepageImageUrl: "",
+    appointmentBookingUrl: "",
+    patientIntakeUrl: "",
   });
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
@@ -124,6 +128,8 @@ export default function SettingsPage() {
             address: data.settings.contact.address || "",
             businessHours: data.settings.contact.businessHours || "",
             homepageImageUrl: data.settings.contact.homepageImageUrl || "",
+            appointmentBookingUrl: data.settings.contact.appointmentBookingUrl || "",
+            patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
           });
           setSystemSettings({
             timezone: data.settings.system.timezone || "America/Toronto",
@@ -174,6 +180,12 @@ export default function SettingsPage() {
             type: "success",
             text: data.message || "Settings saved successfully!",
           });
+          
+          // Clear appointment URLs cache to force refresh
+          if (typeof window !== 'undefined') {
+            // Dispatch a custom event to notify other components to refresh their cache
+            window.dispatchEvent(new CustomEvent('settingsUpdated'));
+          }
           // Update local state with returned settings
           if (data.settings) {
             setContactSettings({
@@ -184,6 +196,8 @@ export default function SettingsPage() {
               address: data.settings.contact.address || "",
               businessHours: data.settings.contact.businessHours || "",
               homepageImageUrl: data.settings.contact.homepageImageUrl || "",
+              appointmentBookingUrl: data.settings.contact.appointmentBookingUrl || "",
+              patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
             });
             setSystemSettings({
               timezone: data.settings.system.timezone || "America/Toronto",
@@ -577,6 +591,48 @@ export default function SettingsPage() {
                   </div>
                   <p className="mt-1 text-sm text-gray-500">
                     Hero image displayed on the homepage. Recommended size: 1200x600px or larger.
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Appointment Booking URL
+                  </label>
+                  <input
+                    type="url"
+                    value={contactSettings.appointmentBookingUrl || ""}
+                    onChange={(e) =>
+                      setContactSettings((prev) => ({
+                        ...prev,
+                        appointmentBookingUrl: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://zenithmedical.cortico.ca/"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    URL for the appointment booking system
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Patient Intake URL
+                  </label>
+                  <input
+                    type="url"
+                    value={contactSettings.patientIntakeUrl || ""}
+                    onChange={(e) =>
+                      setContactSettings((prev) => ({
+                        ...prev,
+                        patientIntakeUrl: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    URL for the patient intake form
                   </p>
                 </div>
               </div>

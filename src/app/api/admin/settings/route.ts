@@ -41,7 +41,9 @@ export async function GET() {
           adminEmail: settings.adminEmail,
           address: settings.address,
           businessHours: settings.businessHours,
-          homepageImageUrl: settings.homepageImageUrl
+          homepageImageUrl: settings.homepageImageUrl,
+          appointmentBookingUrl: settings.appointmentBookingUrl,
+          patientIntakeUrl: settings.patientIntakeUrl
         },
         system: {
           timezone: settings.timezone,
@@ -153,6 +155,14 @@ export async function PUT(request: NextRequest) {
       if (contact.homepageImageUrl !== undefined) {
         updates.homepageImageUrl = contact.homepageImageUrl || null;
       }
+
+      if (contact.appointmentBookingUrl !== undefined) {
+        updates.appointmentBookingUrl = contact.appointmentBookingUrl || null;
+      }
+
+      if (contact.patientIntakeUrl !== undefined) {
+        updates.patientIntakeUrl = contact.patientIntakeUrl || null;
+      }
     }
 
     // Validate and prepare system settings updates
@@ -199,7 +209,9 @@ export async function PUT(request: NextRequest) {
           adminEmail: updatedSettings.adminEmail,
           address: updatedSettings.address,
           businessHours: updatedSettings.businessHours,
-          homepageImageUrl: updatedSettings.homepageImageUrl
+          homepageImageUrl: updatedSettings.homepageImageUrl,
+          appointmentBookingUrl: updatedSettings.appointmentBookingUrl,
+          patientIntakeUrl: updatedSettings.patientIntakeUrl
         },
         system: {
           timezone: updatedSettings.timezone,

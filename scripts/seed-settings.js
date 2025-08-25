@@ -27,6 +27,9 @@ const defaultSettings = {
   passwordExpiry: 90,
 
   ipWhitelist: null,
+  homepageImageUrl: '/images/home.webp',
+  appointmentBookingUrl: 'https://zenithmedical.cortico.ca/',
+  patientIntakeUrl: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227',
   updatedBy: null
 };
 

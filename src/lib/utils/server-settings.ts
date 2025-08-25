@@ -74,6 +74,32 @@ export async function getHomepageImageUrl(): Promise<string> {
 }
 
 /**
+ * Get appointment booking URL (server-side)
+ */
+export async function getAppointmentBookingUrl(): Promise<string> {
+  try {
+    const settings = await settingsManager.getSettings();
+    return settings.appointmentBookingUrl || 'https://zenithmedical.cortico.ca/';
+  } catch (error) {
+    console.error('Error getting appointment booking URL:', error);
+    return 'https://zenithmedical.cortico.ca/'; // Fallback
+  }
+}
+
+/**
+ * Get patient intake URL (server-side)
+ */
+export async function getPatientIntakeUrl(): Promise<string> {
+  try {
+    const settings = await settingsManager.getSettings();
+    return settings.patientIntakeUrl || 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227';
+  } catch (error) {
+    console.error('Error getting patient intake URL:', error);
+    return 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227'; // Fallback
+  }
+}
+
+/**
  * Check if maintenance mode is enabled (server-side)
  */
 
@@ -100,6 +126,8 @@ export async function getAllSettings() {
       maxLoginAttempts: 5,
       passwordExpiry: 90,
       homepageImageUrl: '/images/home.webp',
+      appointmentBookingUrl: 'https://zenithmedical.cortico.ca/',
+      patientIntakeUrl: 'https://ocean.cognisantmd.com/eRequest/fc7408b9-fa27-4d25-87ea-c403cd903227',
       ipWhitelist: undefined,
       createdAt: new Date(),
       updatedAt: new Date()
