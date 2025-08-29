@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const featured = searchParams.get('featured') === 'true'
 
-    // Get published blog posts with categories and tags
+    // Get published blog posts with categories, authors, and tags
     const posts = await prisma.blogPost.findMany({
       where: {
         published: true,
@@ -32,6 +32,15 @@ export async function GET(request: NextRequest) {
             color: true
           }
         },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            bio: true,
+            photoUrl: true
+          }
+        },
         tags: {
           select: {
             blogTag: {
@@ -43,45 +52,30 @@ export async function GET(request: NextRequest) {
               }
             }
           }
-        },
-        createdBy: true
+        }
       }
     })
 
-    // Get author information for each post
-    const postsWithAuthors = await Promise.all(
-      posts.map(async (post) => {
-        let authorName = 'Zenith Medical Team'
-        
-        if (post.createdBy) {
-          try {
-            const author = await prisma.adminUser.findUnique({
-              where: { id: post.createdBy },
-              select: { name: true }
-            })
-            if (author?.name) {
-              authorName = author.name
-            }
-          } catch (error) {
-            console.warn('Failed to fetch author for post:', post.id, error)
-          }
-        }
+    // Transform posts to include author information
+    const postsWithAuthors = posts.map((post) => {
+      const authorName = post.author?.name || 'Zenith Medical Team'
+      const authorTitle = post.author?.title || 'Healthcare Professional'
 
-        return {
-          id: post.id,
-          title: post.title,
-          slug: post.slug,
-          excerpt: post.excerpt,
-          featured: post.featured,
-          publishedAt: post.publishedAt,
-          metaTitle: post.metaTitle,
-          metaDescription: post.metaDescription,
-          category: post.category,
-          tags: post.tags.map(tag => tag.blogTag),
-          author: authorName
-        }
-      })
-    )
+      return {
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        featured: post.featured,
+        publishedAt: post.publishedAt,
+        metaTitle: post.metaTitle,
+        metaDescription: post.metaDescription,
+        category: post.category,
+        tags: post.tags.map(tag => tag.blogTag),
+        author: authorName,
+        authorTitle: authorTitle
+      }
+    })
 
     return NextResponse.json({ 
       posts: postsWithAuthors,

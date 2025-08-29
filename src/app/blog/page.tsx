@@ -84,7 +84,10 @@ export default function Blog() {
     ? blogPosts 
     : blogPosts.filter(post => post.category?.slug === activeCategory)
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) {
+      return 'No date'
+    }
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', { 
       year: 'numeric', 
@@ -114,7 +117,10 @@ export default function Blog() {
     return colors[category.slug] || 'bg-gray-100 text-gray-800'
   }
 
-  const calculateReadTime = (content: string) => {
+  const calculateReadTime = (content: string | null | undefined) => {
+    if (!content) {
+      return '1 min read'
+    }
     const wordsPerMinute = 200
     const wordCount = content.split(' ').length
     const readTime = Math.ceil(wordCount / wordsPerMinute)
@@ -293,11 +299,11 @@ export default function Blog() {
 
                       {/* Excerpt */}
                       <p className="text-slate-600 mb-4 line-clamp-3">
-                        {post.excerpt}
+                        {post.excerpt || 'No excerpt available'}
                       </p>
 
                       {/* Tags */}
-                      {post.tags.length > 0 && (
+                      {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           {post.tags.slice(0, 3).map((tag) => (
                             <span
@@ -318,7 +324,7 @@ export default function Blog() {
                       {/* Meta */}
                       <div className="flex items-center justify-between text-sm text-slate-500">
                         <div className="flex items-center space-x-4">
-                          <span>{post.author}</span>
+                          <span>{post.author || 'Unknown Author'}</span>
                           <span>•</span>
                           <span>{formatDate(post.publishedAt)}</span>
                         </div>

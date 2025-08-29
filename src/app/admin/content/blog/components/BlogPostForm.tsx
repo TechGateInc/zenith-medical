@@ -18,6 +18,17 @@ interface BlogTag {
   color?: string
 }
 
+interface TeamMember {
+  id: string
+  name: string
+  title: string
+  bio?: string
+  photoUrl?: string
+  email?: string
+  phone?: string
+  published: boolean
+}
+
 interface BlogPost {
   id: string
   title: string
@@ -30,14 +41,15 @@ interface BlogPost {
   metaTitle?: string
   metaDescription?: string
   category?: BlogCategory
+  author?: TeamMember
   tags: BlogTag[]
   createdAt: string
   updatedAt: string
 }
 
 interface BlogPostFormProps {
-  mode: 'create' | 'edit'
-  initialData?: BlogPost
+  readonly mode: 'create' | 'edit'
+  readonly initialData?: BlogPost
 }
 
 export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
@@ -52,6 +64,7 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
     metaTitle: '',
     metaDescription: '',
     categoryId: '',
+    authorId: '',
     tagIds: [] as string[]
   })
   const [loading, setLoading] = useState(false)
@@ -59,16 +72,19 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
   const [previewMode, setPreviewMode] = useState(false)
   const [categories, setCategories] = useState<BlogCategory[]>([])
   const [tags, setTags] = useState<BlogTag[]>([])
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [loadingCategories, setLoadingCategories] = useState(true)
   const [loadingTags, setLoadingTags] = useState(true)
+  const [loadingTeamMembers, setLoadingTeamMembers] = useState(true)
 
-  // Fetch categories and tags
+  // Fetch categories, tags, and team members
   useEffect(() => {
-    const fetchCategoriesAndTags = async () => {
+    const fetchData = async () => {
       try {
-        const [categoriesRes, tagsRes] = await Promise.all([
+        const [categoriesRes, tagsRes, teamMembersRes] = await Promise.all([
           fetch('/api/admin/content/blog/categories?published=true', { credentials: 'include' }),
-          fetch('/api/admin/content/blog/tags', { credentials: 'include' })
+          fetch('/api/admin/content/blog/tags', { credentials: 'include' }),
+          fetch('/api/admin/content/team?published=true', { credentials: 'include' })
         ]);
 
         if (categoriesRes.ok) {
@@ -80,15 +96,21 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
           const tagsData = await tagsRes.json();
           setTags(tagsData.tags || []);
         }
+
+        if (teamMembersRes.ok) {
+          const teamMembersData = await teamMembersRes.json();
+          setTeamMembers(teamMembersData.data || teamMembersData.teamMembers || []);
+        }
       } catch (error) {
-        console.error('Error fetching categories and tags:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoadingCategories(false);
         setLoadingTags(false);
+        setLoadingTeamMembers(false);
       }
     };
 
-    fetchCategoriesAndTags();
+    fetchData();
   }, []);
 
   // Initialize form data
@@ -104,6 +126,7 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
         metaTitle: initialData.metaTitle || '',
         metaDescription: initialData.metaDescription || '',
         categoryId: initialData.category?.id || '',
+        authorId: initialData.author?.id || '',
         tagIds: initialData.tags?.map(tag => tag.id) || []
       })
     }
@@ -133,6 +156,16 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
     }
   }
 
+  const getSubmitButtonText = () => {
+    if (loading) {
+      return 'Saving...';
+    }
+    if (mode === 'create') {
+      return 'Create Post';
+    }
+    return 'Update Post';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.title.trim() || !formData.content.trim()) {
@@ -149,26 +182,37 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
       
       const method = mode === 'create' ? 'POST' : 'PATCH';
       
+      const requestBody = {
+        ...formData,
+        categoryId: formData.categoryId || null,
+        authorId: formData.authorId || null,
+        tagIds: formData.tagIds,
+        publishedAt: formData.published ? new Date().toISOString() : null
+      };
+      
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify({
-          ...formData,
-          categoryId: formData.categoryId || null,
-          tagIds: formData.tagIds,
-          publishedAt: formData.published ? new Date().toISOString() : null
-        })
+        body: JSON.stringify(requestBody)
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to save blog post')
+      
+      console.log('Response status:', response.status);
+            if (!response.ok) {
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+        }
+        throw new Error(errorData.error || `Failed to save blog post (${response.status})`)
       }
 
       const data = await response.json()
+      console.log('Response data:', data)
       if (!data.success) {
         throw new Error(data.error || 'Failed to save blog post')
       }
@@ -429,6 +473,30 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
                     )}
                   </div>
 
+                  {/* Author Selection */}
+                  <div>
+                    <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-1">
+                      Author
+                    </label>
+                    {loadingTeamMembers ? (
+                      <div className="text-sm text-gray-500">Loading team members...</div>
+                    ) : (
+                      <select
+                        id="author"
+                        value={formData.authorId}
+                        onChange={(e) => handleInputChange('authorId', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">Select an author</option>
+                        {teamMembers.map((member) => (
+                          <option key={member.id} value={member.id}>
+                            {member.name} - {member.title}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+
                   {/* Tag Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -473,9 +541,9 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
                   {/* Selected Tags Display */}
                   {formData.tagIds.length > 0 && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="block text-sm font-medium text-gray-700 mb-2">
                         Selected Tags ({formData.tagIds.length})
-                      </label>
+                      </div>
                       <div className="flex flex-wrap gap-1">
                         {formData.tagIds.map(tagId => {
                           const tag = tags.find(t => t.id === tagId);
@@ -520,7 +588,7 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
                   disabled={loading}
                   className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                 >
-                  {loading ? 'Saving...' : mode === 'create' ? 'Create Post' : 'Update Post'}
+                  {getSubmitButtonText()}
                 </button>
 
                 {mode === 'create' && (

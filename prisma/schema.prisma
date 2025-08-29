@@ -99,11 +99,13 @@ model BlogPost {
   metaTitle       String?
   metaDescription String?
   categoryId      String?
+  authorId        String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   createdBy       String
   tags            BlogPostTag[]
   category        BlogCategory? @relation(fields: [categoryId], references: [id])
+  author          TeamMember?   @relation(fields: [authorId], references: [id])
 
   @@map("blog_posts")
 }
@@ -181,6 +183,7 @@ model TeamMember {
   certifications String[]
   languages   String[]
   doctor      Doctor?
+  blogPosts   BlogPost[]
 
   @@map("team_members")
 }

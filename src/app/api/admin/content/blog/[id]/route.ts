@@ -28,7 +28,7 @@ export async function GET(
 
     const { id: postId } = await params
 
-    // Get blog post with categories and tags
+    // Get blog post with categories, author, and tags
     const post = await prisma.blogPost.findUnique({
       where: { id: postId },
       include: {
@@ -38,6 +38,17 @@ export async function GET(
             name: true,
             slug: true,
             color: true
+          }
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            bio: true,
+            photoUrl: true,
+            email: true,
+            phone: true
           }
         },
         tags: {
@@ -163,6 +174,7 @@ export async function PATCH(
     if (body.metaTitle !== undefined) updateData.metaTitle = body.metaTitle
     if (body.metaDescription !== undefined) updateData.metaDescription = body.metaDescription
     if (body.categoryId !== undefined) updateData.categoryId = body.categoryId || null
+    if (body.authorId !== undefined) updateData.authorId = body.authorId || null
 
     // Handle published status
     if (body.published !== undefined) {
@@ -212,6 +224,17 @@ export async function PATCH(
             color: true
           }
         },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            bio: true,
+            photoUrl: true,
+            email: true,
+            phone: true
+          }
+        },
         tags: {
           select: {
             blogTag: {
@@ -252,7 +275,10 @@ export async function PATCH(
       tags: updatedPost.tags.map(tag => tag.blogTag)
     };
 
-    return NextResponse.json({ post: transformedPost })
+    return NextResponse.json({ 
+      success: true,
+      post: transformedPost 
+    })
 
   } catch (error) {
     console.error('Blog post update error:', error)

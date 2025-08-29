@@ -60,7 +60,7 @@ export default async function About() {
       {/* Structured Data for Team Members */}
       {doctorStructuredData.map((data, index) => (
         <script
-          key={index}
+          key={`doctor-structured-data-${index}`}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
         />

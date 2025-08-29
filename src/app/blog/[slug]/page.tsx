@@ -27,6 +27,15 @@ async function getBlogPost(slug: string) {
             color: true
           }
         },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            bio: true,
+            photoUrl: true
+          }
+        },
         tags: {
           select: {
             blogTag: {
@@ -44,24 +53,9 @@ async function getBlogPost(slug: string) {
 
     if (!post) return null;
 
-    // Get author information
-    let authorName = 'Zenith Medical Team';
-    let authorTitle = 'Healthcare Team';
-    
-    if (post.createdBy) {
-      try {
-        const author = await prisma.adminUser.findUnique({
-          where: { id: post.createdBy },
-          select: { name: true }
-        });
-        if (author?.name) {
-          authorName = author.name;
-          authorTitle = 'Medical Professional';
-        }
-      } catch (error) {
-        console.warn('Failed to fetch author for post:', post.id, error);
-      }
-    }
+    // Get author information from the new relationship
+    const authorName = post.author?.name || 'Zenith Medical Team';
+    const authorTitle = post.author?.title || 'Healthcare Professional';
 
     return {
       ...post,
@@ -436,12 +430,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
                   <div className="flex-1">
                     <h4 className="text-xl font-bold text-gray-900">{post.author}</h4>
                     <p className="text-blue-600 font-semibold mb-3">{post.authorTitle}</p>
-                    <p className="text-gray-600 leading-relaxed">
-                      {post.author} is a dedicated healthcare professional at Zenith Medical Centre, 
-                      committed to providing compassionate, evidence-based care to patients and families. 
-                      With years of experience in family medicine, they focus on preventive care and 
-                      patient education to help individuals achieve their best health.
-                    </p>
+
                   </div>
                 </div>
               </div>

@@ -9,7 +9,14 @@ export async function GET(request: NextRequest) {
   try {
     // Check authentication and authorization
     const session = await getServerSession(authOptions)
+    console.log('Session check:', { 
+      hasSession: !!session, 
+      hasUser: !!session?.user, 
+      hasEmail: !!session?.user?.email 
+    });
+    
     if (!session || !session.user?.email) {
+      console.log('Authentication failed');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -45,7 +52,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get blog posts with categories and tags
+    // Get blog posts with categories, authors, and tags
     const posts = await prisma.blogPost.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
@@ -62,6 +69,17 @@ export async function GET(request: NextRequest) {
             name: true,
             slug: true,
             color: true
+          }
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            bio: true,
+            photoUrl: true,
+            email: true,
+            phone: true
           }
         },
         tags: {
@@ -115,6 +133,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication and authorization
     const session = await getServerSession(authOptions)
+    
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -131,6 +150,8 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request body
     const body = await request.json()
+    console.log('Request body received:', body);
+    
     const {
       title,
       slug,
@@ -141,6 +162,7 @@ export async function POST(request: NextRequest) {
       metaTitle,
       metaDescription,
       categoryId,
+      authorId,
       tagIds = []
     } = body
 
@@ -174,7 +196,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create blog post with category and tags
+    // Create blog post with category, author, and tags
     const post = await prisma.blogPost.create({
       data: {
         title,
@@ -187,6 +209,7 @@ export async function POST(request: NextRequest) {
         metaTitle,
         metaDescription,
         categoryId: categoryId || null,
+        authorId: authorId || null,
         createdBy: user.id,
         tags: tagIds && tagIds.length > 0 ? {
           create: tagIds.map((tagId: string) => ({
@@ -201,6 +224,17 @@ export async function POST(request: NextRequest) {
             name: true,
             slug: true,
             color: true
+          }
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            bio: true,
+            photoUrl: true,
+            email: true,
+            phone: true
           }
         },
         tags: {
@@ -242,7 +276,10 @@ export async function POST(request: NextRequest) {
       tags: post.tags.map(tag => tag.blogTag)
     };
 
-    return NextResponse.json({ post: transformedPost }, { status: 201 })
+    return NextResponse.json({ 
+      success: true,
+      post: transformedPost 
+    }, { status: 201 })
 
   } catch (error) {
     console.error('Blog post creation error:', error)

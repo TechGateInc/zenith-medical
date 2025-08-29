@@ -235,11 +235,12 @@ export default function ContactManagement() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
-              <select
-                value={statusFilter}
+                             <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                 Status
+               </label>
+               <select
+                 id="status-filter"
+                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -253,11 +254,12 @@ export default function ContactManagement() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Priority
-              </label>
-              <select
-                value={priorityFilter}
+                             <label htmlFor="priority-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                 Priority
+               </label>
+               <select
+                 id="priority-filter"
+                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -431,10 +433,10 @@ export default function ContactManagement() {
               </h3>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="original-message" className="block text-sm font-medium text-gray-700 mb-2">
                   Original Message
                 </label>
-                <div className="bg-gray-50 p-4 rounded-md">
+                <div id="original-message" className="bg-gray-50 p-4 rounded-md">
                   <p className="text-sm text-gray-900">
                     {selectedSubmission.message}
                   </p>
@@ -442,10 +444,11 @@ export default function ContactManagement() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="response-message" className="block text-sm font-medium text-gray-700 mb-2">
                   Your Response
                 </label>
                 <textarea
+                  id="response-message"
                   value={responseMessage}
                   onChange={(e) => setResponseMessage(e.target.value)}
                   rows={6}
