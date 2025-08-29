@@ -110,10 +110,9 @@ export default function AnnouncementBanner({ announcement }: AnnouncementBannerP
                   {announcement.announcementTitle}
                 </h3>
               )}
-              <div 
-                className={`text-sm ${styles.message} leading-relaxed prose prose-sm max-w-none`}
-                dangerouslySetInnerHTML={{ __html: announcement.announcementMessage }}
-              />
+              <p className={`text-sm ${styles.message} leading-relaxed`}>
+                {announcement.announcementMessage}
+              </p>
             </div>
           </div>
           
