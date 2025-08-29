@@ -29,7 +29,6 @@ export async function GET() {
 
     // Get current date ranges
     const now = new Date();
-    const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     
     // Calculate security statistics
     // Note: These would typically come from audit logs, authentication logs, etc.
@@ -37,7 +36,6 @@ export async function GET() {
     
     const [
       activeUsers,
-      recentActivity,
       failedAttempts
     ] = await Promise.all([
       // Count of providers (published team members)
@@ -47,20 +45,13 @@ export async function GET() {
         }
       }),
       
-      // Recent activity (using intake submissions as proxy)
-      prisma.patientIntake.count({
-        where: {
-          status: 'APPOINTMENT_SCHEDULED',
-          updatedAt: {
-            gte: last24Hours
-          }
-        }
-      }),
-      
       // Failed login attempts (placeholder - would come from security logs)
       // This would typically be tracked in a separate security_events table
       Promise.resolve(8) // Mock data
     ]);
+
+    // Recent activity - patient intake system removed, using mock data
+    const recentActivity = 0;
 
 
 
