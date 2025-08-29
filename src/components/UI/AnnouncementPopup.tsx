@@ -115,9 +115,10 @@ export default function AnnouncementPopup({ announcement }: AnnouncementPopupPro
 
             {/* Message Content */}
             <div className="text-gray-700 leading-relaxed mb-6">
-              <p className="mb-4">
-                {announcement.announcementMessage}
-              </p>
+              <div 
+                className="prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: announcement.announcementMessage }}
+              />
             </div>
 
             {/* Don't show again checkbox */}

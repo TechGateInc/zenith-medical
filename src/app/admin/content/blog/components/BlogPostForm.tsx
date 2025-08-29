@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import RichTextEditor from '@/components/UI/RichTextEditor'
 
 interface BlogCategory {
   id: string
@@ -319,24 +320,20 @@ export default function BlogPostForm({ mode, initialData }: BlogPostFormProps) {
                   <div className="border border-gray-300 rounded-lg p-4 min-h-96 bg-gray-50">
                     <div 
                       className="prose max-w-none"
-                      dangerouslySetInnerHTML={{ __html: formData.content.replace(/\n/g, '<br />') }}
+                      dangerouslySetInnerHTML={{ __html: formData.content }}
                     />
                   </div>
                 ) : (
-                  <textarea
-                    id="content"
+                  <RichTextEditor
                     value={formData.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
-                    rows={20}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                      errors.content ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="Write your blog post content here. You can use HTML tags for formatting."
+                    onChange={(value) => handleInputChange('content', value)}
+                    placeholder="Write your blog post content here..."
+                    className={errors.content ? 'border-red-500' : ''}
                   />
                 )}
                 {errors.content && <p className="mt-1 text-sm text-red-600">{errors.content}</p>}
                 <p className="mt-1 text-sm text-gray-500">
-                  You can use HTML tags for formatting. Line breaks will be preserved.
+                  Use the toolbar above to format your content with headings, lists, and text styling.
                 </p>
               </div>
 

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { SettingsSkeleton } from "@/components/UI/SkeletonLoader";
 import ImageUpload from "@/components/Admin/ImageUpload";
+import RichTextEditor from "@/components/UI/RichTextEditor";
 
 
 
@@ -904,20 +905,19 @@ export default function SettingsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Announcement Message
                     </label>
-                    <textarea
+                    <RichTextEditor
                       value={announcementSettings.announcementMessage}
-                      onChange={(e) =>
+                      onChange={(value) =>
                         setAnnouncementSettings((prev) => ({
                           ...prev,
-                          announcementMessage: e.target.value,
+                          announcementMessage: value,
                         }))
                       }
-                      rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="We are pausing new patient intake for now in order to effectively care for patients who are already rostered with us."
+                      className="min-h-[200px]"
                     />
                     <p className="mt-1 text-sm text-gray-500">
-                      This message will be displayed in the popup announcement.
+                      Use the toolbar above to format your announcement with headings, lists, and text styling.
                     </p>
                   </div>
 
@@ -938,14 +938,17 @@ export default function SettingsPage() {
                       }`}>
                         {announcementSettings.announcementTitle || "Important Notice"}
                       </h4>
-                      <p className={`text-sm ${
-                        announcementSettings.announcementType === 'info' ? 'text-blue-700' :
-                        announcementSettings.announcementType === 'warning' ? 'text-yellow-700' :
-                        announcementSettings.announcementType === 'error' ? 'text-red-700' :
-                        'text-green-700'
-                      }`}>
-                        {announcementSettings.announcementMessage || "Your announcement message will appear here."}
-                      </p>
+                      <div 
+                        className={`text-sm prose prose-sm max-w-none ${
+                          announcementSettings.announcementType === 'info' ? 'text-blue-700' :
+                          announcementSettings.announcementType === 'warning' ? 'text-yellow-700' :
+                          announcementSettings.announcementType === 'error' ? 'text-red-700' :
+                          'text-green-700'
+                        }`}
+                        dangerouslySetInnerHTML={{ 
+                          __html: announcementSettings.announcementMessage || "Your announcement message will appear here." 
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
