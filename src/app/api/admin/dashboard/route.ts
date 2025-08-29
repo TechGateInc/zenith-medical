@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { prisma } from '../../../../lib/prisma'
-import { decryptPHI } from '../../../../lib/utils/encryption'
 import { authOptions } from '@/lib/auth/config'
 
 export async function GET(request: NextRequest) {
@@ -36,24 +35,6 @@ export async function GET(request: NextRequest) {
         userAgent
       }
     })
-
-
-
-          // Return partial data without decryption
-          return {
-            id: submission.id as string,
-            legalFirstName: 'Decryption Failed',
-            legalLastName: '',
-            emailAddress: 'Decryption Failed',
-            phoneNumber: 'Decryption Failed',
-            status: submission.status as string,
-            appointmentBooked: submission.appointmentBooked as boolean,
-            createdAt: (submission.createdAt as Date).toISOString(),
-            updatedAt: (submission.updatedAt as Date).toISOString(),
-            healthInformationNumber: 'Decryption Failed'
-          }
-        }
-      })
 
     // Calculate dashboard statistics
     const today = new Date()

@@ -14,7 +14,7 @@ export function useAnnouncement() {
     announcementTitle: '',
     announcementMessage: '',
     announcementType: 'info',
-    announcementDisplay: 'banner'
+            announcementDisplay: 'popup'
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -100,7 +100,7 @@ export default function SettingsPage() {
     announcementTitle: "",
     announcementMessage: "",
     announcementType: "info",
-    announcementDisplay: "banner",
+            announcementDisplay: "popup",
   });
 
   const [activeTab, setActiveTab] = useState<
@@ -174,7 +174,7 @@ export default function SettingsPage() {
             announcementTitle: data.settings.announcement?.announcementTitle || "",
             announcementMessage: data.settings.announcement?.announcementMessage || "",
             announcementType: data.settings.announcement?.announcementType || "info",
-            announcementDisplay: data.settings.announcement?.announcementDisplay || "banner",
+            announcementDisplay: data.settings.announcement?.announcementDisplay || "popup",
           });
         }
       } else {
@@ -874,12 +874,10 @@ export default function SettingsPage() {
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
-                      <option value="banner">Banner (Under Navbar)</option>
                       <option value="popup">Popup (Modal)</option>
-                      <option value="both">Both (Banner + Popup)</option>
                     </select>
                     <p className="mt-1 text-sm text-gray-500">
-                      Choose how the announcement will be displayed to visitors
+                      Announcements are displayed as a popup modal to visitors
                     </p>
                   </div>
 

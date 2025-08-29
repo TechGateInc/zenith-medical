@@ -5,12 +5,11 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState} from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useSidebar } from '@/lib/contexts/SidebarContext';
-import { useApiAuth } from '@/lib/auth/use-api-auth';
 
 import { 
   LayoutDashboard, 
@@ -27,7 +26,6 @@ import {
   Home,
   Menu,
   X,
-  Mail
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -49,7 +47,6 @@ interface AdminSidebarProps {
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebar();
-  const { handleApiError } = useApiAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
 
@@ -93,14 +90,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
         },
       ],
     },
-
-    // Notifications temporarily removed
-    // {
-    //   name: 'Notifications',
-    //   href: '/admin/notifications',
-    //   icon: Bell,
-    //   badge: notificationCount > 0 ? notificationCount : undefined,
-    // },
     {
       name: 'Export Data',
       href: '/admin/export',
