@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image'
 import { useCachedPrimaryPhone, useCachedAddressOnly, useCachedBusinessHours } from '@/lib/hooks/useCachedAddress';
 import { useAppointmentUrls } from '@/lib/hooks/useSettings';
+import GoogleMapsLink from '@/components/UI/GoogleMapsLink';
+import GoogleMaps from '@/components/UI/GoogleMaps';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -61,13 +63,21 @@ export default function Footer() {
 
             {/* Contact Information */}
             <div className="space-y-3">
-              <div className="flex items-center">
-                <svg className="h-5 w-5 text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-start">
+                <svg className="h-5 w-5 text-blue-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <div>
                   <div className="text-white">{addressLoading ? 'Loading...' : address}</div>
+                  {!addressLoading && address && (
+                    <GoogleMapsLink 
+                      address={address} 
+                      className="text-blue-400 hover:text-blue-300 text-sm mt-1"
+                    >
+                      View on Google Maps
+                    </GoogleMapsLink>
+                  )}
                 </div>
               </div>
 
@@ -93,6 +103,20 @@ export default function Footer() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Google Maps */}
+          <div className="lg:col-span-2">
+            <h3 className="text-lg font-semibold mb-4">Find Us</h3>
+            {!addressLoading && address && (
+              <div className="bg-gray-800 rounded-lg overflow-hidden">
+                <GoogleMaps 
+                  address={address} 
+                  className="w-full h-48"
+                  height="200px"
+                />
+              </div>
+            )}
           </div>
 
           {/* Quick Links */}

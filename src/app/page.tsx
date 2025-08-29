@@ -12,6 +12,7 @@ import {
   getPatientIntakeUrl,
   getWhyChooseUsImageUrl,
 } from "../lib/utils/server-settings";
+import GoogleMapsClient from "@/components/UI/GoogleMapsClient";
 
 interface Service {
   id: string;
@@ -438,7 +439,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Final CTA Section */}
+        {/* Final CTA Section with Google Maps */}
         <section className="bg-slate-50 rounded-xl p-8 mb-8">
           <div className="max-w-6xl mx-auto">
             {/* Section Badge */}
@@ -512,7 +513,7 @@ export default async function Home() {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <a
                   href={appointmentBookingUrl}
                   target="_blank"
@@ -555,6 +556,18 @@ export default async function Home() {
                   </svg>
                   Complete Intake Form
                 </a>
+              </div>
+
+              {/* Google Maps Section */}
+              <div className="bg-white rounded-xl p-6 shadow-lg">
+                <h3 className="text-2xl font-bold text-slate-800 mb-4 text-center">Find Our Location</h3>
+                <div className="max-w-2xl mx-auto">
+                  <GoogleMapsClient 
+                    address="Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3"
+                    className="w-full h-64 rounded-lg"
+                    height="250px"
+                  />
+                </div>
               </div>
             </div>
           </div>
