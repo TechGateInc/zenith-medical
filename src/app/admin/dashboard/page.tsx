@@ -1,29 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../../lib/auth/use-auth";
 import { DashboardSkeleton } from "@/components/UI/SkeletonLoader";
 
-interface DashboardStats {
-  totalSubmissions: number;
-  pendingReview: number;
-  appointmentsScheduled: number;
-  completedToday: number;
-}
-
 export default function AdminDashboard() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
-  const [stats, setStats] = useState<DashboardStats>({
-    totalSubmissions: 0,
-    pendingReview: 0,
-    appointmentsScheduled: 0,
-    completedToday: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -32,34 +18,7 @@ export default function AdminDashboard() {
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Fetch dashboard data
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchDashboardData();
-    }
-  }, [isAuthenticated]);
 
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/dashboard", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch dashboard data");
-      }
-
-      const data = await response.json();
-      setStats(data.stats);
-    } catch (err) {
-      console.error("Dashboard fetch error:", err);
-      setError(err instanceof Error ? err.message : "Failed to load dashboard");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -69,9 +28,7 @@ export default function AdminDashboard() {
     return null;
   }
 
-  if (loading) {
-    return <DashboardSkeleton />;
-  }
+
 
   return (
     <div className="p-6 lg:p-8">

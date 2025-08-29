@@ -168,37 +168,9 @@ async function createLogicalBackup(): Promise<string> {
     backupData += `-- Generated on: ${timestamp}\n`
     backupData += `-- Backup Type: Logical (Full Data Export)\n\n`
 
-    // Get all patient intakes (encrypted data)
-    const patientIntakes = await prisma.patientIntake.findMany()
-    
-    backupData += `-- Patient Intakes: ${patientIntakes.length} records\n`
-    backupData += `INSERT INTO patient_intakes (id, legal_first_name, legal_last_name, preferred_name, email_address, phone_number, date_of_birth, street_address, city, province_state, postal_zip_code, next_of_kin_name, next_of_kin_phone, relationship_to_patient, health_information_number, status, appointment_booked, created_at, updated_at, viewed_at) VALUES\n`
-    
-    patientIntakes.forEach((intake, index) => {
-      const values = [
-        `'${intake.id}'`,
-        `'${intake.legalFirstName}'`,
-        `'${intake.legalLastName}'`,
-        `'${intake.preferredName || ''}'`,
-        `'${intake.emailAddress}'`,
-        `'${intake.phoneNumber}'`,
-        `'${intake.dateOfBirth}'`,
-        `'${intake.streetAddress}'`,
-        `'${intake.city}'`,
-        `'${intake.provinceState}'`,
-        `'${intake.postalZipCode}'`,
-        `'${intake.nextOfKinName}'`,
-        `'${intake.nextOfKinPhone}'`,
-        `'${intake.relationshipToPatient}'`,
-        `'${intake.healthInformationNumber || ''}'`,
-        `'${intake.status}'`,
-        `${intake.appointmentBooked}`,
-        `'${intake.createdAt.toISOString()}'`,
-        `'${intake.updatedAt.toISOString()}'`,
-        `'${intake.viewedAt?.toISOString() || null}'`
-      ]
-      backupData += `(${values.join(', ')})${index < patientIntakes.length - 1 ? ',' : ';'}\n`
-    })
+    // Patient intake system has been removed - no data to backup
+    backupData += `-- Patient Intakes: 0 records (system removed)\n`
+    backupData += `-- Note: Patient intake functionality has been removed from the system\n`
 
     // Get admin users (without passwords for security)
     const adminUsers = await prisma.adminUser.findMany({
@@ -261,7 +233,7 @@ async function createLogicalBackup(): Promise<string> {
 
     // Add backup metadata
     backupData += `\n-- Backup Metadata\n`
-    backupData += `-- Total Patient Intakes: ${patientIntakes.length}\n`
+    backupData += `-- Total Patient Intakes: 0 (system removed)\n`
     backupData += `-- Total Admin Users: ${adminUsers.length}\n`
     backupData += `-- Total Audit Logs: ${auditLogs.length}\n`
     backupData += `-- Backup completed at: ${timestamp}\n`
