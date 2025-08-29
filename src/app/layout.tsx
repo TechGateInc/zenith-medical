@@ -4,8 +4,10 @@ import { Suspense } from 'react'
 import './globals.css'
 import SessionProvider from '../lib/auth/session-provider'
 import { AnalyticsProvider, ScrollTracker, TimeTracker } from '../components/Analytics/AnalyticsProvider'
-import AnalyticsConsent from '../components/Analytics/AnalyticsConsent'
+
 import ToastProvider from '../components/UI/ToastProvider'
+import AnnouncementProvider from '../components/UI/AnnouncementProvider'
+import AnnouncementBannerProvider from '../components/UI/AnnouncementBannerProvider'
 
 
 // Primary font for body text and UI elements
@@ -103,10 +105,12 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <AnalyticsProvider>
               <ToastProvider />
+              {!isAdmin && <AnnouncementBannerProvider />}
               {children}
               <ScrollTracker />
               <TimeTracker />
-              {!isAdmin && <AnalyticsConsent />}
+
+              {!isAdmin && <AnnouncementProvider />}
             </AnalyticsProvider>
           </Suspense>
         </SessionProvider>

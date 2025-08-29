@@ -29,7 +29,13 @@ export async function GET() {
           timezone: settings.timezone,
           dateFormat: settings.dateFormat
         },
-
+        announcement: {
+          announcementEnabled: settings.announcementEnabled,
+          announcementTitle: settings.announcementTitle,
+          announcementMessage: settings.announcementMessage,
+          announcementType: settings.announcementType,
+          announcementDisplay: settings.announcementDisplay
+        }
       }
     });
 

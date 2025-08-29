@@ -40,6 +40,14 @@ interface ContactSettings {
   servicesPaymentImageUrl?: string;
 }
 
+interface AnnouncementSettings {
+  announcementEnabled: boolean;
+  announcementTitle: string;
+  announcementMessage: string;
+  announcementType: string;
+  announcementDisplay: string; // 'popup', 'banner', or 'both'
+}
+
 interface SystemSettings {
   timezone: string;
   dateFormat: string;
@@ -86,8 +94,16 @@ export default function SettingsPage() {
     ipWhitelist: "",
   });
 
+  const [announcementSettings, setAnnouncementSettings] = useState<AnnouncementSettings>({
+    announcementEnabled: false,
+    announcementTitle: "",
+    announcementMessage: "",
+    announcementType: "info",
+    announcementDisplay: "banner",
+  });
+
   const [activeTab, setActiveTab] = useState<
-    "contact" | "system" | "security" | "database"
+    "contact" | "announcement" | "system" | "security" | "database"
   >("contact");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -151,6 +167,14 @@ export default function SettingsPage() {
             passwordExpiry: data.settings.security.passwordExpiry || 90,
             ipWhitelist: data.settings.security.ipWhitelist || "",
           });
+          
+          setAnnouncementSettings({
+            announcementEnabled: data.settings.announcement?.announcementEnabled || false,
+            announcementTitle: data.settings.announcement?.announcementTitle || "",
+            announcementMessage: data.settings.announcement?.announcementMessage || "",
+            announcementType: data.settings.announcement?.announcementType || "info",
+            announcementDisplay: data.settings.announcement?.announcementDisplay || "banner",
+          });
         }
       } else {
         console.error("Failed to fetch settings:", response.statusText);
@@ -170,7 +194,7 @@ export default function SettingsPage() {
       const settingsData = {
         contact: contactSettings,
         system: systemSettings,
-
+        announcement: announcementSettings,
         security: securitySettings,
       };
 
@@ -389,6 +413,17 @@ export default function SettingsPage() {
             >
               <Phone className="h-4 w-4 inline mr-2" />
               Contact Information
+            </button>
+            <button
+              onClick={() => setActiveTab("announcement")}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "announcement"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              <AlertCircle className="h-4 w-4 inline mr-2" />
+              Announcement
             </button>
             <button
               onClick={() => setActiveTab("system")}
@@ -768,6 +803,153 @@ export default function SettingsPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Announcement Tab */}
+          {activeTab === "announcement" && (
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                Website Announcement
+              </h2>
+              
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    id="announcementEnabled"
+                    checked={announcementSettings.announcementEnabled}
+                    onChange={(e) =>
+                      setAnnouncementSettings((prev) => ({
+                        ...prev,
+                        announcementEnabled: e.target.checked,
+                      }))
+                    }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="announcementEnabled" className="ml-2 text-sm font-medium text-gray-700">
+                    Enable website announcement popup
+                  </label>
+                </div>
+                <p className="text-sm text-gray-500">
+                  When enabled, visitors will see a popup announcement when they first visit the website.
+                </p>
+              </div>
+
+              {announcementSettings.announcementEnabled && (
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Announcement Type
+                    </label>
+                    <select
+                      value={announcementSettings.announcementType}
+                      onChange={(e) =>
+                        setAnnouncementSettings((prev) => ({
+                          ...prev,
+                          announcementType: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="info">Information (Blue)</option>
+                      <option value="warning">Warning (Yellow)</option>
+                      <option value="error">Error (Red)</option>
+                      <option value="success">Success (Green)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Display Method
+                    </label>
+                    <select
+                      value={announcementSettings.announcementDisplay}
+                      onChange={(e) =>
+                        setAnnouncementSettings((prev) => ({
+                          ...prev,
+                          announcementDisplay: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="banner">Banner (Under Navbar)</option>
+                      <option value="popup">Popup (Modal)</option>
+                      <option value="both">Both (Banner + Popup)</option>
+                    </select>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Choose how the announcement will be displayed to visitors
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Announcement Title
+                    </label>
+                    <input
+                      type="text"
+                      value={announcementSettings.announcementTitle}
+                      onChange={(e) =>
+                        setAnnouncementSettings((prev) => ({
+                          ...prev,
+                          announcementTitle: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Important Notice"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Announcement Message
+                    </label>
+                    <textarea
+                      value={announcementSettings.announcementMessage}
+                      onChange={(e) =>
+                        setAnnouncementSettings((prev) => ({
+                          ...prev,
+                          announcementMessage: e.target.value,
+                        }))
+                      }
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="We are pausing new patient intake for now in order to effectively care for patients who are already rostered with us."
+                    />
+                    <p className="mt-1 text-sm text-gray-500">
+                      This message will be displayed in the popup announcement.
+                    </p>
+                  </div>
+
+                  {/* Preview */}
+                  <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Preview:</h3>
+                    <div className={`p-4 rounded-lg ${
+                      announcementSettings.announcementType === 'info' ? 'bg-blue-50 border border-blue-200' :
+                      announcementSettings.announcementType === 'warning' ? 'bg-yellow-50 border border-yellow-200' :
+                      announcementSettings.announcementType === 'error' ? 'bg-red-50 border border-red-200' :
+                      'bg-green-50 border border-green-200'
+                    }`}>
+                      <h4 className={`font-semibold mb-2 ${
+                        announcementSettings.announcementType === 'info' ? 'text-blue-800' :
+                        announcementSettings.announcementType === 'warning' ? 'text-yellow-800' :
+                        announcementSettings.announcementType === 'error' ? 'text-red-800' :
+                        'text-green-800'
+                      }`}>
+                        {announcementSettings.announcementTitle || "Important Notice"}
+                      </h4>
+                      <p className={`text-sm ${
+                        announcementSettings.announcementType === 'info' ? 'text-blue-700' :
+                        announcementSettings.announcementType === 'warning' ? 'text-yellow-700' :
+                        announcementSettings.announcementType === 'error' ? 'text-red-700' :
+                        'text-green-700'
+                      }`}>
+                        {announcementSettings.announcementMessage || "Your announcement message will appear here."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

@@ -21,6 +21,14 @@ export interface SystemSettings {
   whyChooseUsImageUrl?: string;
   aboutMissionImageUrl?: string;
   servicesPaymentImageUrl?: string;
+  
+  // Announcement settings
+  announcementEnabled?: boolean;
+  announcementTitle?: string;
+  announcementMessage?: string;
+  announcementType?: string;
+  announcementDisplay?: string;
+  
   createdAt: Date;
   updatedAt: Date;
   updatedBy?: string;

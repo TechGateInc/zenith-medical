@@ -59,6 +59,13 @@ export async function GET() {
           passwordExpiry: settings.passwordExpiry,
       
           ipWhitelist: settings.ipWhitelist
+        },
+        announcement: {
+          announcementEnabled: settings.announcementEnabled,
+          announcementTitle: settings.announcementTitle,
+          announcementMessage: settings.announcementMessage,
+          announcementType: settings.announcementType,
+          announcementDisplay: settings.announcementDisplay
         }
       }
     });
@@ -91,7 +98,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { contact, system, security } = body;
+    const { contact, system, security, announcement } = body;
 
     const updates: Partial<SystemSettings> = {};
 
@@ -190,8 +197,24 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // Validate and prepare notification settings updates
-
+    // Validate and prepare announcement settings updates
+    if (announcement) {
+      if (typeof announcement.announcementEnabled === 'boolean') {
+        updates.announcementEnabled = announcement.announcementEnabled;
+      }
+      if (announcement.announcementTitle !== undefined) {
+        updates.announcementTitle = announcement.announcementTitle || null;
+      }
+      if (announcement.announcementMessage !== undefined) {
+        updates.announcementMessage = announcement.announcementMessage || null;
+      }
+      if (announcement.announcementType) {
+        updates.announcementType = announcement.announcementType;
+      }
+      if (announcement.announcementDisplay) {
+        updates.announcementDisplay = announcement.announcementDisplay;
+      }
+    }
 
     // Validate and prepare security settings updates
     if (security) {
@@ -239,6 +262,13 @@ export async function PUT(request: NextRequest) {
           passwordExpiry: updatedSettings.passwordExpiry,
 
           ipWhitelist: updatedSettings.ipWhitelist
+        },
+        announcement: {
+          announcementEnabled: updatedSettings.announcementEnabled,
+          announcementTitle: updatedSettings.announcementTitle,
+          announcementMessage: updatedSettings.announcementMessage,
+          announcementType: updatedSettings.announcementType,
+          announcementDisplay: updatedSettings.announcementDisplay
         }
       }
     });
