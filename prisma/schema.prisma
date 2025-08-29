@@ -7,69 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model PatientIntake {
-  id                      String        @id @default(cuid())
-  legalFirstName          String
-  legalLastName           String
-  preferredName           String?
-  dateOfBirth             String
-  phoneNumber             String
-  emailAddress            String
-  healthInformationNumber String
-  streetAddress           String
-  city                    String
-  provinceState           String
-  postalZipCode           String
-  nextOfKinName           String
-  nextOfKinPhone          String
-  relationshipToPatient   String
-  privacyPolicyAccepted   Boolean
-  consentTimestamp        DateTime      @default(now())
-  status                  IntakeStatus  @default(SUBMITTED)
-  appointmentBooked       Boolean       @default(false)
-  appointmentBookedAt     DateTime?
-  createdAt               DateTime      @default(now())
-  updatedAt               DateTime      @updatedAt
-  ipAddress               String?
-  userAgent               String?
-  viewedAt                DateTime?
-
-  cellPhone               String?
-  gender                  String?
-  middleName              String?
-  newsletterOptIn         Boolean       @default(false)
-  preferredLanguage       String?
-  primaryLanguage         String?
-  title                   String?
-  workPhone               String?
-  dependents              Dependent[]
-
-  @@map("patient_intakes")
-}
-
-
-
-model Dependent {
-  id                             String        @id @default(cuid())
-  patientIntakeId                String
-  legalFirstName                 String
-  legalLastName                  String
-  healthInformationNumber        String
-  dateOfBirth                    String
-  gender                         String
-  relationship                   String
-  residenceAddressSameAsSection1 Boolean
-  residenceApartmentNumber       String
-  residenceStreetAddress         String
-  residenceCity                  String
-  residencePostalCode            String
-  createdAt                      DateTime      @default(now())
-  updatedAt                      DateTime      @updatedAt
-  patientIntake                  PatientIntake @relation(fields: [patientIntakeId], references: [id], onDelete: Cascade)
-
-  @@map("dependents")
-}
-
 model AdminUser {
   id                   String     @id @default(cuid())
   email                String     @unique
@@ -276,53 +213,6 @@ model SystemSettings {
   @@map("system_settings")
 }
 
-model ContactSubmission {
-  id                      String          @id @default(cuid())
-  name                    String
-  email                   String
-  phone                   String?
-  healthInformationNumber String?
-  subject                 String
-  message                 String
-  appointmentType         String?
-  status                  ContactStatus   @default(NEW)
-  priority                ContactPriority @default(NORMAL)
-  assignedTo              String?
-  respondedAt             DateTime?
-  responseMessage         String?
-  responseAdminId         String?
-  createdAt               DateTime        @default(now())
-  updatedAt               DateTime        @updatedAt
-  ipAddress               String?
-  userAgent               String?
-  originalMessageId       String?
-
-  @@map("contact_submissions")
-}
-
-enum ContactStatus {
-  NEW
-  IN_PROGRESS
-  RESPONDED
-  CLOSED
-  SPAM
-}
-
-enum ContactPriority {
-  LOW
-  NORMAL
-  HIGH
-  URGENT
-}
-
-enum IntakeStatus {
-  SUBMITTED
-  REVIEWED
-  APPOINTMENT_SCHEDULED
-  CHECKED_IN
-  COMPLETED
-  CANCELLED
-}
 
 enum AdminRole {
   SUPER_ADMIN

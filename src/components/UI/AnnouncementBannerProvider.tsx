@@ -2,11 +2,14 @@
 
 import { useAnnouncement } from '@/lib/hooks/useAnnouncement';
 import AnnouncementBanner from './AnnouncementBanner';
+import { usePathname } from 'next/navigation';
 
 export default function AnnouncementBannerProvider() {
   const { announcement, loading, error } = useAnnouncement();
+  const pathname = usePathname();
+  const isAdmin = pathname.startsWith('/admin');
 
-  if (loading || error) {
+  if (loading || error || isAdmin) {
     return null;
   }
 

@@ -3,6 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { X, AlertCircle, AlertTriangle, CheckCircle, Info } from 'lucide-react';
 
+// Function to strip HTML tags and convert to plain text
+const stripHtml = (html: string): string => {
+  if (typeof window !== 'undefined') {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  }
+  // Fallback for server-side rendering
+  return html.replace(/<[^>]*>/g, '');
+};
+
 interface AnnouncementData {
   announcementEnabled: boolean;
   announcementTitle?: string;
@@ -100,18 +111,18 @@ export default function AnnouncementBanner({ announcement }: AnnouncementBannerP
         isClosing ? 'h-0 opacity-0 overflow-hidden' : 'h-auto opacity-100'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-3">
-          <div className="flex items-center space-x-3 flex-1">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-1">
+          <div className="flex items-center space-x-3 flex-1 w-full">
             {getIcon()}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 w-full">
               {announcement.announcementTitle && (
                 <h3 className={`text-sm font-semibold ${styles.title} mb-1`}>
                   {announcement.announcementTitle}
                 </h3>
               )}
-              <p className={`text-sm ${styles.message} leading-relaxed`}>
-                {announcement.announcementMessage}
+              <p className={`text-sm ${styles.message} leading-relaxed w-full`}>
+                {stripHtml(announcement.announcementMessage || '')}
               </p>
             </div>
           </div>

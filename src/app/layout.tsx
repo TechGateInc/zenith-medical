@@ -96,8 +96,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
-  const isAdmin = pathname.startsWith('/admin')
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans`}>
@@ -105,12 +103,11 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <AnalyticsProvider>
               <ToastProvider />
-              {!isAdmin && <AnnouncementBannerProvider />}
+              <AnnouncementBannerProvider />
               {children}
               <ScrollTracker />
               <TimeTracker />
-
-              {!isAdmin && <AnnouncementProvider />}
+              <AnnouncementProvider />
             </AnalyticsProvider>
           </Suspense>
         </SessionProvider>

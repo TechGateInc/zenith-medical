@@ -37,67 +37,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Fetch recent intake submissions (last 50)
-    const intakeSubmissions = await prisma.patientIntake.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-      select: {
-        id: true,
-        legalFirstName: true,
-        legalLastName: true,
-        preferredName: true,
-        emailAddress: true,
-        phoneNumber: true,
-        status: true,
-        appointmentBooked: true,
-        createdAt: true,
-        updatedAt: true,
-        healthInformationNumber: true
-      }
-    })
 
-    // Decrypt patient data for display
-    const decryptedSubmissions = intakeSubmissions.map((submission: Record<string, unknown>) => {
-      try {
-        // Decrypt individual fields that we need for the dashboard
-        const decryptedFirstName = submission.legalFirstName ? decryptPHI(submission.legalFirstName as string) : ''
-        const decryptedLastName = submission.legalLastName ? decryptPHI(submission.legalLastName as string) : ''
-        const decryptedPreferredName = submission.preferredName ? decryptPHI(submission.preferredName as string) : ''
-        const decryptedEmail = submission.emailAddress ? decryptPHI(submission.emailAddress as string) : ''
-        const decryptedPhone = submission.phoneNumber ? decryptPHI(submission.phoneNumber as string) : ''
-        const decryptedHealthNumber = submission.healthInformationNumber ? decryptPHI(submission.healthInformationNumber as string) : ''
-
-        return {
-          id: submission.id,
-          legalFirstName: decryptedFirstName,
-          legalLastName: decryptedLastName,
-          preferredName: decryptedPreferredName || undefined,
-          emailAddress: decryptedEmail,
-          phoneNumber: decryptedPhone,
-          status: submission.status as string,
-          appointmentBooked: submission.appointmentBooked as boolean,
-          createdAt: (submission.createdAt as Date).toISOString(),
-          updatedAt: (submission.updatedAt as Date).toISOString(),
-          healthInformationNumber: decryptedHealthNumber
-        }
-      } catch (decryptionError) {
-          console.error('Decryption error for submission:', submission.id, decryptionError)
-          
-          // Log decryption error (but don't await since we're not in async context)
-          prisma.auditLog.create({
-            data: {
-              userId: session.user.id,
-              action: 'ERROR',
-              resource: 'patient_intake',
-              resourceId: submission.id as string,
-              details: {
-                error: 'decryption_failed',
-                timestamp: new Date().toISOString()
-              },
-              ipAddress,
-              userAgent
-            }
-          }).catch(console.error)
 
           // Return partial data without decryption
           return {
@@ -121,55 +61,15 @@ export async function GET(request: NextRequest) {
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    const [
-      totalSubmissions,
-      pendingReview,
-      appointmentsScheduled,
-      completedToday
-    ] = await Promise.all([
-      prisma.patientIntake.count(),
-      prisma.patientIntake.count({
-        where: { status: 'SUBMITTED' }
-      }),
-      prisma.patientIntake.count({
-        where: { status: 'APPOINTMENT_SCHEDULED' }
-      }),
-      prisma.patientIntake.count({
-        where: {
-          status: 'COMPLETED',
-          updatedAt: {
-            gte: today,
-            lt: tomorrow
-          }
-        }
-      })
-    ])
-
     const stats = {
-      totalSubmissions,
-      pendingReview,
-      appointmentsScheduled,
-      completedToday
+      totalSubmissions: 0,
+      pendingReview: 0,
+      appointmentsScheduled: 0,
+      completedToday: 0
     }
 
-    // Log successful data access
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: 'READ',
-        resource: 'patient_intake',
-        details: {
-          action: 'dashboard_data_accessed',
-          submissionsCount: decryptedSubmissions.length,
-          timestamp: new Date().toISOString()
-        },
-        ipAddress,
-        userAgent
-      }
-    })
-
     return NextResponse.json({
-      submissions: decryptedSubmissions,
+      submissions: [],
       stats
     })
 

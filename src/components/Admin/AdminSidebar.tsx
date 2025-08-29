@@ -51,45 +51,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
   const { collapsed, setCollapsed } = useSidebar();
   const { handleApiError } = useApiAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [intakeCount, setIntakeCount] = useState<number>(0);
 
-  const [loadingCount, setLoadingCount] = useState(true);
-
-  // Fetch all counts
-  const fetchCounts = useCallback(async () => {
-    try {
-      const response = await fetch('/api/admin/intake/count');
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const error = new Error(errorData.error || `HTTP ${response.status}: Failed to fetch intake count`);
-        
-        // Handle authentication errors
-        if (handleApiError(error, response)) {
-          return;
-        }
-        
-        throw error;
-      }
-      
-      const data = await response.json();
-      if (data.success) {
-        setIntakeCount(data.count);
-      }
-    } catch (error) {
-      // Only log error if it wasn't handled by the API auth hook
-      if (!handleApiError(error)) {
-        console.error('Error fetching intake count:', error);
-      }
-    }
-    setLoadingCount(false);
-  }, [handleApiError]);
-
-  // Fetch counts on component mount
-  useEffect(() => {
-    fetchCounts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
 
   const navigation: NavigationItem[] = [
     {
@@ -97,17 +59,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
       href: '/admin/dashboard',
       icon: LayoutDashboard,
     },
-    {
-      name: 'Patient Intake',
-      href: '/admin/dashboard/intake',
-      icon: Users,
-      badge: intakeCount > 0 ? intakeCount : undefined,
-    },
-    {
-      name: 'Contact Forms',
-      href: '/admin/contact',
-      icon: Mail,
-    },
+
+
     {
       name: 'Content Management',
       href: '/admin/content',
@@ -196,10 +149,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
             <>
               <span className="flex-1">{item.name}</span>
               {item.badge && (
-                <span className={`ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ${
-                  (item.name === 'Patient Intake' && item.badge > 0) ? 'animate-pulse' : ''
-                }`}>
-                  {loadingCount && item.name === 'Patient Intake' ? '...' : item.badge}
+                <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  {item.badge}
                 </span>
               )}
               {hasChildren && (

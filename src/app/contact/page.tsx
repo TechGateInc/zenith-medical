@@ -5,13 +5,11 @@ import { useCachedPrimaryPhone, useCachedAddressOnly, useCachedAdminEmail } from
 import { useAppointmentUrls } from '@/lib/hooks/useSettings';
 import GoogleMaps from '@/components/UI/GoogleMaps';
 import GoogleMapsLink from '@/components/UI/GoogleMapsLink';
-import Link from 'next/link';
-
 export default function Contact() {
   const { primaryPhone, loading: phoneLoading } = useCachedPrimaryPhone();
   const { address, loading: addressLoading } = useCachedAddressOnly();
   const { adminEmail, loading: emailLoading } = useCachedAdminEmail();
-  const { patientIntakeUrl } = useAppointmentUrls();
+  const { patientIntakeUrl, appointmentBookingUrl } = useAppointmentUrls();
 
   const contactInfo = {
     primary: <a href={`tel:${primaryPhone.replace(/\s/g, '')}`} className="text-blue-600 hover:underline">
@@ -107,15 +105,17 @@ export default function Contact() {
                     Complete Patient Intake
                   </a>
                   
-                  <Link
-                    href="/appointments"
+                  <a
+                    href={appointmentBookingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center justify-center w-full px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
                   >
                     <svg className="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                     Request Appointment
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>
@@ -130,53 +130,56 @@ export default function Contact() {
                 </div>
               )}
 
-              {/* Contact Form Section */}
+              {/* Contact Information Section */}
               <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-2xl font-bold text-slate-800 mb-6">Send us a Message</h2>
+                <h2 className="text-2xl font-bold text-slate-800 mb-6">Get in Touch</h2>
                 
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Your full name"
-                    />
+                <div className="space-y-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-medium text-blue-800">
+                          Contact Information
+                        </h3>
+                        <div className="mt-2 text-sm text-blue-700">
+                          <p>For the fastest response, please contact us directly:</p>
+                          <ul className="mt-2 space-y-1">
+                            <li>• <strong>Phone:</strong> {contactInfo.primary}</li>
+                            <li>• <strong>Email:</strong> {contactInfo.email}</li>
+                            <li>• <strong>Visit:</strong> Our clinic during business hours</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="your.email@example.com"
-                    />
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-medium text-green-800">
+                          Online Services Available
+                        </h3>
+                        <div className="mt-2 text-sm text-green-700">
+                          <p>You can also use our online services:</p>
+                          <ul className="mt-2 space-y-1">
+                            <li>• Complete patient intake forms online</li>
+                            <li>• Request appointments through our booking system</li>
+                            <li>• Access your health information securely</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                      Message
-                    </label>
-                    <textarea
-                      id="message"
-                      rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="How can we help you?"
-                    />
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Send Message
-                  </button>
                 </div>
               </div>
             </div>
