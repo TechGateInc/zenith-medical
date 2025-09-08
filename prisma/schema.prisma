@@ -198,6 +198,9 @@ model SystemSettings {
   aboutMissionImageUrl String?
   servicesPaymentImageUrl String?
   
+  // Practice status
+  acceptingNewPatients Boolean  @default(true)
+  
   // Announcement settings
   announcementEnabled  Boolean  @default(false)
   announcementTitle    String?

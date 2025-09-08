@@ -23,7 +23,8 @@ export async function GET() {
           address: settings.address,
           businessHours: settings.businessHours,
           appointmentBookingUrl: settings.appointmentBookingUrl,
-          patientIntakeUrl: settings.patientIntakeUrl
+          patientIntakeUrl: settings.patientIntakeUrl,
+          acceptingNewPatients: settings.acceptingNewPatients
         },
         system: {
           timezone: settings.timezone,

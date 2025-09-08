@@ -46,7 +46,8 @@ export async function GET() {
           patientIntakeUrl: settings.patientIntakeUrl,
           whyChooseUsImageUrl: settings.whyChooseUsImageUrl,
           aboutMissionImageUrl: settings.aboutMissionImageUrl,
-          servicesPaymentImageUrl: settings.servicesPaymentImageUrl
+          servicesPaymentImageUrl: settings.servicesPaymentImageUrl,
+          acceptingNewPatients: settings.acceptingNewPatients
         },
         system: {
           timezone: settings.timezone,
@@ -185,6 +186,10 @@ export async function PUT(request: NextRequest) {
       if (contact.servicesPaymentImageUrl !== undefined) {
         updates.servicesPaymentImageUrl = contact.servicesPaymentImageUrl || null;
       }
+
+      if (typeof contact.acceptingNewPatients === 'boolean') {
+        updates.acceptingNewPatients = contact.acceptingNewPatients;
+      }
     }
 
     // Validate and prepare system settings updates
@@ -233,8 +238,23 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // Update settings in database
-    const updatedSettings = await settingsManager.updateSettings(updates, user.id);
+    // Update settings in database, with fallback if DB is not migrated yet
+    let updatedSettings;
+    try {
+      updatedSettings = await settingsManager.updateSettings(updates, user.id);
+    } catch (err: any) {
+      const msg = (err && err.message) || '';
+      const hasAcceptingFlag = Object.prototype.hasOwnProperty.call(updates, 'acceptingNewPatients');
+      const looksLikeMissingColumn = /does not exist|Unknown column|invalid input syntax for type|acceptingNewPatients/i.test(msg);
+      if (hasAcceptingFlag && looksLikeMissingColumn) {
+        // Retry without acceptingNewPatients to avoid hard failure before migration is applied
+        const { acceptingNewPatients: _omit, ...withoutFlag } = updates as any;
+        console.warn('[settings] acceptingNewPatients column missing, retrying without the field');
+        updatedSettings = await settingsManager.updateSettings(withoutFlag, user.id);
+      } else {
+        throw err;
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -249,7 +269,11 @@ export async function PUT(request: NextRequest) {
           businessHours: updatedSettings.businessHours,
           homepageImageUrl: updatedSettings.homepageImageUrl,
           appointmentBookingUrl: updatedSettings.appointmentBookingUrl,
-          patientIntakeUrl: updatedSettings.patientIntakeUrl
+          patientIntakeUrl: updatedSettings.patientIntakeUrl,
+          whyChooseUsImageUrl: updatedSettings.whyChooseUsImageUrl,
+          aboutMissionImageUrl: updatedSettings.aboutMissionImageUrl,
+          servicesPaymentImageUrl: updatedSettings.servicesPaymentImageUrl,
+          acceptingNewPatients: updatedSettings.acceptingNewPatients
         },
         system: {
           timezone: updatedSettings.timezone,

@@ -39,6 +39,7 @@ interface ContactSettings {
   whyChooseUsImageUrl?: string;
   aboutMissionImageUrl?: string;
   servicesPaymentImageUrl?: string;
+  acceptingNewPatients?: boolean;
 }
 
 interface AnnouncementSettings {
@@ -78,6 +79,7 @@ export default function SettingsPage() {
     whyChooseUsImageUrl: "",
     aboutMissionImageUrl: "",
     servicesPaymentImageUrl: "",
+    acceptingNewPatients: true,
   });
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
@@ -156,6 +158,7 @@ export default function SettingsPage() {
             whyChooseUsImageUrl: data.settings.contact.whyChooseUsImageUrl || "",
             aboutMissionImageUrl: data.settings.contact.aboutMissionImageUrl || "",
             servicesPaymentImageUrl: data.settings.contact.servicesPaymentImageUrl || "",
+            acceptingNewPatients: typeof data.settings.contact.acceptingNewPatients === 'boolean' ? data.settings.contact.acceptingNewPatients : true,
           });
           setSystemSettings({
             timezone: data.settings.system.timezone || "America/Toronto",
@@ -235,6 +238,7 @@ export default function SettingsPage() {
                 whyChooseUsImageUrl: data.settings.contact.whyChooseUsImageUrl || "",
                 aboutMissionImageUrl: data.settings.contact.aboutMissionImageUrl || "",
                 servicesPaymentImageUrl: data.settings.contact.servicesPaymentImageUrl || "",
+                acceptingNewPatients: typeof data.settings.contact.acceptingNewPatients === 'boolean' ? data.settings.contact.acceptingNewPatients : true,
               });
             setSystemSettings({
               timezone: data.settings.system.timezone || "America/Toronto",
@@ -681,6 +685,30 @@ export default function SettingsPage() {
                   />
                   <p className="mt-1 text-sm text-gray-500">
                     URL for the patient intake form
+                  </p>
+                </div>
+
+                {/* Accepting New Patients Toggle */}
+                <div className="md:col-span-2">
+                  <div className="flex items-center mt-2">
+                    <input
+                      type="checkbox"
+                      id="acceptingNewPatients"
+                      checked={!!contactSettings.acceptingNewPatients}
+                      onChange={(e) =>
+                        setContactSettings((prev) => ({
+                          ...prev,
+                          acceptingNewPatients: e.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="acceptingNewPatients" className="ml-2 text-sm font-medium text-gray-700">
+                      Accepting New Patients
+                    </label>
+                  </div>
+                  <p className="mt-1 text-sm text-gray-500">
+                    When unchecked, the website will show "Join the waitlist" instead of "Now Open: Accepting New Patients" on the homepage.
                   </p>
                 </div>
 

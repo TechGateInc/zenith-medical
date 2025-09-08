@@ -139,6 +139,19 @@ export async function getServicesPaymentImageUrl(): Promise<string | undefined> 
 }
 
 /**
+ * Get accepting new patients status (server-side)
+ */
+export async function getAcceptingNewPatients(): Promise<boolean> {
+  try {
+    const settings = await settingsManager.getSettings();
+    return settings.acceptingNewPatients ?? true;
+  } catch (error) {
+    console.error('Error getting accepting new patients flag:', error);
+    return true;
+  }
+}
+
+/**
  * Check if maintenance mode is enabled (server-side)
  */
 

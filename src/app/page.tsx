@@ -11,6 +11,7 @@ import {
   getAppointmentBookingUrl,
   getPatientIntakeUrl,
   getWhyChooseUsImageUrl,
+  getAcceptingNewPatients,
 } from "../lib/utils/server-settings";
 import GoogleMapsClient from "@/components/UI/GoogleMapsClient";
 
@@ -49,6 +50,7 @@ export default async function Home() {
   const appointmentBookingUrl = await getAppointmentBookingUrl();
   const patientIntakeUrl = await getPatientIntakeUrl();
   const whyChooseUsImageUrl = await getWhyChooseUsImageUrl();
+  const acceptingNewPatients = await getAcceptingNewPatients();
   const services = await getServices();
 
   return (
@@ -145,10 +147,14 @@ export default async function Home() {
                     />
                   </svg>
                   <div className="text-slate-700">
-                    <span className="text-sm">Now Open:</span>
-                    <span className="font-semibold ml-1">
-                      Accepting New Patients
-                    </span>
+                    {acceptingNewPatients ? (
+                      <>
+                        <span className="text-sm">Now Open:</span>
+                        <span className="font-semibold ml-1">Accepting New Patients</span>
+                      </>
+                    ) : (
+                      <span className="font-semibold">Join the waitlist</span>
+                    )}
                   </div>
                 </div>
               </div>

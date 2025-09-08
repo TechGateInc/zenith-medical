@@ -22,6 +22,9 @@ export interface SystemSettings {
   aboutMissionImageUrl?: string;
   servicesPaymentImageUrl?: string;
   
+  // Practice status
+  acceptingNewPatients?: boolean;
+  
   // Announcement settings
   announcementEnabled?: boolean;
   announcementTitle?: string;
@@ -114,6 +117,7 @@ export class SettingsManager {
         whyChooseUsImageUrl: undefined,
         aboutMissionImageUrl: undefined,
         servicesPaymentImageUrl: undefined,
+        acceptingNewPatients: true,
         createdAt: new Date(),
         updatedAt: new Date()
       };
