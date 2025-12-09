@@ -356,7 +356,7 @@ export default function Blog() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors"
               >
-                New Patient Intake
+                Registration Form
               </a>
               <Link
                 href="/contact"

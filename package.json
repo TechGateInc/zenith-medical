@@ -59,7 +59,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.525.0",
     "nanoid": "^5.1.5",
-    "next": "^15.3.5",
+    "next": "15.3.6",
     "next-auth": "^4.24.11",
     "postcss": "^8.5.6",
     "prisma": "^6.11.1",

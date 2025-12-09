@@ -39,6 +39,30 @@ async function getServices(): Promise<Service[]> {
   }
 }
 
+interface Doctor {
+  id: string;
+  name: string;
+  title: string;
+  photoUrl?: string;
+  doctor?: {
+    bookingUrl?: string;
+  };
+}
+
+async function getDoctors(): Promise<Doctor[]> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/doctors`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || [];
+  } catch {
+    return [];
+  }
+}
+
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.home,
   canonical: "/",
@@ -52,6 +76,7 @@ export default async function Home() {
   const whyChooseUsImageUrl = await getWhyChooseUsImageUrl();
   const acceptingNewPatients = await getAcceptingNewPatients();
   const services = await getServices();
+  const doctors = await getDoctors();
 
   return (
     <Layout className="bg-slate-50">
@@ -128,7 +153,7 @@ export default async function Home() {
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
-                    Patient Intake Form
+                    Registration Form
                   </a>
                 </div>
 
@@ -150,7 +175,9 @@ export default async function Home() {
                     {acceptingNewPatients ? (
                       <>
                         <span className="text-sm">Now Open:</span>
-                        <span className="font-semibold ml-1">Accepting New Patients</span>
+                        <span className="font-semibold ml-1">
+                          Accepting New Patients
+                        </span>
                       </>
                     ) : (
                       <span className="font-semibold">Join the waitlist</span>
@@ -287,6 +314,111 @@ export default async function Home() {
             </div>
           </section>
         )}
+
+        {/* Meet Our Doctors */}
+        {doctors.length > 0 && (
+          <section className="mb-16">
+            <div className="max-w-6xl mx-auto">
+              {/* Section Badge */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center justify-center px-4 py-2 bg-teal-50 border border-teal-200 rounded-full mb-6">
+                  <span className="text-sm font-semibold text-teal-700 uppercase tracking-wider">
+                    Our Medical Team
+                  </span>
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+                  Meet Our Doctors
+                </h2>
+                <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                  Our experienced physicians are dedicated to providing
+                  exceptional care for you and your family
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {doctors.slice(0, 6).map((doctor) => {
+                  const slug = doctor.name
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                  return (
+                    <div
+                      key={doctor.id}
+                      className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    >
+                      {/* Doctor Photo */}
+                      <div className="relative h-64 bg-slate-100">
+                        {doctor.photoUrl ? (
+                          <Image
+                            src={doctor.photoUrl}
+                            alt={doctor.name}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <svg
+                              className="h-24 w-24 text-slate-300"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      {/* Doctor Info */}
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-slate-800 mb-1">
+                          {doctor.name}
+                        </h3>
+                        <p className="text-slate-600 mb-4">{doctor.title}</p>
+                        <div className="flex gap-3">
+                          <a
+                            href={
+                              doctor.doctor?.bookingUrl || appointmentBookingUrl
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
+                          >
+                            <svg
+                              className="mr-2 h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"
+                              />
+                            </svg>
+                            Book Appointment
+                          </a>
+                          <Link
+                            href={`/doctors/${slug}`}
+                            className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors text-sm"
+                          >
+                            View Profile
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Why Choose Us */}
         <section className="mb-16">
           <div className="max-w-6xl mx-auto">
@@ -560,15 +692,17 @@ export default async function Home() {
                       d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                  Complete Intake Form
+                  Registration Form
                 </a>
               </div>
 
               {/* Google Maps Section */}
               <div className="bg-white rounded-xl p-6 shadow-lg">
-                <h3 className="text-2xl font-bold text-slate-800 mb-4 text-center">Find Our Location</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4 text-center">
+                  Find Our Location
+                </h3>
                 <div className="max-w-2xl mx-auto">
-                  <GoogleMapsClient 
+                  <GoogleMapsClient
                     address="Unit 216, 1980 Ogilvie Road, Gloucester, Ottawa, K1J 9L3"
                     className="w-full h-64 rounded-lg"
                     height="250px"
@@ -650,7 +784,7 @@ export default async function Home() {
                     </svg>
                   </div>
                   <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                    Patient Intake
+                    Registration Form
                   </h3>
                   <p className="text-slate-600">
                     Complete your intake form before your visit

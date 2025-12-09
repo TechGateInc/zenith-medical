@@ -1,39 +1,100 @@
-import Layout from '../../components/Layout/Layout'
-import { generateMetadata as generateSEOMetadata, PAGE_METADATA } from '../../lib/utils/seo'
-import { getAppointmentBookingUrl, getPatientIntakeUrl, getServicesPaymentImageUrl } from '../../lib/utils/server-settings'
-import Image from 'next/image'
+import Layout from "../../components/Layout/Layout";
+import {
+  generateMetadata as generateSEOMetadata,
+  PAGE_METADATA,
+} from "../../lib/utils/seo";
+import {
+  getAppointmentBookingUrl,
+  getPatientIntakeUrl,
+} from "../../lib/utils/server-settings";
 
 export const metadata = generateSEOMetadata({
   ...PAGE_METADATA.services,
-  canonical: '/services',
-})
+  canonical: "/services",
+});
 
 interface Service {
-  id: string
-  title: string
-  description: string
-  features: string[]
-  icon?: string
-  orderIndex: number
-  published: boolean
+  id: string;
+  title: string;
+  description: string;
+  features: string[];
+  icon?: string;
+  orderIndex: number;
+  published: boolean;
+}
+
+interface UninsuredService {
+  id: string;
+  category: string;
+  title: string;
+  description: string | null;
+  price: string;
+  isInsured: boolean;
+  orderIndex: number;
+  published: boolean;
+}
+
+interface UninsuredCategory {
+  key: string;
+  name: string;
+  items: UninsuredService[];
 }
 
 async function getServices(): Promise<Service[]> {
+  return [
+    {
+      id: "1",
+      title: "General Consultation",
+      description:
+        "Comprehensive health assessment and consultation with our experienced physicians.",
+      features: [
+        "Physical examination",
+        "Health history review",
+        "Personalized advice",
+      ],
+      orderIndex: 1,
+      published: true,
+    },
+    {
+      id: "2",
+      title: "Vaccinations",
+      description:
+        "Routine and travel vaccinations to keep you and your family protected.",
+      features: ["Flu shots", "Travel vaccines", "Childhood immunizations"],
+      orderIndex: 2,
+      published: true,
+    },
+    {
+      id: "3",
+      title: "Minor Procedures",
+      description:
+        "Quick and efficient minor surgical procedures performed in our clinic.",
+      features: ["Sutures", "Wart removal", "Biopsies"],
+      orderIndex: 3,
+      published: true,
+    },
+  ];
+}
+
+async function getUninsuredServices(): Promise<UninsuredCategory[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/services`, { cache: 'no-store' })
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.services || []
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/uninsured-services`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.categories || [];
   } catch {
-    return []
+    return [];
   }
 }
 
 export default async function Services() {
-  const services = await getServices()
-  const appointmentBookingUrl = await getAppointmentBookingUrl()
-  const patientIntakeUrl = await getPatientIntakeUrl()
-  const servicesPaymentImageUrl = await getServicesPaymentImageUrl()
+  const services = await getServices();
+  const appointmentBookingUrl = await getAppointmentBookingUrl();
+  const patientIntakeUrl = await getPatientIntakeUrl();
+  const uninsuredCategories = await getUninsuredServices();
 
   return (
     <Layout>
@@ -55,10 +116,10 @@ export default async function Services() {
                 Our Medical Services
               </h1>
               <p className="text-xl lg:text-2xl text-slate-600 mb-12 leading-relaxed max-w-4xl mx-auto">
-                Comprehensive healthcare services in our efficient medical facility, designed to keep you and your family healthy throughout every stage of life.
+                Comprehensive healthcare services in our efficient medical
+                facility, designed to keep you and your family healthy
+                throughout every stage of life.
               </p>
-
-
             </div>
           </div>
         </div>
@@ -75,41 +136,46 @@ export default async function Services() {
                   Primary Care
                 </span>
               </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">Primary Care Services</h2>
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+                Primary Care Services
+              </h2>
               <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Our core medical services provide the foundation for your ongoing health and wellness journey with comprehensive care for every age.
+                Our core medical services provide the foundation for your
+                ongoing health and wellness journey with comprehensive care for
+                every age.
               </p>
             </div>
 
             {services.length === 0 ? (
-              <div className="text-center text-slate-500 py-12">No services available at this time.</div>
+              <div className="text-center text-slate-500 py-12">
+                No services available at this time.
+              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+              <div className="max-w-4xl mx-auto space-y-12">
                 {services.map((service) => (
                   <div
                     key={service.id}
-                    className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    className="border-b border-slate-200 pb-12 last:border-0"
                   >
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 text-blue-600">
-                      {/* Optionally render icon if available */}
-                      {service.icon ? (
-                        <span dangerouslySetInnerHTML={{ __html: service.icon }} />
-                      ) : (
-                        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      )}
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-800 mb-4">{service.title}</h3>
-                    <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-                    <ul className="space-y-3">
-                      {service.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-center text-slate-600">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
+                    <h3 className="text-2xl font-semibold text-slate-800 mb-3">
+                      {service.title}
+                    </h3>
+                    <p className="text-slate-600 mb-4 leading-relaxed text-lg">
+                      {service.description}
+                    </p>
+                    {service.features && service.features.length > 0 && (
+                      <ul className="space-y-2 ml-1">
+                        {service.features.map((feature, idx) => (
+                          <li
+                            key={idx}
+                            className="flex items-start text-slate-600"
+                          >
+                            <span className="mr-3 mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></span>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 ))}
               </div>
@@ -117,94 +183,146 @@ export default async function Services() {
           </div>
         </section>
 
-        {/* Insurance & Payment */}
-        <section className="mb-20">
-          <div className="max-w-6xl mx-auto">
-            {/* Section Badge */}
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
-                <span className="text-sm font-semibold text-green-700 uppercase tracking-wider">
-                  Insurance & Payment
-                </span>
-              </div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">Payment & Insurance Options</h2>
-              <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                We accept OHIP for covered services and offer out-of-pocket payment options for non-OHIP services.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left Content - Payment Options */}
-              <div className="space-y-8">
-
-
-                <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-                  <div className="flex items-center mb-6">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                      <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-800">Payment Options</h3>
-                  </div>
-                  <p className="text-slate-600 mb-6 leading-relaxed">
-                    Secure payment options to make healthcare accessible and convenient.
+        {/* Patient's Guide to Uninsured Services */}
+        {uninsuredCategories.length > 0 && (
+          <section className="mb-20">
+            <div className="max-w-6xl mx-auto">
+              {/* Section Badge */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center justify-center px-4 py-2 bg-amber-50 border border-amber-200 rounded-full mb-6">
+                  <span className="text-sm font-semibold text-amber-700 uppercase tracking-wider">
+                    Fee Schedule
+                  </span>
+                </div>
+                <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">
+                  Patient&apos;s Guide to Uninsured Services
+                </h2>
+                <div className="max-w-3xl mx-auto text-left">
+                  <p className="text-lg text-slate-600 leading-relaxed mb-4">
+                    Some services are not covered by OHIP. We use the Ontario
+                    Medical Association&apos;s (OMA) suggested fees and common
+                    practice as a guideline for our 2024 fee list.
                   </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Debit and credit cards</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Interac e-transfer</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-slate-700">Bank transfers</span>
-                    </div>
-                  </div>
                 </div>
               </div>
 
-                            {/* Right Content - Visual Element */}
-              <div className="relative">
-                {servicesPaymentImageUrl ? (
-                  <div className="w-full h-96 rounded-2xl overflow-hidden shadow-lg">
-                    <Image
-                      src={servicesPaymentImageUrl}
-                      alt="Payment Options and Affordable Healthcare"
-                      width={600}
-                      height={400}
-                      className="w-full h-full object-cover"
-                      priority={false}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-96 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-6 left-6 w-12 h-12 bg-green-600 rounded-full"></div>
-                      <div className="absolute top-16 right-12 w-8 h-8 bg-green-500 rounded-full"></div>
-                      <div className="absolute bottom-12 left-12 w-6 h-6 bg-green-700 rounded-full"></div>
-                      <div className="absolute bottom-6 right-6 w-16 h-16 bg-green-400 rounded-full"></div>
+              {/* Fee Categories */}
+              <div className="space-y-10">
+                {uninsuredCategories.map((category) => (
+                  <div
+                    key={category.key}
+                    className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden"
+                  >
+                    <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                      <h3 className="text-xl font-bold text-slate-800">
+                        {category.name}
+                      </h3>
                     </div>
-                    
-                    <div className="text-center relative z-10">
-                      <div className="w-24 h-24 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-2xl font-bold text-green-800 mb-2">Affordable Healthcare</h3>
-                      <p className="text-green-700">Accessible to everyone</p>
+                    <div className="divide-y divide-slate-100">
+                      {category.items.map((item) => (
+                        <div
+                          key={item.id}
+                          className={`px-6 py-4 flex justify-between items-start gap-4 ${
+                            item.isInsured ? "bg-green-50" : ""
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium text-slate-800">
+                              {item.title}
+                            </div>
+                            {item.description && (
+                              <div className="text-sm text-slate-500 mt-1">
+                                {item.description}
+                              </div>
+                            )}
+                            {item.isInsured && (
+                              <div className="inline-flex items-center mt-2 text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">
+                                <svg
+                                  className="w-3 h-3 mr-1"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
+                                This is considered an insured service
+                              </div>
+                            )}
+                          </div>
+                          <div className="font-semibold text-blue-600 whitespace-nowrap">
+                            {item.price}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                )}
+                ))}
+              </div>
+
+              {/* Insured Services Note */}
+              <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-xl">
+                <h4 className="font-semibold text-green-800 mb-3">
+                  Services Considered Insured by OHIP:
+                </h4>
+                <ul className="space-y-2 text-green-700">
+                  <li className="flex items-start">
+                    <svg
+                      className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Application for Accessible Parking Permit
+                  </li>
+                  <li className="flex items-start">
+                    <svg
+                      className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Accessible Transit Eligibility Application forms
+                  </li>
+                  <li className="flex items-start">
+                    <svg
+                      className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Ministry of Health Forms
+                  </li>
+                </ul>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* CTA Section */}
         <section className="bg-slate-50 rounded-xl p-8 mb-8">
@@ -221,18 +339,32 @@ export default async function Services() {
                 Ready to Experience Our Comprehensive Care?
               </h2>
               <p className="text-lg text-slate-600 mb-8 leading-relaxed text-center">
-                Schedule an appointment today and discover how our efficient medical facility and experienced team can serve your healthcare needs.
+                Schedule an appointment today and discover how our efficient
+                medical facility and experienced team can serve your healthcare
+                needs.
               </p>
 
               {/* Feature Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 max-w-2xl mx-auto">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    <svg
+                      className="h-8 w-8 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-2">Secure Health Records</h3>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                    Secure Health Records
+                  </h3>
                   <p className="text-sm text-slate-600">
                     Secure digital records with patient portal access.
                   </p>
@@ -240,13 +372,26 @@ export default async function Services() {
 
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 3v12m0 0l3-3m-3 3l-3-3m12-9a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="h-8 w-8 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 17h5l-5 5v-5zM9 3v12m0 0l3-3m-3 3l-3-3m12-9a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-2">Instant Updates</h3>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                    Instant Updates
+                  </h3>
                   <p className="text-sm text-slate-600">
-                    Get real-time notifications about appointments and health updates.
+                    Get real-time notifications about appointments and health
+                    updates.
                   </p>
                 </div>
               </div>
@@ -259,8 +404,18 @@ export default async function Services() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white hover:text-white font-semibold rounded-lg transition-colors shadow-lg text-lg whitespace-nowrap"
                 >
-                  <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  <svg
+                    className="mr-2 h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
                   </svg>
                   Request Appointment
                 </a>
@@ -270,10 +425,20 @@ export default async function Services() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                 >
-                  <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg
+                    className="mr-2 h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
-                  Patient Intake Form
+                  Registration Form
                 </a>
               </div>
             </div>
@@ -281,5 +446,5 @@ export default async function Services() {
         </section>
       </div>
     </Layout>
-  )
-} 
+  );
+}

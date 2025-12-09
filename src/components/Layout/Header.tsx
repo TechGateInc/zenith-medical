@@ -71,7 +71,7 @@ export default function Header() {
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
             >
-              Patient Intake
+              Registration Form
             </a>
             <a
               href={appointmentBookingUrl}
@@ -131,7 +131,7 @@ export default function Header() {
                 className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Patient Intake
+                Registration Form
               </a>
               <a
                 href={appointmentBookingUrl}

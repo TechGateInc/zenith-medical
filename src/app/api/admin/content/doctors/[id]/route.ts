@@ -30,7 +30,8 @@ export async function PUT(
       memberships,
       consultationFee,
       availability,
-      emergencyContact
+      emergencyContact,
+      bookingUrl
     } = body;
 
     // Validate required fields
@@ -58,7 +59,8 @@ export async function PUT(
         memberships: memberships || [],
         consultationFee,
         availability,
-        emergencyContact
+        emergencyContact,
+        bookingUrl
       }
     });
 

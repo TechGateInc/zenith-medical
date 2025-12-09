@@ -325,7 +325,7 @@ export default function FAQ() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Patient Intake</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-4">Registration Form</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
                   Complete your intake form before your first visit to save time and ensure we have all necessary information.
                 </p>
@@ -335,7 +335,7 @@ export default function FAQ() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                 >
-                  Complete Patient Intake
+                  Registration Form
                 </a>
               </div>
 

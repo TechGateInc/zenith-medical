@@ -142,6 +142,7 @@ model Doctor {
   consultationFee       String?
   availability          String?
   emergencyContact      String?
+  bookingUrl            String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   teamMember            TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
@@ -174,6 +175,21 @@ model Service {
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model UninsuredService {
+  id          String   @id @default(cuid())
+  category    String   // "clinical", "work_educational_government", "insurance_admin"
+  title       String
+  description String?
+  price       String   // e.g. "$180", "$40 (1-4 lesions, additional: $5 each)"
+  isInsured   Boolean  @default(false) // For items that are noted as insured
+  orderIndex  Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("uninsured_services")
 }
 
 model SystemSettings {

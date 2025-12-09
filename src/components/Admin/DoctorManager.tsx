@@ -46,6 +46,7 @@ interface DoctorProfile {
   consultationFee?: string;
   availability?: string;
   emergencyContact?: string;
+  bookingUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -88,6 +89,7 @@ interface DoctorFormData {
   consultationFee?: string;
   availability?: string;
   emergencyContact?: string;
+  bookingUrl?: string;
 }
 
 // TagInput component for managing arrays of strings
@@ -179,6 +181,7 @@ export default function DoctorManager() {
     consultationFee: "",
     availability: "",
     emergencyContact: "",
+    bookingUrl: "",
   });
   const [availableTeamMembers, setAvailableTeamMembers] = useState<
     TeamMember[]
@@ -287,6 +290,7 @@ export default function DoctorManager() {
       consultationFee: "",
       availability: "",
       emergencyContact: "",
+      bookingUrl: "",
     });
     setPhotoChanged(false);
     setShowModal(true);
@@ -312,6 +316,7 @@ export default function DoctorManager() {
         consultationFee: doctor.doctor.consultationFee || "",
         availability: doctor.doctor.availability || "",
         emergencyContact: doctor.doctor.emergencyContact || "",
+        bookingUrl: doctor.doctor.bookingUrl || "",
       });
     }
     setShowModal(true);
@@ -684,37 +689,37 @@ export default function DoctorManager() {
                 " For new doctor profiles, a photo is highly recommended."}
             </p>
             <div className="bg-white p-3 rounded-lg border border-gray-300">
-                              <ImageUpload
-                  uploadType="team-member"
-                  entityId={editingDoctor?.id || formData.teamMemberId}
-                  currentImageUrl={editingDoctor?.photoUrl}
-                  onUploadSuccess={(uploadResult) => {
-                    // Update the team member's photo URL
-                    if (editingDoctor) {
-                      // Update the local state to reflect the new photo
-                      setEditingDoctor({
-                        ...editingDoctor,
-                        photoUrl: uploadResult.secure_url,
-                      });
-                      setPhotoChanged(true);
-                    }
-                    toast.success("Photo uploaded successfully");
-                  }}
-                  onUploadError={(error) => {
-                    toast.error(`Failed to upload photo: ${error}`);
-                  }}
-                  onImageRemove={() => {
-                    if (editingDoctor) {
-                      setEditingDoctor({
-                        ...editingDoctor,
-                        photoUrl: undefined,
-                      });
-                      setPhotoChanged(true);
-                    }
-                    toast.success("Photo removed");
-                  }}
-                  className="max-w-xs"
-                />
+              <ImageUpload
+                uploadType="team-member"
+                entityId={editingDoctor?.id || formData.teamMemberId}
+                currentImageUrl={editingDoctor?.photoUrl}
+                onUploadSuccess={(uploadResult) => {
+                  // Update the team member's photo URL
+                  if (editingDoctor) {
+                    // Update the local state to reflect the new photo
+                    setEditingDoctor({
+                      ...editingDoctor,
+                      photoUrl: uploadResult.secure_url,
+                    });
+                    setPhotoChanged(true);
+                  }
+                  toast.success("Photo uploaded successfully");
+                }}
+                onUploadError={(error) => {
+                  toast.error(`Failed to upload photo: ${error}`);
+                }}
+                onImageRemove={() => {
+                  if (editingDoctor) {
+                    setEditingDoctor({
+                      ...editingDoctor,
+                      photoUrl: undefined,
+                    });
+                    setPhotoChanged(true);
+                  }
+                  toast.success("Photo removed");
+                }}
+                className="max-w-xs"
+              />
             </div>
           </div>
 
@@ -939,6 +944,26 @@ export default function DoctorManager() {
                 placeholder="Emergency contact info"
               />
             </div>
+          </div>
+
+          {/* Booking URL */}
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Appointment Booking URL
+            </label>
+            <p className="text-sm text-gray-500 mb-3">
+              Direct link for patients to book appointments with this doctor.
+              This will be displayed on the homepage.
+            </p>
+            <input
+              type="url"
+              value={formData.bookingUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, bookingUrl: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., https://booking.example.com/dr-smith"
+            />
           </div>
 
           {/* Form Actions */}

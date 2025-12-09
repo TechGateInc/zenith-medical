@@ -22,7 +22,7 @@ export default function Footer() {
   ]
 
   const patientResources = [
-    { name: 'Patient Intake', href: patientIntakeUrl },
+    { name: 'Registration Form', href: patientIntakeUrl },
     { name: 'FAQs', href: '/faq' },
   ]
 

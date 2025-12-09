@@ -69,7 +69,8 @@ export async function POST(request: NextRequest) {
       memberships,
       consultationFee,
       availability,
-      emergencyContact
+      emergencyContact,
+      bookingUrl
     } = body;
 
     // Validate required fields
@@ -109,7 +110,8 @@ export async function POST(request: NextRequest) {
         memberships: memberships || [],
         consultationFee,
         availability,
-        emergencyContact
+        emergencyContact,
+        bookingUrl
       }
     });
 
