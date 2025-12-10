@@ -21,6 +21,7 @@ interface Service {
   description: string;
   features: string[];
   icon?: string;
+  imageUrl?: string;
   orderIndex: number;
   published: boolean;
 }
@@ -44,8 +45,10 @@ interface Doctor {
   name: string;
   title: string;
   photoUrl?: string;
+  bio?: string;
   doctor?: {
     bookingUrl?: string;
+    professionalBio?: string;
   };
 }
 
@@ -227,48 +230,38 @@ export default async function Home() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {services.slice(0, 6).map((service) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {services.map((service) => (
                   <div
                     key={service.id}
-                    className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full group"
                   >
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600">
-                      {service.icon ? (
-                        <span
-                          dangerouslySetInnerHTML={{ __html: service.icon }}
+                    {/* Service Image */}
+                    {service.imageUrl ? (
+                      <div className="relative h-64 bg-slate-100 overflow-hidden">
+                        <Image
+                          src={service.imageUrl}
+                          alt={service.title}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                      ) : (
-                        <svg
-                          className="h-6 w-6"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3">
-                      {service.title}
-                    </h3>
-                    <p className="text-slate-600 leading-relaxed mb-4">
-                      {service.description}
-                    </p>
-                    {service.features && service.features.length > 0 && (
-                      <ul className="space-y-2">
-                        {service.features.slice(0, 3).map((feature, index) => (
-                          <li
-                            key={index}
-                            className="flex items-center text-sm text-slate-600"
-                          >
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+                        <div className="absolute bottom-4 left-6 right-6">
+                          <h3 className="text-2xl font-bold text-white shadow-sm">
+                            {service.title}
+                          </h3>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-64 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center relative overflow-hidden">
+                        <div className="w-24 h-24 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-blue-600 shadow-sm z-10">
+                          {service.icon ? (
+                            <span
+                              dangerouslySetInnerHTML={{ __html: service.icon }}
+                            />
+                          ) : (
                             <svg
-                              className="w-4 h-4 text-green-500 mr-2 flex-shrink-0"
+                              className="h-10 w-10"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -277,14 +270,83 @@ export default async function Home() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M5 13l4 4L19 7"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                               />
                             </svg>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
+                          )}
+                        </div>
+                        {/* Decorative circles */}
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-200/50 rounded-full blur-2xl"></div>
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-200/50 rounded-full blur-2xl"></div>
+
+                        <div className="absolute bottom-4 left-6 right-6 z-10">
+                          <h3 className="text-2xl font-bold text-slate-800">
+                            {service.title}
+                          </h3>
+                        </div>
+                      </div>
                     )}
+
+                    <div className="p-8 flex-1 flex flex-col">
+                      <p className="text-slate-600 leading-relaxed mb-6 flex-1">
+                        {service.description}
+                      </p>
+
+                      {service.features && service.features.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">
+                            Key Features
+                          </h4>
+                          <ul className="space-y-3">
+                            {service.features
+                              .slice(0, 3)
+                              .map((feature, index) => (
+                                <li
+                                  key={index}
+                                  className="flex items-start text-sm text-slate-600"
+                                >
+                                  <svg
+                                    className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M5 13l4 4L19 7"
+                                    />
+                                  </svg>
+                                  <span>{feature}</span>
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="mt-8 pt-6 border-t border-slate-100">
+                        <Link
+                          href="/services"
+                          className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors group-hover:translate-x-1 duration-300"
+                        >
+                          Learn More
+                          <svg
+                            className="w-4 h-4 ml-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -353,7 +415,7 @@ export default async function Home() {
                             src={doctor.photoUrl}
                             alt={doctor.name}
                             fill
-                            className="object-cover"
+                            className="object-cover object-top"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
@@ -373,23 +435,32 @@ export default async function Home() {
                           </div>
                         )}
                       </div>
-                      {/* Doctor Info */}
                       <div className="p-6">
-                        <h3 className="text-xl font-bold text-slate-800 mb-1">
-                          {doctor.name}
-                        </h3>
-                        <p className="text-slate-600 mb-4">{doctor.title}</p>
-                        <div className="flex gap-3">
+                        <div className="mb-4">
+                          <h3 className="text-xl font-bold text-slate-800 mb-1">
+                            {doctor.name}
+                          </h3>
+                          <p className="text-blue-600 font-medium mb-3">
+                            {doctor.title}
+                          </p>
+                          <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed">
+                            {doctor.bio ||
+                              doctor.doctor?.professionalBio ||
+                              "Dedicated healthcare professional committed to your well-being."}
+                          </p>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-slate-100">
                           <a
                             href={
                               doctor.doctor?.bookingUrl || appointmentBookingUrl
                             }
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
+                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
                           >
                             <svg
-                              className="mr-2 h-4 w-4"
+                              className="mr-2 h-5 w-5"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -403,12 +474,6 @@ export default async function Home() {
                             </svg>
                             Book Appointment
                           </a>
-                          <Link
-                            href={`/doctors/${slug}`}
-                            className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors text-sm"
-                          >
-                            View Profile
-                          </Link>
                         </div>
                       </div>
                     </div>

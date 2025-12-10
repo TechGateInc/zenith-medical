@@ -171,6 +171,7 @@ model Service {
   description String
   features    String[]
   icon        String?
+  imageUrl    String?
   orderIndex  Int      @default(0)
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
