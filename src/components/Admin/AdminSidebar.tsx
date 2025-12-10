@@ -11,10 +11,10 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useSidebar } from '@/lib/contexts/SidebarContext';
 
-import { 
-  LayoutDashboard, 
-  Users, 
-  FileText, 
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
   Download,
   Shield,
   HelpCircle,
@@ -26,6 +26,7 @@ import {
   Home,
   Menu,
   X,
+  DollarSign,
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -82,6 +83,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ user }) => {
           name: 'Services',
           href: '/admin/content/services',
           icon: BookOpen,
+        },
+        {
+          name: 'Uninsured Services',
+          href: '/admin/content/uninsured-services',
+          icon: DollarSign,
         },
         {
           name: 'Doctor Profiles',
