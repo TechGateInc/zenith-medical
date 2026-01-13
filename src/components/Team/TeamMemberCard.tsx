@@ -19,14 +19,14 @@ export interface TeamMember {
   id: string;
   name: string;
   title: string;
-  bio?: string;
-  photoUrl?: string;
-  email?: string;
-  phone?: string;
+  bio?: string | null;
+  photoUrl?: string | null;
+  email?: string | null;
+  phone?: string | null;
   orderIndex: number;
   published: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 interface TeamMemberCardProps {

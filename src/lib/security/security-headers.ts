@@ -271,7 +271,7 @@ export interface SecurityEvent {
   ipAddress: string
   userAgent: string
   path: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export function logSecurityEvent(event: SecurityEvent): void {

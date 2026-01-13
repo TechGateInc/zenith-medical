@@ -27,9 +27,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    // Get current date ranges
-    const now = new Date();
-    
     // Calculate security statistics
     // Note: These would typically come from audit logs, authentication logs, etc.
     // For now, we'll use available data and some mock calculations

@@ -14,24 +14,25 @@ export function useApiAuth() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  const handleApiError = useCallback((error: any, response?: Response) => {
+  const handleApiError = useCallback((error: unknown, response?: Response) => {
+    const errorObj = error as Error | { message?: string } | null;
     // Handle 401 Unauthorized errors
-    if (response?.status === 401 || error?.message?.includes('Unauthorized')) {
+    if (response?.status === 401 || errorObj?.message?.includes('Unauthorized')) {
       toast.error('Session expired. Please sign in again.');
       router.push('/admin/login');
       return true; // Indicates that the error was handled
     }
 
     // Handle 403 Forbidden errors
-    if (response?.status === 403 || error?.message?.includes('Forbidden')) {
+    if (response?.status === 403 || errorObj?.message?.includes('Forbidden')) {
       toast.error('Access denied. You do not have permission to perform this action.');
       return true;
     }
 
     // Handle other authentication-related errors
-    if (error?.message?.includes('Authentication required') ||
-      error?.message?.includes('Invalid session') ||
-      error?.message?.includes('Token expired')) {
+    if (errorObj?.message?.includes('Authentication required') ||
+      errorObj?.message?.includes('Invalid session') ||
+      errorObj?.message?.includes('Token expired')) {
       toast.error('Authentication required. Please sign in again.');
       router.push('/admin/login');
       return true;

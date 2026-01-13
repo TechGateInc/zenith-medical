@@ -34,8 +34,8 @@ export interface ImageUploadOptions {
   folder?: string;
   public_id?: string;
   tags?: string[];
-  transformation?: any;
-  eager?: any[];
+  transformation?: Record<string, unknown>;
+  eager?: Record<string, unknown>[];
   context?: Record<string, string>;
   metadata?: Record<string, string>;
 }
@@ -61,7 +61,7 @@ export function validateImage(file: File): ValidationError[] {
 
   // Check file format
   const fileExtension = file.name.split('.').pop()?.toLowerCase();
-  if (!fileExtension || !VALIDATION.ALLOWED_FORMATS.includes(fileExtension as any)) {
+  if (!fileExtension || !VALIDATION.ALLOWED_FORMATS.includes(fileExtension as typeof VALIDATION.ALLOWED_FORMATS[number])) {
     errors.push({
       field: 'fileFormat',
       message: `File format must be one of: ${VALIDATION.ALLOWED_FORMATS.join(', ')}`,
@@ -196,6 +196,49 @@ export async function uploadBlogImage(
   }
 }
 
+// Upload service image
+export async function uploadServiceImage(
+  file: File,
+  serviceId: string,
+  options: Partial<ImageUploadOptions> = {}
+): Promise<UploadResult> {
+  // Validate image
+  const validationErrors = validateImage(file);
+  if (validationErrors.length > 0) {
+    throw new Error(`Validation failed: ${validationErrors.map(e => e.message).join(', ')}`);
+  }
+
+  try {
+    // Convert file to data URL (server-side)
+    const dataURL = await fileToDataURLServer(file);
+
+    // Generate unique public ID
+    const publicId = generatePublicId('service', `${serviceId}_${file.name}`);
+
+    // Upload options
+    const uploadOptions = {
+      ...UPLOAD_OPTIONS.SERVICE_IMAGE,
+      public_id: publicId,
+      context: {
+        service_id: serviceId,
+        original_filename: file.name,
+        upload_date: new Date().toISOString(),
+        type: 'service_image',
+        ...options.context
+      },
+      ...options
+    };
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(dataURL, uploadOptions);
+
+    return result as UploadResult;
+  } catch (error) {
+    console.error('Service image upload failed:', error);
+    throw new Error(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 // Upload general image
 export async function uploadGeneralImage(
   file: File,
@@ -254,7 +297,7 @@ export async function deleteImage(publicId: string): Promise<boolean> {
 export function getOptimizedImageUrl(
   publicId: string,
   transformationType: keyof typeof IMAGE_TRANSFORMATIONS,
-  additionalTransformations: any = {}
+  additionalTransformations: Record<string, unknown> = {}
 ): string {
   const baseTransformation = IMAGE_TRANSFORMATIONS[transformationType];
   const transformation = { ...baseTransformation, ...additionalTransformations };
@@ -299,8 +342,8 @@ export function getResponsiveImageUrls(publicId: string, baseWidth: number = 400
 // Batch upload images
 export async function batchUploadImages(
   files: File[],
-  uploadFunction: (file: File, ...args: any[]) => Promise<UploadResult>,
-  ...args: any[]
+  uploadFunction: (file: File, ...args: unknown[]) => Promise<UploadResult>,
+  ...args: unknown[]
 ): Promise<UploadResult[]> {
   const results: UploadResult[] = [];
   const errors: string[] = [];
@@ -322,7 +365,7 @@ export async function batchUploadImages(
 }
 
 // Get image metadata
-export async function getImageMetadata(publicId: string): Promise<any> {
+export async function getImageMetadata(publicId: string): Promise<Record<string, unknown> | null> {
   try {
     const result = await cloudinary.api.resource(publicId, {
       image_metadata: true,

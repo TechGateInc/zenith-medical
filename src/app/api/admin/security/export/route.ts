@@ -69,11 +69,12 @@ export async function GET(request: NextRequest) {
         const action = log.action || '';
         const userId = log.userId || '';
         // Extract userEmail from details if available
-        const userEmail = (log.details as any)?.userEmail || (log.details as any)?.email || '';
+        const detailsObj = log.details as Record<string, unknown> | null;
+        const userEmail = (detailsObj?.userEmail as string) || (detailsObj?.email as string) || '';
         const ipAddress = log.ipAddress || '';
         const details = log.details ? JSON.stringify(log.details).replace(/"/g, '""') : '';
         // Extract success status from details or assume success if no explicit failure
-        const status = (log.details as any)?.success !== false ? 'Success' : 'Failed';
+        const status = detailsObj?.success !== false ? 'Success' : 'Failed';
         
         return `"${timestamp}","${action}","${userId}","${userEmail}","${ipAddress}","${details}","${status}"`;
       }).join('\n');
@@ -101,15 +102,18 @@ export async function GET(request: NextRequest) {
             end: endDate.toISOString()
           },
           recordCount: auditLogs.length,
-          logs: auditLogs.map(log => ({
-            timestamp: log.timestamp,
-            action: log.action,
-            userId: log.userId,
-            userEmail: (log.details as any)?.userEmail || (log.details as any)?.email || null,
-            ipAddress: log.ipAddress,
-            details: log.details,
-            success: (log.details as any)?.success !== false
-          }))
+          logs: auditLogs.map(log => {
+            const detailsObj = log.details as Record<string, unknown> | null;
+            return {
+              timestamp: log.timestamp,
+              action: log.action,
+              userId: log.userId,
+              userEmail: (detailsObj?.userEmail as string) || (detailsObj?.email as string) || null,
+              ipAddress: log.ipAddress,
+              details: log.details,
+              success: detailsObj?.success !== false
+            };
+          })
         }
       });
     }

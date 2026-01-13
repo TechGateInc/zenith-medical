@@ -18,7 +18,8 @@ export const CLOUDINARY_FOLDERS = {
   TEAM_MEMBERS: 'zenith-medical/team-members',
   BLOG_IMAGES: 'zenith-medical/blog-images',
   GENERAL_IMAGES: 'zenith-medical/general',
-  THUMBNAILS: 'zenith-medical/thumbnails'
+  THUMBNAILS: 'zenith-medical/thumbnails',
+  SERVICES: 'zenith-medical/services'
 } as const;
 
 // Image transformation presets
@@ -50,6 +51,20 @@ export const IMAGE_TRANSFORMATIONS = {
   BLOG_THUMBNAIL: {
     width: 400,
     height: 225,
+    crop: 'fill',
+    quality: 'auto:good',
+    format: 'webp'
+  },
+  SERVICE_IMAGE: {
+    width: 800,
+    height: 600,
+    crop: 'fill',
+    quality: 'auto:good',
+    format: 'webp'
+  },
+  SERVICE_THUMBNAIL: {
+    width: 400,
+    height: 300,
     crop: 'fill',
     quality: 'auto:good',
     format: 'webp'
@@ -92,6 +107,18 @@ export const UPLOAD_OPTIONS = {
     tags: ['general-image', 'zenith-medical'],
     resource_type: 'image' as const,
     transformation: [IMAGE_TRANSFORMATIONS.GENERAL_OPTIMIZED],
+    overwrite: true,
+    invalidate: true
+  },
+  SERVICE_IMAGE: {
+    folder: CLOUDINARY_FOLDERS.SERVICES,
+    tags: ['service-image', 'zenith-medical'],
+    resource_type: 'image' as const,
+    transformation: [IMAGE_TRANSFORMATIONS.SERVICE_IMAGE],
+    eager: [
+      IMAGE_TRANSFORMATIONS.SERVICE_THUMBNAIL
+    ],
+    eager_async: true,
     overwrite: true,
     invalidate: true
   }

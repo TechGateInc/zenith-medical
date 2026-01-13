@@ -8,7 +8,7 @@ export interface AuditLogData {
   userEmail?: string
   resource?: string
   resourceId?: string
-  details?: Record<string, any>
+  details?: Record<string, unknown>
   ipAddress?: string
   userAgent?: string
 }
@@ -129,7 +129,7 @@ export async function queryAuditLogs(filters: {
   limit?: number
   offset?: number
 }) {
-  const where: any = {}
+  const where: NonNullable<Parameters<typeof prisma.auditLog.findMany>[0]>['where'] = {}
 
   if (filters.userId) where.userId = filters.userId
   if (filters.action) where.action = { contains: filters.action, mode: 'insensitive' }

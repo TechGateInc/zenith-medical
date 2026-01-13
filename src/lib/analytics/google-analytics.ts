@@ -3,8 +3,8 @@
 
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void
-    dataLayer: any[]
+    gtag: (...args: unknown[]) => void
+    dataLayer: unknown[]
   }
 }
 
@@ -13,7 +13,7 @@ export interface AnalyticsEvent {
   category: string
   label?: string
   value?: number
-  custom_parameters?: Record<string, any>
+  custom_parameters?: Record<string, unknown>
 }
 
 export interface PageViewEvent {
@@ -57,8 +57,8 @@ export class GoogleAnalytics {
 
       // Initialize dataLayer
       window.dataLayer = window.dataLayer || []
-      window.gtag = function gtag() {
-        window.dataLayer.push(arguments)
+      window.gtag = function gtag(...args: unknown[]) {
+        window.dataLayer.push(args)
       }
 
       // Configure Google Analytics with privacy settings
@@ -326,8 +326,8 @@ export class GoogleAnalytics {
     return `file.${extension}`
   }
 
-  private sanitizeCustomParameters(params: Record<string, any>): Record<string, any> {
-    const sanitized: Record<string, any> = {}
+  private sanitizeCustomParameters(params: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {}
     
     Object.entries(params).forEach(([key, value]) => {
       if (typeof value === 'string') {

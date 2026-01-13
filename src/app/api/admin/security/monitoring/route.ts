@@ -146,8 +146,8 @@ export async function GET(request: NextRequest) {
 
     // Calculate security score (0-100)
     const totalEvents = securityEvents.length
-    const failedLogins = authMetrics.find((m: any) => m.action === 'LOGIN_FAILED')?._count.action || 0
-    const successfulLogins = authMetrics.find((m: any) => m.action === 'LOGIN_SUCCESS')?._count.action || 0
+    const failedLogins = authMetrics.find((m: { action: string; _count: { action: number } }) => m.action === 'LOGIN_FAILED')?._count.action || 0
+    const successfulLogins = authMetrics.find((m: { action: string; _count: { action: number } }) => m.action === 'LOGIN_SUCCESS')?._count.action || 0
     
     let securityScore = 100
     

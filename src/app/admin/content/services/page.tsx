@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Trash2, Edit, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Trash2, Edit, Eye, EyeOff, ArrowUp, ArrowDown, Upload, X, Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
 
 interface Service {
   id: string;
@@ -32,6 +33,8 @@ export default function AdminServicesPage() {
   const [form, setForm] = useState(emptyService);
   const [formMode, setFormMode] = useState<"add" | "edit">("add");
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchServices();
@@ -157,6 +160,59 @@ export default function AdminServicesPage() {
     }));
   }
 
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      setError('Please select a valid image file (JPEG, PNG, WebP, or GIF)');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Image file must be less than 10MB');
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('uploadType', 'service');
+      formData.append('entityId', editing?.id || 'new-service');
+
+      const res = await fetch('/api/uploads/images', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      setForm((f) => ({ ...f, imageUrl: data.data.secure_url }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload image');
+    } finally {
+      setUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  }
+
+  function handleRemoveImage() {
+    setForm((f) => ({ ...f, imageUrl: '' }));
+  }
+
   return (
     <div className="max-w-4xl mx-auto py-12">
       <h1 className="text-3xl font-bold mb-8">Manage Services</h1>
@@ -218,18 +274,77 @@ export default function AdminServicesPage() {
           </button>
         </div>
         <div className="mb-4">
-          <label className="block font-medium mb-1">Image URL (optional)</label>
-          <input
-            className="w-full border rounded px-3 py-2"
-            value={form.imageUrl || ""}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, imageUrl: e.target.value }))
-            }
-            placeholder="https://example.com/image.jpg"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Enter an image URL to display with this service
-          </p>
+          <label className="block font-medium mb-1">Service Image</label>
+
+          {/* Image Preview */}
+          {form.imageUrl ? (
+            <div className="relative mb-3">
+              <div className="relative w-full h-48 rounded-lg overflow-hidden bg-slate-100">
+                <Image
+                  src={form.imageUrl}
+                  alt="Service preview"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                title="Remove image"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : (
+            <div className="mb-3 w-full h-48 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center text-slate-400">
+              <ImageIcon size={48} className="mb-2" />
+              <p className="text-sm">No image selected</p>
+            </div>
+          )}
+
+          {/* Upload Button */}
+          <div className="flex items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="service-image-upload"
+            />
+            <label
+              htmlFor="service-image-upload"
+              className={`inline-flex items-center px-4 py-2 rounded-lg font-medium cursor-pointer transition-colors ${
+                uploading
+                  ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+              }`}
+            >
+              <Upload size={18} className="mr-2" />
+              {uploading ? 'Uploading...' : 'Upload Image'}
+            </label>
+            <span className="text-xs text-slate-500">
+              JPEG, PNG, WebP, or GIF (max 10MB)
+            </span>
+          </div>
+
+          {/* Or enter URL manually */}
+          <div className="mt-3">
+            <details className="text-sm">
+              <summary className="cursor-pointer text-slate-500 hover:text-slate-700">
+                Or enter image URL manually
+              </summary>
+              <input
+                className="w-full border rounded px-3 py-2 mt-2"
+                value={form.imageUrl || ""}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, imageUrl: e.target.value }))
+                }
+                placeholder="https://example.com/image.jpg"
+              />
+            </details>
+          </div>
         </div>
         <div className="mb-4 flex items-center">
           <input
@@ -275,6 +390,7 @@ export default function AdminServicesPage() {
             <thead>
               <tr>
                 <th className="py-2">Order</th>
+                <th className="py-2">Image</th>
                 <th className="py-2">Title</th>
                 <th className="py-2">Published</th>
                 <th className="py-2">Actions</th>
@@ -298,6 +414,22 @@ export default function AdminServicesPage() {
                     >
                       <ArrowDown size={18} />
                     </button>
+                  </td>
+                  <td className="py-2">
+                    {service.imageUrl ? (
+                      <div className="relative w-16 h-12 rounded overflow-hidden bg-slate-100">
+                        <Image
+                          src={service.imageUrl}
+                          alt={service.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-12 rounded bg-slate-100 flex items-center justify-center">
+                        <ImageIcon size={20} className="text-slate-400" />
+                      </div>
+                    )}
                   </td>
                   <td className="py-2 font-semibold">{service.title}</td>
                   <td className="py-2">

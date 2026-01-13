@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
     const offset = searchParams.get('offset');
     const statsOnly = searchParams.get('stats') === 'true';
 
-    // Build where clause - using any for Prisma's dynamic where conditions
-    const where: any = {};
+    // Build where clause for Prisma's dynamic where conditions
+    const where: NonNullable<Parameters<typeof prisma.teamMember.findMany>[0]>['where'] = {};
     
     if (published !== null) {
       where.published = published === 'true';
@@ -61,8 +61,8 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    // Build query options - using any for Prisma's dynamic query building
-    const queryOptions: any = {
+    // Build query options for Prisma's dynamic query building
+    const queryOptions: Parameters<typeof prisma.teamMember.findMany>[0] = {
       where,
       orderBy: {
         [orderBy]: orderDirection

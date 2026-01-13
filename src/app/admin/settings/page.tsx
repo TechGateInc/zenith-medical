@@ -24,8 +24,6 @@ import { SettingsSkeleton } from "@/components/UI/SkeletonLoader";
 import ImageUpload from "@/components/Admin/ImageUpload";
 import RichTextEditor from "@/components/UI/RichTextEditor";
 
-
-
 interface ContactSettings {
   primaryPhone: string;
   emergencyPhone?: string;
@@ -54,8 +52,6 @@ interface SystemSettings {
   timezone: string;
   dateFormat: string;
 }
-
-
 
 interface SecuritySettings {
   sessionTimeout: number;
@@ -87,8 +83,6 @@ export default function SettingsPage() {
     dateFormat: "MM/DD/YYYY",
   });
 
-
-
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
     sessionTimeout: 30,
     maxLoginAttempts: 5,
@@ -97,13 +91,14 @@ export default function SettingsPage() {
     ipWhitelist: "",
   });
 
-  const [announcementSettings, setAnnouncementSettings] = useState<AnnouncementSettings>({
-    announcementEnabled: false,
-    announcementTitle: "",
-    announcementMessage: "",
-    announcementType: "info",
-            announcementDisplay: "popup",
-  });
+  const [announcementSettings, setAnnouncementSettings] =
+    useState<AnnouncementSettings>({
+      announcementEnabled: false,
+      announcementTitle: "",
+      announcementMessage: "",
+      announcementType: "info",
+      announcementDisplay: "popup",
+    });
 
   const [activeTab, setActiveTab] = useState<
     "contact" | "announcement" | "system" | "security" | "database"
@@ -124,17 +119,9 @@ export default function SettingsPage() {
     const tabParam = urlParams.get("tab");
     if (
       tabParam &&
-      ["contact", "system", "security", "database"].includes(
-        tabParam
-      )
+      ["contact", "system", "security", "database"].includes(tabParam)
     ) {
-      setActiveTab(
-        tabParam as
-          | "contact"
-          | "system"
-          | "security"
-          | "database"
-      );
+      setActiveTab(tabParam as "contact" | "system" | "security" | "database");
     }
   }, []);
 
@@ -153,31 +140,43 @@ export default function SettingsPage() {
             address: data.settings.contact.address || "",
             businessHours: data.settings.contact.businessHours || "",
             homepageImageUrl: data.settings.contact.homepageImageUrl || "",
-            appointmentBookingUrl: data.settings.contact.appointmentBookingUrl || "",
+            appointmentBookingUrl:
+              data.settings.contact.appointmentBookingUrl || "",
             patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
-            whyChooseUsImageUrl: data.settings.contact.whyChooseUsImageUrl || "",
-            aboutMissionImageUrl: data.settings.contact.aboutMissionImageUrl || "",
-            servicesPaymentImageUrl: data.settings.contact.servicesPaymentImageUrl || "",
-            acceptingNewPatients: typeof data.settings.contact.acceptingNewPatients === 'boolean' ? data.settings.contact.acceptingNewPatients : true,
+            whyChooseUsImageUrl:
+              data.settings.contact.whyChooseUsImageUrl || "",
+            aboutMissionImageUrl:
+              data.settings.contact.aboutMissionImageUrl || "",
+            servicesPaymentImageUrl:
+              data.settings.contact.servicesPaymentImageUrl || "",
+            acceptingNewPatients:
+              typeof data.settings.contact.acceptingNewPatients === "boolean"
+                ? data.settings.contact.acceptingNewPatients
+                : true,
           });
           setSystemSettings({
             timezone: data.settings.system.timezone || "America/Toronto",
             dateFormat: data.settings.system.dateFormat || "MM/DD/YYYY",
           });
-          
+
           setSecuritySettings({
             sessionTimeout: data.settings.security.sessionTimeout || 30,
             maxLoginAttempts: data.settings.security.maxLoginAttempts || 5,
             passwordExpiry: data.settings.security.passwordExpiry || 90,
             ipWhitelist: data.settings.security.ipWhitelist || "",
           });
-          
+
           setAnnouncementSettings({
-            announcementEnabled: data.settings.announcement?.announcementEnabled || false,
-            announcementTitle: data.settings.announcement?.announcementTitle || "",
-            announcementMessage: data.settings.announcement?.announcementMessage || "",
-            announcementType: data.settings.announcement?.announcementType || "info",
-            announcementDisplay: data.settings.announcement?.announcementDisplay || "popup",
+            announcementEnabled:
+              data.settings.announcement?.announcementEnabled || false,
+            announcementTitle:
+              data.settings.announcement?.announcementTitle || "",
+            announcementMessage:
+              data.settings.announcement?.announcementMessage || "",
+            announcementType:
+              data.settings.announcement?.announcementType || "info",
+            announcementDisplay:
+              data.settings.announcement?.announcementDisplay || "popup",
           });
         }
       } else {
@@ -217,11 +216,11 @@ export default function SettingsPage() {
             type: "success",
             text: data.message || "Settings saved successfully!",
           });
-          
+
           // Clear appointment URLs cache to force refresh
-          if (typeof window !== 'undefined') {
+          if (typeof window !== "undefined") {
             // Dispatch a custom event to notify other components to refresh their cache
-            window.dispatchEvent(new CustomEvent('settingsUpdated'));
+            window.dispatchEvent(new CustomEvent("settingsUpdated"));
           }
           // Update local state with returned settings
           if (data.settings) {
@@ -233,13 +232,20 @@ export default function SettingsPage() {
               address: data.settings.contact.address || "",
               businessHours: data.settings.contact.businessHours || "",
               homepageImageUrl: data.settings.contact.homepageImageUrl || "",
-                              appointmentBookingUrl: data.settings.contact.appointmentBookingUrl || "",
-                patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
-                whyChooseUsImageUrl: data.settings.contact.whyChooseUsImageUrl || "",
-                aboutMissionImageUrl: data.settings.contact.aboutMissionImageUrl || "",
-                servicesPaymentImageUrl: data.settings.contact.servicesPaymentImageUrl || "",
-                acceptingNewPatients: typeof data.settings.contact.acceptingNewPatients === 'boolean' ? data.settings.contact.acceptingNewPatients : true,
-              });
+              appointmentBookingUrl:
+                data.settings.contact.appointmentBookingUrl || "",
+              patientIntakeUrl: data.settings.contact.patientIntakeUrl || "",
+              whyChooseUsImageUrl:
+                data.settings.contact.whyChooseUsImageUrl || "",
+              aboutMissionImageUrl:
+                data.settings.contact.aboutMissionImageUrl || "",
+              servicesPaymentImageUrl:
+                data.settings.contact.servicesPaymentImageUrl || "",
+              acceptingNewPatients:
+                typeof data.settings.contact.acceptingNewPatients === "boolean"
+                  ? data.settings.contact.acceptingNewPatients
+                  : true,
+            });
             setSystemSettings({
               timezone: data.settings.system.timezone || "America/Toronto",
               dateFormat: data.settings.system.dateFormat || "MM/DD/YYYY",
@@ -637,12 +643,13 @@ export default function SettingsPage() {
                         });
                       }}
                       maxFileSize={5}
-                      allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                      allowedFormats={["jpg", "jpeg", "png", "webp"]}
                       className="w-full"
                     />
                   </div>
                   <p className="mt-1 text-sm text-gray-500">
-                    Hero image displayed on the homepage. Recommended size: 1200x600px or larger.
+                    Hero image displayed on the homepage. Recommended size:
+                    1200x600px or larger.
                   </p>
                 </div>
 
@@ -703,12 +710,17 @@ export default function SettingsPage() {
                       }
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
-                    <label htmlFor="acceptingNewPatients" className="ml-2 text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="acceptingNewPatients"
+                      className="ml-2 text-sm font-medium text-gray-700"
+                    >
                       Accepting New Patients
                     </label>
                   </div>
                   <p className="mt-1 text-sm text-gray-500">
-                    When unchecked, the website will show "Join the waitlist" instead of "Now Open: Accepting New Patients" on the homepage.
+                    When unchecked, the website will show &quot;Join the
+                    waitlist&quot; instead of &quot;Now Open: Accepting New
+                    Patients&quot; on the homepage.
                   </p>
                 </div>
 
@@ -718,11 +730,13 @@ export default function SettingsPage() {
                     Why Choose Us Section Image
                   </label>
                   {contactSettings.whyChooseUsImageUrl && (
-                    <div className="mb-4">
-                      <img
+                    <div className="mb-4 relative w-full h-48">
+                      <Image
                         src={contactSettings.whyChooseUsImageUrl}
                         alt="Why Choose Us Section"
-                        className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                        fill
+                        className="object-cover rounded-lg border border-gray-300"
+                        unoptimized
                       />
                     </div>
                   )}
@@ -744,11 +758,12 @@ export default function SettingsPage() {
                       });
                     }}
                     maxFileSize={5}
-                    allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                    allowedFormats={["jpg", "jpeg", "png", "webp"]}
                     className="w-full"
                   />
                   <p className="mt-1 text-sm text-gray-500">
-                    Image for the &quot;Why Choose Us&quot; section on the homepage. Recommended size: 600x400px or larger.
+                    Image for the &quot;Why Choose Us&quot; section on the
+                    homepage. Recommended size: 600x400px or larger.
                   </p>
                 </div>
 
@@ -758,11 +773,13 @@ export default function SettingsPage() {
                     About Mission Section Image
                   </label>
                   {contactSettings.aboutMissionImageUrl && (
-                    <div className="mb-4">
-                      <img
+                    <div className="mb-4 relative w-full h-48">
+                      <Image
                         src={contactSettings.aboutMissionImageUrl}
                         alt="About Mission Section"
-                        className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                        fill
+                        className="object-cover rounded-lg border border-gray-300"
+                        unoptimized
                       />
                     </div>
                   )}
@@ -784,11 +801,12 @@ export default function SettingsPage() {
                       });
                     }}
                     maxFileSize={5}
-                    allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                    allowedFormats={["jpg", "jpeg", "png", "webp"]}
                     className="w-full"
                   />
                   <p className="mt-1 text-sm text-gray-500">
-                    Image for the &quot;Our Mission&quot; section on the about page. Recommended size: 600x400px or larger.
+                    Image for the &quot;Our Mission&quot; section on the about
+                    page. Recommended size: 600x400px or larger.
                   </p>
                 </div>
 
@@ -798,11 +816,13 @@ export default function SettingsPage() {
                     Services Payment Section Image
                   </label>
                   {contactSettings.servicesPaymentImageUrl && (
-                    <div className="mb-4">
-                      <img
+                    <div className="mb-4 relative w-full h-48">
+                      <Image
                         src={contactSettings.servicesPaymentImageUrl}
                         alt="Services Payment Section"
-                        className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                        fill
+                        className="object-cover rounded-lg border border-gray-300"
+                        unoptimized
                       />
                     </div>
                   )}
@@ -824,11 +844,12 @@ export default function SettingsPage() {
                       });
                     }}
                     maxFileSize={5}
-                    allowedFormats={['jpg', 'jpeg', 'png', 'webp']}
+                    allowedFormats={["jpg", "jpeg", "png", "webp"]}
                     className="w-full"
                   />
                   <p className="mt-1 text-sm text-gray-500">
-                    Image for the payment options section on the services page. Recommended size: 600x400px or larger.
+                    Image for the payment options section on the services page.
+                    Recommended size: 600x400px or larger.
                   </p>
                 </div>
               </div>
@@ -841,7 +862,7 @@ export default function SettingsPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
                 Website Announcement
               </h2>
-              
+
               <div className="mb-6">
                 <div className="flex items-center mb-4">
                   <input
@@ -856,12 +877,16 @@ export default function SettingsPage() {
                     }
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="announcementEnabled" className="ml-2 text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="announcementEnabled"
+                    className="ml-2 text-sm font-medium text-gray-700"
+                  >
                     Enable website announcement popup
                   </label>
                 </div>
                 <p className="text-sm text-gray-500">
-                  When enabled, visitors will see a popup announcement when they first visit the website.
+                  When enabled, visitors will see a popup announcement when they
+                  first visit the website.
                 </p>
               </div>
 
@@ -943,36 +968,59 @@ export default function SettingsPage() {
                       className="min-h-[200px]"
                     />
                     <p className="mt-1 text-sm text-gray-500">
-                      Use the toolbar above to format your announcement with headings, lists, and text styling.
+                      Use the toolbar above to format your announcement with
+                      headings, lists, and text styling.
                     </p>
                   </div>
 
                   {/* Preview */}
                   <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Preview:</h3>
-                    <div className={`p-4 rounded-lg ${
-                      announcementSettings.announcementType === 'info' ? 'bg-blue-50 border border-blue-200' :
-                      announcementSettings.announcementType === 'warning' ? 'bg-yellow-50 border border-yellow-200' :
-                      announcementSettings.announcementType === 'error' ? 'bg-red-50 border border-red-200' :
-                      'bg-green-50 border border-green-200'
-                    }`}>
-                      <h4 className={`font-semibold mb-2 ${
-                        announcementSettings.announcementType === 'info' ? 'text-blue-800' :
-                        announcementSettings.announcementType === 'warning' ? 'text-yellow-800' :
-                        announcementSettings.announcementType === 'error' ? 'text-red-800' :
-                        'text-green-800'
-                      }`}>
-                        {announcementSettings.announcementTitle || "Important Notice"}
-                      </h4>
-                      <div 
-                        className={`text-sm prose prose-sm max-w-none ${
-                          announcementSettings.announcementType === 'info' ? 'text-blue-700' :
-                          announcementSettings.announcementType === 'warning' ? 'text-yellow-700' :
-                          announcementSettings.announcementType === 'error' ? 'text-red-700' :
-                          'text-green-700'
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                      Preview:
+                    </h3>
+                    <div
+                      className={`p-4 rounded-lg ${
+                        announcementSettings.announcementType === "info"
+                          ? "bg-blue-50 border border-blue-200"
+                          : announcementSettings.announcementType === "warning"
+                            ? "bg-yellow-50 border border-yellow-200"
+                            : announcementSettings.announcementType === "error"
+                              ? "bg-red-50 border border-red-200"
+                              : "bg-green-50 border border-green-200"
+                      }`}
+                    >
+                      <h4
+                        className={`font-semibold mb-2 ${
+                          announcementSettings.announcementType === "info"
+                            ? "text-blue-800"
+                            : announcementSettings.announcementType ===
+                                "warning"
+                              ? "text-yellow-800"
+                              : announcementSettings.announcementType ===
+                                  "error"
+                                ? "text-red-800"
+                                : "text-green-800"
                         }`}
-                        dangerouslySetInnerHTML={{ 
-                          __html: announcementSettings.announcementMessage || "Your announcement message will appear here." 
+                      >
+                        {announcementSettings.announcementTitle ||
+                          "Important Notice"}
+                      </h4>
+                      <div
+                        className={`text-sm prose prose-sm max-w-none ${
+                          announcementSettings.announcementType === "info"
+                            ? "text-blue-700"
+                            : announcementSettings.announcementType ===
+                                "warning"
+                              ? "text-yellow-700"
+                              : announcementSettings.announcementType ===
+                                  "error"
+                                ? "text-red-700"
+                                : "text-green-700"
+                        }`}
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            announcementSettings.announcementMessage ||
+                            "Your announcement message will appear here.",
                         }}
                       />
                     </div>
@@ -1044,8 +1092,6 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
-
-
 
           {/* Security Tab */}
           {activeTab === "security" && (

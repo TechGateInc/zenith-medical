@@ -242,13 +242,14 @@ export async function PUT(request: NextRequest) {
     let updatedSettings;
     try {
       updatedSettings = await settingsManager.updateSettings(updates, user.id);
-    } catch (err: any) {
-      const msg = (err && err.message) || '';
+    } catch (err: unknown) {
+      const msg = (err instanceof Error ? err.message : '') || '';
       const hasAcceptingFlag = Object.prototype.hasOwnProperty.call(updates, 'acceptingNewPatients');
       const looksLikeMissingColumn = /does not exist|Unknown column|invalid input syntax for type|acceptingNewPatients/i.test(msg);
       if (hasAcceptingFlag && looksLikeMissingColumn) {
         // Retry without acceptingNewPatients to avoid hard failure before migration is applied
-        const { acceptingNewPatients: _omit, ...withoutFlag } = updates as any;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { acceptingNewPatients: _, ...withoutFlag } = updates as Record<string, unknown>;
         console.warn('[settings] acceptingNewPatients column missing, retrying without the field');
         updatedSettings = await settingsManager.updateSettings(withoutFlag, user.id);
       } else {

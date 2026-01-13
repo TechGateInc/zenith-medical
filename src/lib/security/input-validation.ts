@@ -74,7 +74,7 @@ export const DangerousPatterns = {
 
 export interface ValidationResult {
   isValid: boolean
-  sanitized?: any
+  sanitized?: unknown
   errors: string[]
   warnings: string[]
   securityIssues: string[]
@@ -305,7 +305,7 @@ export class InputValidator {
   }
 
   // Comprehensive input validation for API requests
-  public validateAPIInput(input: any, schema: z.ZodSchema, requestInfo?: {
+  public validateAPIInput(input: unknown, schema: z.ZodSchema, requestInfo?: {
     ip?: string
     userAgent?: string
     path?: string
@@ -357,7 +357,7 @@ export class InputValidator {
   }
 
   // Recursively check object for security issues
-  private recursiveSecurityCheck(obj: any, result: ValidationResult, depth = 0): void {
+  private recursiveSecurityCheck(obj: unknown, result: ValidationResult, depth = 0): void {
     // Prevent deep recursion attacks
     if (depth > 10) {
       result.securityIssues.push('Object nesting too deep')

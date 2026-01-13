@@ -6,12 +6,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
-import { 
-  uploadTeamMemberPhoto, 
-  uploadBlogImage, 
+import {
+  uploadTeamMemberPhoto,
+  uploadBlogImage,
   uploadGeneralImage,
+  uploadServiceImage,
   validateImage,
-  type UploadResult 
+  type UploadResult
 } from '@/lib/cloudinary/image-upload';
 
 export async function POST(request: NextRequest) {
@@ -83,6 +84,16 @@ export async function POST(request: NextRequest) {
         }
         const blogImageType = (imageType as 'hero' | 'content') || 'content';
         uploadResult = await uploadBlogImage(file, entityId, blogImageType);
+        break;
+
+      case 'service':
+        if (!entityId) {
+          return NextResponse.json(
+            { error: 'Service ID is required for service images' },
+            { status: 400 }
+          );
+        }
+        uploadResult = await uploadServiceImage(file, entityId);
         break;
 
       case 'general':

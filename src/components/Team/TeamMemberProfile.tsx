@@ -35,10 +35,10 @@ const TeamMemberProfile: React.FC<TeamMemberProfileProps> = ({
   variant = 'card',
   className = ''
 }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
+  const formatDate = (dateValue: string | Date) => {
+    const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
       month: 'long',
       day: 'numeric'
     });

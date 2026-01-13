@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query options
-    const queryOptions: any = {
+    const queryOptions: Parameters<typeof prisma.blogTag.findMany>[0] = {
       include: {
         _count: {
           select: {
