@@ -284,38 +284,6 @@ export default async function Services() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    Application for Accessible Parking Permit
-                  </li>
-                  <li className="flex items-start">
-                    <svg
-                      className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    Accessible Transit Eligibility Application forms
-                  </li>
-                  <li className="flex items-start">
-                    <svg
-                      className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
                     Ministry of Health Forms
                   </li>
                 </ul>
