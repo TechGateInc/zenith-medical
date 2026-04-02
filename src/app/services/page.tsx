@@ -264,33 +264,38 @@ export default async function Services() {
                 ))}
               </div>
 
-              {/* Insured Services Note */}
-              <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-xl">
-                <h4 className="font-semibold text-green-800 mb-3">
-                  Services Considered Insured by OHIP:
-                </h4>
-                <ul className="space-y-2 text-green-700">
-                  <li className="flex items-start">
-                    <svg
-                      className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    Ministry of Health Forms
-                  </li>
-                </ul>
-              </div>
             </div>
           </section>
         )}
+
+        {/* Insured Services Note */}
+        <section className="mb-20">
+          <div className="max-w-6xl mx-auto">
+            <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-xl">
+              <h4 className="font-semibold text-green-800 mb-3">
+                Services Considered Insured by OHIP:
+              </h4>
+              <ul className="space-y-2 text-green-700">
+                <li className="flex items-start">
+                  <svg
+                    className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Ministry of Health Forms
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* CTA Section */}
         <section className="bg-slate-50 rounded-xl p-8 mb-8">
